@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -100,7 +101,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
     val isPassCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtUserCorrect: String by viewModel.txtValidationUserCorrect.observeAsState(initial = "")
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
-
+    val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     //Mutable
     val viewModel2 = ForgotPasswordViewModel()
@@ -190,7 +191,8 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
                 showForgotPasswordDialog,
                 navController,
                 viewModel2,
-                snackbarVisible
+                snackbarVisible,
+                coroutineScope,
             ) { forgotPasswordValue ->
                 showForgotPasswordDialog = forgotPasswordValue
             }

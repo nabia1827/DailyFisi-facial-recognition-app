@@ -54,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ fun ForgotPasswordDialog(
     navController: NavHostController,
     viewModel: ForgotPasswordViewModel,
     showSnackbar: MutableState<Boolean>,
+    coroutineScope: CoroutineScope,
     onShowForgotPasswordDialog: (Boolean) -> Unit,
 ) {
 
@@ -87,6 +89,7 @@ fun ForgotPasswordDialog(
         ContentDialogForgotPassword(
             viewModel,
             showSnackbar,
+            coroutineScope,
             onShowForgotPasswordDialog
         )
     }
@@ -96,6 +99,7 @@ fun ForgotPasswordDialog(
 fun ContentDialogForgotPassword(
     viewModel: ForgotPasswordViewModel,
     showSnackbar: MutableState<Boolean>,
+    coroutineScope: CoroutineScope,
     onShowForgotPasswordDialog: (Boolean) -> Unit
 ) {
     //Password
@@ -103,7 +107,7 @@ fun ContentDialogForgotPassword(
     val isNewPasswordCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtNewPasswordCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
 
-    val coroutineScope = rememberCoroutineScope()
+
     //Confirm Password
     val newPasswordC: String by viewModel.newPasswordC.observeAsState(initial = "")
     val isNewPasswordCCorrect: Boolean by viewModel.isValidationPassCCorrect.observeAsState(initial = true)
@@ -144,7 +148,7 @@ fun ContentDialogForgotPassword(
                 txtNewPasswordCCorrect
             ) { viewModel.onPassCFieldChanged(it) }
             Spacer(modifier = Modifier.padding(6.dp))
-            ButtonChangePassword(onShowForgotPasswordDialog, showSnackbar){
+            ButtonChangePassword(onShowForgotPasswordDialog, showSnackbar, coroutineScope){
                 viewModel.onChangingButtonSelected()
             }
             Spacer(modifier = Modifier.padding(6.dp))
@@ -275,19 +279,21 @@ fun DescriptionChangePassword() {
 fun ButtonChangePassword(
     onShowForgotPasswordDialog: (Boolean) -> Unit,
     showSnackbar: MutableState<Boolean>,
+    coroutineScope: CoroutineScope,
     onChangingButtonSelected:() -> Boolean
 ) {
-    val coroutineScope = rememberCoroutineScope()
+
     ElevatedButton(
         onClick = {
             if(onChangingButtonSelected()){
+
                 onShowForgotPasswordDialog(false)
-                /*
-                * showSnackbar.value = true
+                showSnackbar.value = true
                 coroutineScope.launch {
-                    delay(3000)
+                    delayingSnackBar()
+
                     showSnackbar.value = false
-                }*/
+                }
 
             }
 
@@ -664,7 +670,7 @@ fun TextFieldSendCode(
         isError = !isUserCorrect
     )
 }
-suspend fun delayingSnackBar(showSnackbar: (Boolean) -> Unit){
+suspend fun delayingSnackBar(){
     delay(3000)
-    showSnackbar(false)
+
 }

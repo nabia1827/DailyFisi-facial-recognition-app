@@ -16,6 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
+@Preview
+@Composable
+fun PreviewFourDigit(){
+
+}
+
 
 @Composable
 fun FourDigitCodeField(
