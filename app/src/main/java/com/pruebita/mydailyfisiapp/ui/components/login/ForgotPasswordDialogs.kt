@@ -29,7 +29,7 @@ fun FourDigitCodeField(
 ) {
     val code: String by viewModel.code.observeAsState(initial = "")
     val isCodeCorrect: Boolean by viewModel.isVerifiedCode.observeAsState(initial = true)
-    val prueba: Int =18
+    val prueba: Int =27
     val focusRequester1 = remember { FocusRequester() }
     val focusRequester2 = remember { FocusRequester() }
     val focusRequester3 = remember { FocusRequester() }
