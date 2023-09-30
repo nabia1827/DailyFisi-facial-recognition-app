@@ -1,6 +1,6 @@
 # MyDailyFisiApp
 
-![Logo del Proyecto](ruta/al/logo.png)
+![Logo del Proyecto](Logo.png)
 
 ## Descripción
 
