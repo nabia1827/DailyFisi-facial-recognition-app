@@ -24,6 +24,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyDailyFisiAppTheme {
                 // A surface container using the 'background' color from the theme
+
+                //gol
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
