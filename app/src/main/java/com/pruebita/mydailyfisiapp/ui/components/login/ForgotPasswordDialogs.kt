@@ -49,7 +49,7 @@ fun FourDigitCodeField(
             onValueChange = {
                 if (it.length <= 1) {
                     viewModel.onFourCodeChanged(it,digit2,digit3,digit4)
-                    if (it.isNotEmpty()) {
+                    if (it.isNotEmpty() ) {
 
                         focusRequester2.requestFocus()
                     }
