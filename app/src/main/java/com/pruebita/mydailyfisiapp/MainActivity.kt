@@ -13,6 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.screens.SuperScreen
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FaceRecognizerScreen
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.RecognizingScreen
 import com.pruebita.mydailyfisiapp.ui.screens.home.MainScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.LoginScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.StartScreen
@@ -24,15 +26,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyDailyFisiAppTheme {
                 // A surface container using the 'background' color from the theme
+
+                //gol
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    SuperScreen(navController = navController)
+                    //SuperScreen(navController = navController)
+                    FaceRecognizerScreen()
                     //MainScreen(navController2 = navController)
-
-
                 }
             }
         }
