@@ -4,6 +4,7 @@
 
 ## Descripción
 El proyecto de desarrollo tiene como objetivo fundamental la optimización de una tarea repetitiva y poco eficiente en la facultad de Ingeniería de Sistemas: la gestión de asistencias. Además, se enfoca en la publicación eficaz de eventos académicos. Su último propósito es proporcionar una solución práctica para encontrar rápidamente la ubicación de las aulas, permitiendo así una mejor gestión del tiempo en nuestra facultad. Este proyecto promete revolucionar la experiencia académica al simplificar procesos, aumentar la eficiencia y mejorar la conectividad en el entorno educativo de la facultad.
+Para hacer el merge
 ## Funcionalidades
 
 1. **Perfiles de Usuarios:**
