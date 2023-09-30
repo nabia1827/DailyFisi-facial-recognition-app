@@ -19,7 +19,7 @@ import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
 @Preview
 @Composable
 fun PreviewFourDigit(){
-
+    FourDigitCodeField(ForgotPasswordViewModel())
 }
 
 
@@ -48,9 +48,16 @@ fun FourDigitCodeField(
             value = digit1,
             onValueChange = {
                 if (it.length <= 1) {
-
+                    viewModel.onFourCodeChanged(it,digit2,digit3,digit4)
                     if (it.isNotEmpty()) {
-                        viewModel.onFourCodeChanged(it,digit2,digit3,digit4)
+
+                        focusRequester2.requestFocus()
+                    }
+                }
+                else{
+                    viewModel.onFourCodeChanged(it.last()+"",digit2,digit3,digit4)
+                    if (it.isNotEmpty()) {
+
                         focusRequester2.requestFocus()
                     }
                 }
@@ -85,8 +92,14 @@ fun FourDigitCodeField(
             value = digit2,
             onValueChange = {
                 if (it.length <= 1) {
+                    viewModel.onFourCodeChanged(digit1,it,digit3,digit4)
                     if (it.isNotEmpty()) {
-                        viewModel.onFourCodeChanged(digit1,it,digit3,digit4)
+                        focusRequester3.requestFocus()
+                    }
+                }else{
+                    viewModel.onFourCodeChanged(digit1,it.last()+"",digit3,digit4)
+                    if (it.isNotEmpty()) {
+
                         focusRequester3.requestFocus()
                     }
                 }
@@ -120,8 +133,14 @@ fun FourDigitCodeField(
             value = digit3,
             onValueChange = {
                 if (it.length <= 1) {
+                    viewModel.onFourCodeChanged(digit1,digit2,it,digit4)
                     if (it.isNotEmpty()) {
-                        viewModel.onFourCodeChanged(digit1,digit2,it,digit4)
+                        focusRequester4.requestFocus()
+                    }
+                }
+                else{
+                    viewModel.onFourCodeChanged(digit1,digit2,it.last()+"",digit4)
+                    if (it.isNotEmpty()) {
                         focusRequester4.requestFocus()
                     }
                 }
