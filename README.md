@@ -3,9 +3,7 @@
 ![Logo del Proyecto](Logo.png)
 
 ## Descripción
-
-Breve descripción del proyecto, su propósito y funcionalidades principales.
-
+El proyecto de desarrollo tiene como objetivo fundamental la optimización de una tarea repetitiva y poco eficiente en la facultad de Ingeniería de Sistemas: la gestión de asistencias. Además, se enfoca en la publicación eficaz de eventos académicos. Su último propósito es proporcionar una solución práctica para encontrar rápidamente la ubicación de las aulas, permitiendo así una mejor gestión del tiempo en nuestra facultad. Este proyecto promete revolucionar la experiencia académica al simplificar procesos, aumentar la eficiencia y mejorar la conectividad en el entorno educativo de la facultad.
 ## Funcionalidades
 
 1. **Perfiles de Usuarios:**
@@ -29,16 +27,11 @@ Breve descripción del proyecto, su propósito y funcionalidades principales.
    - Los profesores pueden destacar sus áreas de expertise, publicaciones académicas, horarios de consulta y recibir preguntas de los estudiantes.
 
 
-## Características
-
-- Lista de las principales características y funcionalidades.
-- Puede incluir una lista con viñetas.
-
 ## Tecnologías Utilizadas
 
 - Kotlin
 - Android Studio
-- Bibliotecas de terceros (si es necesario)
+- Bibliotecas de terceros
 
 ## Requisitos de Configuración
 
@@ -48,7 +41,7 @@ Breve descripción del proyecto, su propósito y funcionalidades principales.
 
 ## Instalación
 
-1. Clona este repositorio: `git clone https://github.com/enrique150/DailyFISI.git`
+1. Clona este repositorio: `git clone https://github.com/nabia1827/MyDailyFisiApp.git`
 2. Abre el proyecto en Android Studio.
 3. Configura las variables de entorno necesarias.
 
@@ -60,13 +53,8 @@ Describe cómo se ejecuta o utiliza el proyecto:
 2. Paso 2: ...
 3. ...
 
-## Contribuciones
-
-- Si deseas contribuir, por favor abre un Pull Request.
-- Asegúrate de seguir las pautas de contribución.
-
 ## Autor
 
-Jose Enrique mbrosio Quispe
-Kevin Ortiz 
-Nabia Pachas
+* Jose Ambrosio
+* Kevin Ortiz 
+* Nabia Pachas
