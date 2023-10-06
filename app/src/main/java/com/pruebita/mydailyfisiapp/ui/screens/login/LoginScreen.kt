@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.login
+    package com.pruebita.mydailyfisiapp.ui.screens.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
