@@ -39,9 +39,7 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = ItemMenu.HomeScreen.route){
                 HomeScreen()
             }
-            composable(route = ItemMenu.AttendanceScreen.route){
-                AttendanceScreen()
-            }
+
             composable(route = ItemMenu.ScheduleScreen.route){
                 ScheduleScreen()
             }
