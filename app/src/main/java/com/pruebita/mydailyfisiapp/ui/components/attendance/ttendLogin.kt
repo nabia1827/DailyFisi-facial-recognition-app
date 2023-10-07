@@ -23,24 +23,43 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 @Composable
 fun AttendanceLogin() {
     Box(
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopStart
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.polygon_small_secundary_pastel),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentScale = ContentScale.FillBounds
+        Box{
+            Image(
+                painter = painterResource(id = R.drawable.polygon_small_secundary_pastel),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentScale = ContentScale.FillBounds
 
-        )
+            )
+        }
 
-        Image(
-            painter = painterResource(id = R.drawable.polygon_small_primary_gradient),
-            contentDescription = null,
-            modifier = Modifier
+        Box{
+            Image(
+                painter = painterResource(id = R.drawable.polygon_small_primary_gradient),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentScale = ContentScale.FillBounds
+            )
+
+        }
+        Box(
+            modifier = Modifier.padding(top=50.dp)
                 .fillMaxWidth(),
-            contentScale = ContentScale.FillBounds
+            contentAlignment = Alignment.BottomEnd
         )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.asistencias_image),
+                contentDescription = null,
+
+                )
+        }
+
         Spacer(modifier = Modifier.padding(10.dp))
         Column(
             verticalArrangement = Arrangement.Center,

@@ -500,7 +500,7 @@ fun CardEvent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(122.dp)
+            .height(150.dp)
             .background(
                 color = Color(0xFF495ECA),
                 shape = RoundedCornerShape(size = 20.dp)
@@ -511,7 +511,7 @@ fun CardEvent() {
             Image(
                 painter = painterResource(id = R.drawable.fondo_evento_home),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
             )
             ContentCardEvent()
@@ -525,7 +525,7 @@ fun ContentCardEvent() {
     Row(
         modifier = Modifier
             .padding(15.dp)
-            .fillMaxWidth(),
+            .fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically
     ){
         Column(

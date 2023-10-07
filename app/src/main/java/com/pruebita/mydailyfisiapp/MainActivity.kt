@@ -34,8 +34,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     //SuperScreen(navController = navController)
-                    FaceRecognizerScreen()
-                    //MainScreen(navController2 = navController)
+                    //FaceRecognizerScreen()
+                    MainScreen(navController2 = navController)
                 }
             }
         }

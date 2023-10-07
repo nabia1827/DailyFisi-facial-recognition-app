@@ -40,12 +40,14 @@ fun AppNavigation(navController: NavHostController, start:String) {
                 HomeScreen()
             }
 
+            composable(route = ItemMenu.AttendanceScreen.route){
+                AttendanceScreen(navController)
+            }
+
             composable(route = ItemMenu.ScheduleScreen.route){
                 ScheduleScreen()
             }
-            composable(route = ItemMenu.ProfessorsScreen.route){
-                ProfessorsScreen()
-            }
+
             composable(route = ItemMenu.EventsScreen.route){
                 EventsScreen()
             }
@@ -55,6 +57,15 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = DrawerItem.HelpScreen.route){
                 HelpScreen()
             }
+            // Extra
+            composable(route = InternalScreens.TodayScreen.route){
+                TodayScreen(navController)
+            }
+
+            composable(route = InternalScreens.AttendanceReportScreen.route){
+                AttendanceReportScreen()
+            }
+
         }
 
 

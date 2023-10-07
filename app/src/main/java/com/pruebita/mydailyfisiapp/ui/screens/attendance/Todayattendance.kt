@@ -42,7 +42,9 @@ import androidx.compose.material3.Divider
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import okhttp3.internal.wait
 
 @Preview(showBackground = true)
@@ -52,7 +54,7 @@ fun  TodayPreview(){
     TodayScreen(navController)
 }
 @Composable
-fun  TodayScreen(navController: NavController){
+fun  TodayScreen(navController: NavHostController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,52 +66,57 @@ fun  TodayScreen(navController: NavController){
     }
 }
 @Composable
-fun TodaySS(modifier: Modifier,navController: NavController){
+fun TodaySS(modifier: Modifier,navController: NavHostController){
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.Bottom
         ) {
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(6.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp)
                     .background(color = Color.White)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = CenterVertically
+                verticalAlignment = CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Box(modifier = Modifier.padding(1.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_vector_array),
-                        contentDescription = "ico_vector",
-                        modifier = Modifier.size(16.dp, 16.dp)
-                    )
-                }
-                Spacer(modifier =Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = "06",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                Spacer(modifier =Modifier.width(10.dp))
-
-                Column {
-                    Row {
+                Row(
+                    verticalAlignment = CenterVertically
+                ){
+                    Box(modifier = Modifier.padding(1.dp).clickable { navController.navigate(ItemMenu.AttendanceScreen.route) }) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_vector_array),
+                            contentDescription = "ico_vector",
+                            modifier = Modifier.size(16.dp, 16.dp)
+                        )
+                    }
+                    Spacer(modifier =Modifier.width(12.dp))
+                    Column {
                         Text(
-                            text = "Miercoles",
-                            fontSize = 18.sp,
+                            text = "06",
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                    Row {
-                        Text(
-                            text = "Septiembre 2023",
-                            color = Color.Gray
-                        )
+                    Spacer(modifier =Modifier.width(10.dp))
+
+                    Column {
+                        Row {
+                            Text(
+                                text = "Miercoles",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = "Septiembre 2023",
+                                color = Color.Gray
+                            )
+                        }
                     }
                 }
 
@@ -139,17 +146,22 @@ fun TodaySS(modifier: Modifier,navController: NavController){
                 }
 
             }
-            Row {
-                Column(modifier = Modifier.padding(16.dp),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(0.15f).padding(5.dp),
                     //Dentro de esto? o fuera ?
                     horizontalAlignment = Alignment.CenterHorizontally ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.width(5.dp))
                     lineLogic(porcentaje = 0.4f)
                 }
-                Column(modifier = Modifier
+                Column(modifier = Modifier.weight(0.85f)
                     .background(color = Color.White)
-                    .padding(16.dp))
+                    .padding(16.dp),
+                    horizontalAlignment = Alignment.Start
+                )
                 {
                     CartillaCard("Calculo II:","Parte Teorica","12:00 - 13:30","Marcado",1)
                     CartillaCard("Calculo II:","Parte Practica","13:30 - 14:40","Marcado",1)
@@ -222,15 +234,16 @@ fun lineLogic(porcentaje: Float){
 @Composable
 fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorType: Int){
     Spacer(modifier = Modifier.height(14.dp))
-    Box(
+    Row(
         modifier = Modifier
-            .width(274.dp)
+            .fillMaxWidth()
             .height(83.dp)
             .background(Color.White)
             .shadow(
                 elevation = 2.dp, // Elevación de la sombra
                 shape = MaterialTheme.shapes.medium
-            )
+            ),
+        verticalAlignment = Alignment.CenterVertically
     ){
         val backgroundColor = when (colorType) {
             1 -> Color(0xFF6C5FDA) // Azul pastel
@@ -245,19 +258,20 @@ fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorTy
         ) {
             // Contenido de la columna
         }
-        Spacer(modifier =  Modifier.width(34.dp))
+        Spacer(modifier =  Modifier.width(0.dp))
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(15.dp, 10.dp, 15.dp, 24.dp),
+                .padding(13.dp, 13.dp, 13.dp, 13.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Row (
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().weight(0.5f),
+                verticalAlignment = CenterVertically
             ){
-                Spacer(modifier = Modifier.width(28.dp))
+                Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     text = curso,
                     fontSize = 18.sp,
@@ -271,10 +285,13 @@ fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorTy
                 )
             }
             Spacer(modifier =Modifier.height(4.dp) )
-            Row (verticalAlignment = Alignment.CenterVertically){
-                Spacer(modifier =Modifier.width(28.dp) )
+            Row (
+                verticalAlignment = CenterVertically,
+                modifier = Modifier.fillMaxWidth().weight(0.5f),
+            ){
+                Spacer(modifier =Modifier.width(5.dp) )
 
-                Box(modifier = Modifier.padding(1.dp)) {
+                Column(modifier = Modifier.padding(1.dp)) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_reloj),
                         contentDescription = "ico_reloj",
@@ -323,7 +340,7 @@ fun ButtonCustom(isEvent: String, colorType: Int) {
             if (colorType == 1) {
                 Row(
                     modifier = Modifier.padding(1.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = CenterVertically
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ico_calendar_v2),
