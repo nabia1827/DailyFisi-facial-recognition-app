@@ -9,12 +9,11 @@ import com.pruebita.mydailyfisiapp.ui.screens.login.*
 import com.pruebita.mydailyfisiapp.ui.screens.home.*
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.*
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.*
-import com.pruebita.mydailyfisiapp.ui.screens.profesors.*
 import com.pruebita.mydailyfisiapp.ui.screens.events.*
 import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SettingsScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
-
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
 @Composable
 fun AppNavigation(navController: NavHostController, start:String) {
     NavHost(
@@ -31,9 +30,13 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(navController)
             }
+
             composable(route = AppScreens.MainScreen.route){
                 MainScreen(navController)
             }
+
+
+
         }
         navigation(startDestination = ItemMenu.HomeScreen.route, route = "main") {
             composable(route = ItemMenu.HomeScreen.route){

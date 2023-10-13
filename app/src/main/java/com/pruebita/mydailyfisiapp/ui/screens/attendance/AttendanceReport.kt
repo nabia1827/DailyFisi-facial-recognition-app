@@ -7,6 +7,6 @@ import androidx.compose.runtime.Composable
 @Composable
 fun AttendanceReportScreen(){
     Column {
-        Text(text = "Profesores")
+        Text(text = "Attendance Report")
     }
 }

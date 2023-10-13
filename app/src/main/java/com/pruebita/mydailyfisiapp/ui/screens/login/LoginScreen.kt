@@ -56,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.components.login.ForgotPasswordDialog
@@ -77,7 +78,7 @@ fun LoginScreenPreview() {
 }
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavHostController) {
 
     Column(
         modifier = Modifier
@@ -93,7 +94,7 @@ fun LoginScreen(navController: NavController) {
 }
 
 @Composable
-fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavController) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController) {
     var snackbarVisible = remember { mutableStateOf(false) }
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
@@ -102,7 +103,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
     val txtUserCorrect: String by viewModel.txtValidationUserCorrect.observeAsState(initial = "")
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
     val coroutineScope = rememberCoroutineScope()
-    val navController = rememberNavController()
+
     //Mutable
     val viewModel2 = ForgotPasswordViewModel()
 
@@ -211,7 +212,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, navController: NavController, onLoginSelected:()->Boolean) {
+fun LoginButton(loginEnable: Boolean, navController: NavHostController, onLoginSelected:()->Boolean) {
     ElevatedButton(
         onClick = {
             if (onLoginSelected()) {

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -46,6 +48,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -53,7 +56,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RecognizingScreen(){
+fun RecognizingScreen(navController: NavHostController) {
 
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
     LaunchedEffect(Unit) {
@@ -79,7 +82,7 @@ fun RecognizingScreen(){
                 .weight(0.8f)
         ){
             if (permissionState.status.isGranted) {
-                ContentRecognizing()
+                ContentRecognizing(navController)
             }
             else{
                 //Navigar a la venta pero con error()
@@ -172,7 +175,7 @@ fun Recognizing(porcentaje: MutableState<String>) {
 
 
 @Composable
-fun ContentRecognizing() {
+fun ContentRecognizing(navController: NavHostController) {
     var porcentaje = remember {
         mutableStateOf("")
     }
@@ -243,6 +246,9 @@ fun ContentRecognizing() {
             }
             else{
                 Row(
+                    modifier = Modifier.clickable {
+                        navController.navigate(AppScreens.MainScreen.route)
+                    },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
 
@@ -263,6 +269,7 @@ fun ContentRecognizing() {
                         modifier = Modifier.size(40.dp, 40.dp),
                         alignment = Alignment.Center
                     )
+
                 }
 
             }

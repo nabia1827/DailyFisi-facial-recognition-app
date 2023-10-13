@@ -39,10 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Composable
-fun FaceRecognizerScreen(){
+fun FaceRecognizerScreen(navController: NavHostController) {
     var error = remember {
         mutableStateOf(false)
     }
@@ -64,7 +65,7 @@ fun FaceRecognizerScreen(){
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizer(error)
+            ContentRecognizer(error,navController)
         }
         Column(
             modifier = Modifier
@@ -87,7 +88,7 @@ fun FooterRecognizer() {
 }
 
 @Composable
-fun ContentRecognizer(error: MutableState<Boolean>) {
+fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -134,7 +135,7 @@ fun ContentRecognizer(error: MutableState<Boolean>) {
         )
         {
             ElevatedButton(
-                onClick = { },
+                onClick = {},
                 modifier = Modifier
                     .height(40.dp)
                     .width(280.dp),
@@ -172,7 +173,7 @@ fun ContentRecognizer(error: MutableState<Boolean>) {
 
             FilledTonalButton(
                 onClick = {
-
+                    navController.navigate(AppScreens.LoginScreen.route)
                 },
                 modifier = Modifier
                     .height(40.dp)
