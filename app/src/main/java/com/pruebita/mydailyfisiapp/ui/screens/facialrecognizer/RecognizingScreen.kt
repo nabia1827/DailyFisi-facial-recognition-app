@@ -1,6 +1,5 @@
 package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
 
-import android.Manifest
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -27,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,8 +45,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
@@ -58,12 +56,9 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RecognizingScreen(navController: NavHostController) {
-
-    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-    LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
+    var error by remember {
+        mutableStateOf<Boolean>(false)
     }
-
 
     Column (
         modifier = Modifier
@@ -82,14 +77,7 @@ fun RecognizingScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.8f)
         ){
-            if (permissionState.status.isGranted) {
-                ContentRecognizing(navController)
-            }
-            else{
-                //Navigar a la venta pero con error()
-            }
-
-
+            ContentRecognizing(navController,error)
         }
         Column(
             modifier = Modifier
@@ -97,15 +85,12 @@ fun RecognizingScreen(navController: NavHostController) {
         ){
             FooterRecognizer()
         }
-
-
-
-
     }
 }
 
+
 @Composable
-fun Recognizing(porcentaje: MutableState<String>, navController: NavHostController) {
+fun Recognizing(porcentaje: MutableState<String>, navController: NavHostController, error: Boolean) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -126,46 +111,51 @@ fun Recognizing(porcentaje: MutableState<String>, navController: NavHostControll
                     animationSpec = tween(durationMillis = animationDurationMillis)
                 )
 
+
                 // Reiniciar la animación al 0%
-                if(nuevo.value!= 1.0){
+                if (nuevo.value != 1.0) {
                     animationProgress.snapTo(0f)
                 }
-                nuevo.value +=0.25
 
+                nuevo.value += 0.25
+                if(nuevo.value == 0.25){
+                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
+                }
             }
         }
     }
 
-    // Llama a la función para comenzar las actualizaciones
+    // Mostrar la cámara al inicio
     LaunchedEffect(Unit) {
+        delay(4000)
         updatePercentageText()
     }
-    if(porcentaje.value == "100"){
+
+    if (porcentaje.value == "100") {
         Canvas(modifier = Modifier
             .height(180.dp)) {
-            drawCircle(Color(0xFFC8DBF8) , radius = 140.dp.toPx())
-
+            drawCircle(Color(0xFFC8DBF8), radius = 140.dp.toPx())
         }
 
         LaunchedEffect(Unit) {
             delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
             navController.navigate(AppScreens.MainScreen.route) // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
-
-
     }
 
-    Column (
+    Column(
         modifier = Modifier
             .height(250.dp)
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
-    ){
+    ) {
         Camera()
     }
+
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.pruebacirculo)
     )
+
     LottieAnimation(
         modifier = Modifier
             .fillMaxSize(),
@@ -174,16 +164,13 @@ fun Recognizing(porcentaje: MutableState<String>, navController: NavHostControll
         progress = animationProgress.value // Asigna el progreso de la animación
     )
 
-
-    porcentaje.value = ((nuevo.value+(animationProgress.value/4.0))*100).roundToInt().toString()
-
-
+    porcentaje.value = ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
 }
 
 
 
 @Composable
-fun ContentRecognizing(navController: NavHostController) {
+fun ContentRecognizing(navController: NavHostController, error: Boolean) {
     var porcentaje = remember {
         mutableStateOf("")
     }
@@ -218,7 +205,7 @@ fun ContentRecognizing(navController: NavHostController) {
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ){
-            Recognizing(porcentaje,navController)
+            Recognizing(porcentaje,navController,error)
         }
         Column(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
 
+import android.Manifest
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,9 +25,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -38,15 +37,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Composable
-fun FaceRecognizerScreen(navController: NavHostController) {
-    var error = remember {
-        mutableStateOf(false)
-    }
+fun FaceRecognizerScreen(navController: NavHostController, error:Boolean = false) {
 
     Column (
         modifier = Modifier
@@ -87,8 +86,13 @@ fun FooterRecognizer() {
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostController) {
+fun ContentRecognizer(error: Boolean, navController: NavHostController) {
+    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    LaunchedEffect(Unit) {
+        permissionState.launchPermissionRequest()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -104,7 +108,7 @@ fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostContro
             contentAlignment = Alignment.Center
         ) {
             var color = Color(0xFF495ECA)
-            if(error.value){
+            if(error){
                 color = Color(0xFFEC3773)
             }
             Text(
@@ -146,8 +150,9 @@ fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostContro
                     contentColor = Color(0xFFFFFFFF),
                     disabledContainerColor = Color(0xFFB3B6C4)
 
-                ), contentPadding = PaddingValues(),
-                enabled = true
+                ),
+                contentPadding = PaddingValues(),
+                enabled = permissionState.status.isGranted
             ) {
                 Box(
                     modifier =  Modifier
@@ -204,11 +209,11 @@ fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostContro
 }
 
 @Composable
-fun InicieRegistro(error: MutableState<Boolean>) {
+fun InicieRegistro(error: Boolean) {
     var brush = Brush.horizontalGradient(listOf(Color(0xFF6663D7), Color(0xFF1E92BA)))
     var color = Color(0xFFC8DBF8)
 
-    if(error.value){
+    if(error){
         brush = Brush.horizontalGradient(listOf(Color(0xFFEC3773), Color(0xFFF25E56)))
         color = Color(0xFFF8CAD9)
     }
