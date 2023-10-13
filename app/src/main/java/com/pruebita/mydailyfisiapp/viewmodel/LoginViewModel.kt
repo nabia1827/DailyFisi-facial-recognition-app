@@ -29,7 +29,8 @@ class LoginViewModel : ViewModel() {
     private val _txtValidationPassCorrect = MutableLiveData<String>()
     val txtValidationPassCorrect: LiveData<String> = _txtValidationPassCorrect
 
-
+    private val _isFirstLogin = MutableLiveData<Boolean>()
+    val isFirstLogin: LiveData<Boolean> = _isFirstLogin
 
 
     fun onLoginChanged(email: String, password: String) {
@@ -86,6 +87,5 @@ class LoginViewModel : ViewModel() {
             return false
         }
     }
-
 
 }

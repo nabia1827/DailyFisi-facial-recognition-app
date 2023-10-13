@@ -50,6 +50,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -104,7 +105,7 @@ fun RecognizingScreen(navController: NavHostController) {
 }
 
 @Composable
-fun Recognizing(porcentaje: MutableState<String>) {
+fun Recognizing(porcentaje: MutableState<String>, navController: NavHostController) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -145,6 +146,13 @@ fun Recognizing(porcentaje: MutableState<String>) {
             drawCircle(Color(0xFFC8DBF8) , radius = 140.dp.toPx())
 
         }
+
+        LaunchedEffect(Unit) {
+            delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
+            navController.navigate(AppScreens.MainScreen.route) // Reemplaza "nuevo_screen" con la ruta de tu destino
+        }
+
+
     }
 
     Column (
@@ -210,7 +218,7 @@ fun ContentRecognizing(navController: NavHostController) {
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ){
-            Recognizing(porcentaje)
+            Recognizing(porcentaje,navController)
         }
         Column(
             modifier = Modifier

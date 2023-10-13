@@ -135,7 +135,9 @@ fun ContentRecognizer(error: MutableState<Boolean>, navController: NavHostContro
         )
         {
             ElevatedButton(
-                onClick = {},
+                onClick = {
+                    navController.navigate(AppScreens.RecognizingScreen.route)
+                },
                 modifier = Modifier
                     .height(40.dp)
                     .width(280.dp),

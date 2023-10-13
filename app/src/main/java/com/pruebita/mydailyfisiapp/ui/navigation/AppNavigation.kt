@@ -35,6 +35,14 @@ fun AppNavigation(navController: NavHostController, start:String) {
                 MainScreen(navController)
             }
 
+            composable(route = AppScreens.FaceRecognizerScreen.route) {
+                FaceRecognizerScreen(navController)
+            }
+
+            composable(route = AppScreens.RecognizingScreen.route){
+                RecognizingScreen(navController)
+            }
+
 
 
         }
