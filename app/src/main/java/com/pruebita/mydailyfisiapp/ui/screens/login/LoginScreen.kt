@@ -217,7 +217,7 @@ fun LoginButton(loginEnable: Boolean, isFirstLogin:Boolean, navController: NavHo
         onClick = {
             if (onLoginSelected()) {
                 if(isFirstLogin){
-                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route)
+                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false")
                 }
                 else{
                     navController.navigate(route = AppScreens.MainScreen.route)

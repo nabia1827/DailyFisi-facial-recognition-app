@@ -2,9 +2,11 @@ package com.pruebita.mydailyfisiapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.pruebita.mydailyfisiapp.ui.screens.login.*
 import com.pruebita.mydailyfisiapp.ui.screens.home.*
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.*
@@ -35,15 +37,19 @@ fun AppNavigation(navController: NavHostController, start:String) {
                 MainScreen(navController)
             }
 
-            composable(route = AppScreens.FaceRecognizerScreen.route) {
-                FaceRecognizerScreen(navController)
+            composable(route = AppScreens.FaceRecognizerScreen.route + "/{error}",
+                arguments = listOf(navArgument(name = "error"){
+                    type = NavType.BoolType
+                })
+            )
+            {
+                val errorParam = it.arguments?.getBoolean("error") ?: false
+                FaceRecognizerScreen(navController,errorParam)
             }
 
             composable(route = AppScreens.RecognizingScreen.route){
                 RecognizingScreen(navController)
             }
-
-
 
         }
         navigation(startDestination = ItemMenu.HomeScreen.route, route = "main") {
