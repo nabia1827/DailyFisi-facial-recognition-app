@@ -55,7 +55,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
@@ -102,6 +101,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
     val isPassCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtUserCorrect: String by viewModel.txtValidationUserCorrect.observeAsState(initial = "")
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
+    val isFirstLogin: Boolean by viewModel.isFirstLogin.observeAsState(initial = true)
     val coroutineScope = rememberCoroutineScope()
 
     //Mutable
@@ -165,7 +165,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                 verticalArrangement = Arrangement.Center
             )
             {
-                LoginButton(true, navController){ viewModel.onLoginSelected() }
+                LoginButton(true, isFirstLogin, navController){ viewModel.onLoginSelected() }
             }
 
             //Dialog 1
@@ -212,11 +212,17 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, navController: NavHostController, onLoginSelected:()->Boolean) {
+fun LoginButton(loginEnable: Boolean, isFirstLogin:Boolean, navController: NavHostController, onLoginSelected:()->Boolean) {
     ElevatedButton(
         onClick = {
             if (onLoginSelected()) {
-                navController.navigate(route = AppScreens.MainScreen.route)
+                if(isFirstLogin){
+                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route)
+                }
+                else{
+                    navController.navigate(route = AppScreens.MainScreen.route)
+                }
+
             }
 
         },
@@ -362,7 +368,9 @@ fun PasswordField(
             }
         },
         visualTransformation = visualTransformation,
-        modifier = Modifier.fillMaxWidth().onFocusChanged {  isPressed = !isPressed },
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { isPressed = !isPressed },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
         maxLines = 1,
@@ -409,7 +417,9 @@ fun EmailField(
 
         value = email,
         onValueChange = { onTextFieldChanged(it) },
-        modifier = Modifier.fillMaxWidth().onFocusChanged {  isPressed = !isPressed },
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { isPressed = !isPressed },
         placeholder = {
             Text(
                 text = "alguien@unmsm.edu.pe",
