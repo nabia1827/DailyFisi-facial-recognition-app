@@ -12,7 +12,7 @@ sealed class ItemMenu(
     object HomeScreen: ItemMenu(R.drawable.casa,"Inicio", "home_screen")
     object AttendanceScreen: ItemMenu(R.drawable.asistencia,"Asistencia", "attendance_screen")
     object ScheduleScreen: ItemMenu(R.drawable.horario,"Horario", "schedule_screen")
-    object ProfessorsScreen: ItemMenu(R.drawable.grupo,"Profesores", "professors_screen")
+
     object EventsScreen: ItemMenu(R.drawable.evento,"Eventos", "events_screen")
 
 }

@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderStart
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
@@ -43,7 +44,7 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 
 @Composable
-fun StartScreen(navController: NavController) {
+fun StartScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,7 +66,7 @@ fun StartScreen(navController: NavController) {
 }
 
 @Composable
-fun LoginButton(navController: NavController) {
+fun LoginButton(navController: NavHostController) {
     ElevatedButton(
         onClick = {navController.navigate(AppScreens.LoginScreen.route) },
         modifier = Modifier

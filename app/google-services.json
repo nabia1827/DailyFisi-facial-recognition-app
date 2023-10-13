@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888574150595",
+    "project_id": "dailyfisiapp",
+    "storage_bucket": "dailyfisiapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888574150595:android:a090f60ba3a6c1993cdf76",
+        "android_client_info": {
+          "package_name": "com.pruebita.mydailyfisiapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOI2Y8M2OehcQ5rek0vOOr5Tu8-I3THdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

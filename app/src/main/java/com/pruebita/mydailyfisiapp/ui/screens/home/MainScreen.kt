@@ -103,14 +103,12 @@ fun MainScreen(navController2: NavHostController) {
         HomeScreen,
         AttendanceScreen,
         ScheduleScreen,
-        ProfessorsScreen,
         EventsScreen
     )
 
     val navigationMenuItems = listOf(
         DrawerItem.AttendanceScreen,
         DrawerItem.ScheduleScreen,
-        DrawerItem.ProfessorsScreen,
         DrawerItem.EventsScreen,
         DrawerItem.SettingsScreen,
         DrawerItem.HelpScreen

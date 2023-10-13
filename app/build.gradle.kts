@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -79,4 +80,18 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    //Camera
+    implementation ("androidx.camera:camera-camera2:1.3.0-alpha03")
+    implementation ("androidx.camera:camera-lifecycle:1.3.0-alpha03")
+    implementation ("androidx.camera:camera-view:1.3.0-alpha03")
+    implementation ("com.google.accompanist:accompanist-permissions:0.29.1-alpha")
+
+    implementation ("androidx.compose.animation:animation-core:1.4.0-beta01")
+
+
+    //Google dependencies
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
 }
