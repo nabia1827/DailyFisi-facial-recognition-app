@@ -118,7 +118,7 @@ fun Recognizing(porcentaje: MutableState<String>, navController: NavHostControll
                 }
 
                 nuevo.value += 0.25
-                if(nuevo.value == 0.25){
+                if(error){
                     navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
                 }
             }

@@ -90,9 +90,19 @@ fun FooterRecognizer() {
 @Composable
 fun ContentRecognizer(error: Boolean, navController: NavHostController) {
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    val deshabilitado = Brush.horizontalGradient(
+        colors = listOf(Color(0xFFEBECF0), Color(0xFFEBECF0))
+    )
+    val habilitado = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
+    )
+
     LaunchedEffect(Unit) {
         permissionState.launchPermissionRequest()
     }
+
+    var enable = permissionState.status.isGranted
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -137,6 +147,7 @@ fun ContentRecognizer(error: Boolean, navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         )
+
         {
             ElevatedButton(
                 onClick = {
@@ -148,19 +159,21 @@ fun ContentRecognizer(error: Boolean, navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color(0xFFFFFFFF),
-                    disabledContainerColor = Color(0xFFB3B6C4)
+                    disabledContainerColor = Color(0xFFB3B6C4),
+                    disabledContentColor = Color(0xFFB3B6C4)
+
 
                 ),
                 contentPadding = PaddingValues(),
-                enabled = permissionState.status.isGranted
+                enabled = enable
+
             ) {
+
                 Box(
                     modifier =  Modifier
                         .fillMaxSize()
                         .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
-                            ),
+                            brush = if (enable) habilitado else deshabilitado,
                             shape = RoundedCornerShape(22.dp)
                         ),
                     contentAlignment = Alignment.Center,
