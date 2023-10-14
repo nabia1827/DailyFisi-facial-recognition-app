@@ -210,9 +210,6 @@ fun ClasesSection() {
     }
 }
 
-
-
-
 @Composable
 fun ClasesSectionLaterClass() {
     Row(
