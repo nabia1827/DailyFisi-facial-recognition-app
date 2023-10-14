@@ -29,10 +29,13 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -58,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -82,6 +86,8 @@ fun EventsScreen() {
     }
 
     val uris_goers = remember { mutableStateListOf(img1, img2, img3) }
+
+    var isTrendSection by rememberSaveable { mutableStateOf(true) }
 
     LazyColumn(
         modifier = Modifier
@@ -154,23 +160,19 @@ fun EventsScreen() {
                         .fillMaxWidth()
                         .height(120.dp)
                 ) {
-                    SelectorPosts()
+                    SelectorPosts({isTrendSection}){
+                        newValue:Boolean ->
+                        isTrendSection = newValue
+                    }
                 }
                 Spacer(modifier = Modifier.padding(7.dp))
-                Column(
-                    modifier = Modifier.padding(7.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        UpcomingEvents(selectedImageUri,uris_goers, 23)
-                    }
-                    Spacer(modifier = Modifier.padding(7.dp))
-                    Column() {
-                        TrendingNews(img1,true)
-                    }
+                if(isTrendSection){
+                    TrendSection(selectedImageUri,uris_goers,img1)
                 }
+                else{
+                    PersonalSection(selectedImageUri,uris_goers,img1)
+                }
+
 
             }
         }
@@ -178,7 +180,43 @@ fun EventsScreen() {
 }
 
 @Composable
-fun SelectorPosts() {
+fun PersonalSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?) {
+    Column(
+        modifier = Modifier.padding(7.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            UpcomingEvents(selectedImageUri,uris_goers, 23,true)
+        }
+        Spacer(modifier = Modifier.padding(7.dp))
+        Column() {
+            TrendingNews(img1,true)
+        }
+    }
+}
+
+@Composable
+fun TrendSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?) {
+    Column(
+        modifier = Modifier.padding(7.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            UpcomingEvents(selectedImageUri,uris_goers, 23,false)
+        }
+        Spacer(modifier = Modifier.padding(7.dp))
+        Column() {
+            TrendingNews(img1,false)
+        }
+    }
+}
+
+@Composable
+fun SelectorPosts(getTrendSection: () -> Boolean,changeIsTrendSection: (Boolean) -> Unit) {
     Row(
         modifier = Modifier.fillMaxSize()
 
@@ -191,7 +229,7 @@ fun SelectorPosts() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ButtonTrends()
+            ButtonTrends(getTrendSection,changeIsTrendSection)
         }
         Column(
             modifier = Modifier
@@ -201,7 +239,7 @@ fun SelectorPosts() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ButtonMyPosts()
+            ButtonMyPosts(getTrendSection,changeIsTrendSection)
 
         }
 
@@ -210,16 +248,32 @@ fun SelectorPosts() {
 }
 
 @Composable
-fun ButtonMyPosts() {
+fun ButtonMyPosts(
+    getTrendSection: () -> Boolean,
+    changeIsTrendSection: (Boolean) -> Unit
+) {
+    val brushSelected = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
+    )
+
+    val brushNotSelected = Brush.horizontalGradient(
+        colors = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF))
+    )
+
+
     ElevatedButton(
         onClick = {
-
+            if(!getTrendSection()){
+                
+            }else{
+                changeIsTrendSection(false)
+            }
         },
         modifier = Modifier
             .fillMaxSize(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = Color(0xFF8B97A8),
+            contentColor = if(!getTrendSection()) Color(0xFFFFFFFF) else Color(0xFF8B97A8),
             disabledContainerColor = Color(0xFFB3B6C4)
 
         ), contentPadding = PaddingValues(), //Es soluuu no tocar
@@ -235,11 +289,9 @@ fun ButtonMyPosts() {
         Column(
             modifier = Modifier
                 .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF))
-                    ),
+                    brush = if (!getTrendSection()) brushSelected else brushNotSelected
 
-                    )
+                )
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -247,7 +299,7 @@ fun ButtonMyPosts() {
             Icon(
                 painter = painterResource(id = R.drawable.folder_edit),
                 contentDescription = "my posts",
-                tint = Color(0xFF8B97A8),
+                tint = if(!getTrendSection()) Color(0xFFFFFFFF) else Color(0xFF8B97A8),
             )
             Text(text = "Mis Posts", fontSize = 16.sp, fontFamily = poppins)
         }
@@ -256,16 +308,34 @@ fun ButtonMyPosts() {
 }
 
 @Composable
-fun ButtonTrends() {
+fun ButtonTrends(
+    getTrendSection: () -> Boolean,
+    changeIsTrendSection: (Boolean) -> Unit
+) {
+
+    val brushSelected = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
+    )
+
+    val brushNotSelected = Brush.horizontalGradient(
+        colors = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF))
+    )
+
     ElevatedButton(
         onClick = {
+            if(getTrendSection()) {
 
+            }
+            else{
+                changeIsTrendSection(true)
+
+            }
         },
         modifier = Modifier
             .fillMaxSize(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = Color(0xFFFFFFFF),
+            contentColor = if(getTrendSection()) Color(0xFFFFFFFF) else Color(0xFF8B97A8),
             disabledContainerColor = Color(0xFFB3B6C4)
 
         ),
@@ -277,16 +347,12 @@ fun ButtonTrends() {
             pressedElevation = 15.dp,
             disabledElevation = 0.dp
         )
-
     ) {
         Column(
             modifier = Modifier
                 .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
-                    ),
-
-                    )
+                    brush = if (getTrendSection()) brushSelected else brushNotSelected
+                )
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -294,7 +360,7 @@ fun ButtonTrends() {
             Icon(
                 painter = painterResource(id = R.drawable.chart_line),
                 contentDescription = "my posts",
-                tint = Color(0xFFFFFFFF),
+                tint = if(getTrendSection()) Color(0xFFFFFFFF) else Color(0xFF8B97A8),
             )
             Text(text = "Tendencias", fontSize = 16.sp, fontFamily = poppins)
         }
@@ -466,6 +532,7 @@ fun NewsPostContent(uri: Uri?,content: String, maxLines: Int = 4) {
 
 @Composable
 fun NewsPostHeader(img1: Uri?, editable: Boolean) {
+    var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .padding(13.dp)
@@ -522,7 +589,7 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
             horizontalAlignment = Alignment.End
         ) {
             if(editable){
-                IconButton(onClick = { /*TODO*/ })
+                IconButton(onClick = { expanded = true })
                 {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -531,9 +598,46 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
                     )
                 }
 
+                DropdownMenu(
+                    expanded = expanded,
+                    modifier = Modifier.background(Color.White),
+                    onDismissRequest = { expanded = false }
+                ){
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Editar noticia",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF000000),
+
+                                    )
+                            )
+                        },
+                        onClick = { /* Handle edit! */ },
+                        colors = MenuDefaults.itemColors(
+                        )
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Eliminar noticia",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF000000),
+
+                                    )
+                            )
+                        },
+                        onClick = { /* Handle edit! */ },
+                    )
+
+                }
             }
-
-
         }
 
     }
@@ -541,7 +645,7 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
 }
 
 @Composable
-fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, nGoers: Int) {
+fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, nGoers: Int, editable: Boolean) {
     Column {
         Text(
             text = "Próximos Eventos ",
@@ -555,15 +659,15 @@ fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, 
         Spacer(modifier = Modifier.padding(7.dp))
         LazyRow(){
             item {
-                EventoCard(selectedImageUri,uris_goers, nGoers)
+                EventoCard(selectedImageUri,uris_goers, nGoers, editable)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
             item{
-                EventoCard(selectedImageUri,uris_goers, nGoers)
+                EventoCard(selectedImageUri,uris_goers, nGoers,editable)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
             item{
-                EventoCard(selectedImageUri,uris_goers, nGoers)
+                EventoCard(selectedImageUri,uris_goers, nGoers,editable)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
 
@@ -574,35 +678,88 @@ fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, 
 
 @Composable
 fun TitleEventCard(title: String,editable:Boolean) {
+    var expanded by remember { mutableStateOf(false) }
     Row(
+        modifier= Modifier
+        .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Text(
-            text = title,
-            style = TextStyle(
-                fontSize = 18.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight(400),
-                color = Color(0xFF000000),
+        Column(
+            modifier = Modifier.weight(0.8f),
+            horizontalAlignment = Alignment.End
+        ){
+            Text(
+                text = title,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight(400),
+                    color = Color(0xFF000000),
 
-                )
-        )
-        if(editable){
-            IconButton(onClick = { /*TODO*/ })
-            {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "my posts",
-                    tint = Color(0xFF000000),
-                )
+                    )
+            )
+        }
+        Column(
+            modifier = Modifier.weight(0.2f),
+            horizontalAlignment = Alignment.End
+        ){
+            if(editable){
+                IconButton(onClick = { expanded = true })
+                {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "my posts",
+                        tint = Color(0xFF000000),
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(Color.White),
+
+                    ){
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Editar evento",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF000000),
+
+                                    )
+                            )
+
+                        },
+                        onClick = { /* Handle edit! */ },
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Eliminar evento",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF000000),
+
+                                    )
+                            )
+                        },
+                        onClick = { /* Handle edit! */ },
+                    )
+
+                }
             }
         }
+
     }
 }
 
 @Composable
-fun EventoCard(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoers:Int) {
+fun EventoCard(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoers:Int, editable: Boolean) {
     Card(
         modifier = Modifier
             .width(250.dp)
@@ -631,9 +788,10 @@ fun EventoCard(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoer
                 modifier = Modifier
                     .weight(0.5f)
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.Center
             ) {
-                TitleEventCard("Open Day Interbank", true)
+                TitleEventCard("Open Day Interbank", editable)
                 GoersEventCard(uris_goers, nGoers)
                 Spacer(modifier = Modifier.padding(4.dp))
                 PlaceEventCard()
