@@ -1,8 +1,10 @@
 package com.pruebita.mydailyfisiapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,9 +20,11 @@ import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.RecognizingScreen
 import com.pruebita.mydailyfisiapp.ui.screens.home.MainScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.LoginScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.StartScreen
+import com.pruebita.mydailyfisiapp.ui.screens.schedule.ScheduleScreen
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -33,8 +37,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    SuperScreen(navController = navController)
+                    //SuperScreen(navController = navController)
                     //FaceRecognizerScreen(navController)
+                    ScheduleScreen()
                     //RecognizingScreen(navController)
                     //MainScreen(navController2 = navController)
                 }
