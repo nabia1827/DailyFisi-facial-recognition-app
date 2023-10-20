@@ -1,5 +1,10 @@
 package com.pruebita.mydailyfisiapp.ui.screens.events
 
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,11 +48,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
 @Composable
 fun AddNewScreen(){
+    var selectedImageUri by remember {
+        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imagenesnoticias/sin_imagen.png"))
+    }
+    // Selected image from gallery
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) {
+        selectedImageUri = it
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -60,17 +79,103 @@ fun AddNewScreen(){
         item {
             FieldAddNew(
                 title = "Contenido",
-                isSingleLine = false, 7,20
+                isSingleLine = false, 12,20
             )
+            FieldUpload(photoPickerLauncher) { selectedImageUri }
         }
         item {
-            ButtonAddEdit()
+            ButtonAddNew()
         }
     }
 
 }
+
 @Composable
-fun ButtonAddEdit() {
+fun FieldUpload(
+    photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    getImage: () -> Uri?
+) {
+    FieldUploadImage(photoPickerLauncher,getImage)
+
+}
+
+
+
+@Composable
+fun FieldUploadImage(
+    photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    getImage: () -> Uri?
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 15.dp, bottom = 15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Imagen (Opcional)",
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+            )
+        )
+
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth().height(200.dp)
+            .background(
+                color = Color(0xFFF1F5F9),
+                shape = RoundedCornerShape(size = 10.dp)
+            )
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(getImage())
+                    .build(),
+                contentDescription = "This is an example image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(7.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = Color(0x99000000),
+                        shape = RoundedCornerShape(size = 8.dp)
+                    ).fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+
+            ) {
+                IconButton(onClick = { photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "icon",
+                        tint = Color.White,
+                    )
+
+
+                }
+
+
+            }
+
+        }
+    }
+}
+
+
+@Composable
+fun ButtonAddNew() {
     ElevatedButton(
         onClick = { },
         modifier = Modifier

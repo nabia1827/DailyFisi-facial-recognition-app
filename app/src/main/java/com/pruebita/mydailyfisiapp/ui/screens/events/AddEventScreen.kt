@@ -537,11 +537,8 @@ fun ButtonOther(
     )
     ElevatedButton(
         onClick = {
-            if (id != getSelectedId()) {
-                changeOpenDialog(true)
-                changeSelection(id, optional)
-
-            }
+            changeOpenDialog(true)
+            changeSelection(id, optional)
         },
         modifier = Modifier
             .fillMaxSize()
