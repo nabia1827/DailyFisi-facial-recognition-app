@@ -38,6 +38,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -87,7 +89,7 @@ fun EventsScreen() {
 
     val uris_goers = remember { mutableStateListOf(img1, img2, img3) }
 
-    var isTrendSection by rememberSaveable { mutableStateOf(true) }
+    var isTrendSection by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -368,19 +370,42 @@ fun ButtonTrends(
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun TrendingNews(img1: Uri?, editable: Boolean) {
+    val brush = remember {
+        Brush.horizontalGradient(
+            colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
+        )
+    }
+
     Column {
         Spacer(modifier = Modifier.padding(3.dp))
-        Text(
-            text = "Noticias en Tendencia",
-            style = TextStyle(
-                fontSize = 18.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Noticias en Tendencia ",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                )
             )
-        )
+            if(editable){
+                TextButton(onClick = {}) {
+                    Text(
+                        text = "+ Agregar",
+                        style = TextStyle(brush = brush)
+                    )
+
+                }
+            }
+
+        }
         Spacer(modifier = Modifier.padding(3.dp))
         Column(
 
@@ -644,18 +669,41 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
 
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, nGoers: Int, editable: Boolean) {
-    Column {
-        Text(
-            text = "Próximos Eventos ",
-            style = TextStyle(
-                fontSize = 18.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
-            )
+    val brush = remember {
+        Brush.horizontalGradient(
+            colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
         )
+    }
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Próximos Eventos ",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black,
+                )
+            )
+            if(editable){
+                TextButton(onClick = {}) {
+                    Text(
+                        text = "+ Agregar",
+                        style = TextStyle(brush = brush)
+                    )
+
+                }
+            }
+
+        }
+
         Spacer(modifier = Modifier.padding(7.dp))
         LazyRow(){
             item {
