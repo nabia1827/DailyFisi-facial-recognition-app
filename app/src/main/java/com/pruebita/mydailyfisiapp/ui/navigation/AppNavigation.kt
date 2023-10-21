@@ -66,7 +66,7 @@ fun AppNavigation(navController: NavHostController, start:String) {
             }
 
             composable(route = ItemMenu.EventsScreen.route){
-                EventsScreen()
+                EventsScreen(navController)
             }
             composable(route = DrawerItem.SettingsScreen.route){
                 SettingsScreen()
@@ -74,7 +74,7 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = DrawerItem.HelpScreen.route){
                 HelpScreen()
             }
-            // Extra
+            // Modulo Asistencias
             composable(route = InternalScreens.TodayScreen.route){
                 TodayScreen(navController)
             }
@@ -82,6 +82,26 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = InternalScreens.AttendanceReportScreen.route){
                 AttendanceReportScreen()
             }
+
+            //Modulo Eventos
+            composable(route = InternalScreens.AddEventScreen.route){
+                AddEventScreen()
+            }
+
+            composable(route = InternalScreens.AddNewScreen.route){
+                AddNewScreen()
+            }
+
+            composable(route = InternalScreens.DetailsEventScreen.route){
+                DetailsEventScreen()
+            }
+            composable(route = InternalScreens.EditEventScreen.route){
+                EditEventScreen()
+            }
+            composable(route = InternalScreens.EditNewScreen.route){
+                EditNewScreen()
+            }
+
 
         }
 

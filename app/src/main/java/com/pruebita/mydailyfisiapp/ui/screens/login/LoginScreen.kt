@@ -224,7 +224,6 @@ fun LoginButton(loginEnable: Boolean, isFirstLogin:Boolean, navController: NavHo
                 }
 
             }
-
         },
         modifier = Modifier
             .fillMaxWidth()

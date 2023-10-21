@@ -23,9 +23,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -54,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,17 +67,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-
 @Preview(showBackground = true)
 @Composable
-fun EventsScreen() {
+fun PreviewEventScreen(){
+    val navController = rememberNavController()
+    EventsScreen(navController)
+}
+
+
+@Composable
+fun EventsScreen(navController: NavHostController) {
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imageneseventos/101.jpg"))
     }
@@ -86,11 +98,15 @@ fun EventsScreen() {
     var img3 by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba3.png"))
     }
-
+    var openAlertDialog = rememberSaveable  { mutableStateOf(false) }
     val uris_goers = remember { mutableStateListOf(img1, img2, img3) }
 
     var isTrendSection by rememberSaveable { mutableStateOf(false) }
 
+    DialogExamples({ openAlertDialog.value }){
+        newValue: Boolean ->
+        openAlertDialog.value = newValue
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -169,10 +185,16 @@ fun EventsScreen() {
                 }
                 Spacer(modifier = Modifier.padding(7.dp))
                 if(isTrendSection){
-                    TrendSection(selectedImageUri,uris_goers,img1)
+                    TrendSection(navController,selectedImageUri,uris_goers,img1){
+                        newValue: Boolean ->
+                        openAlertDialog.value = newValue
+                    }
                 }
                 else{
-                    PersonalSection(selectedImageUri,uris_goers,img1)
+                    PersonalSection(navController,selectedImageUri,uris_goers,img1){
+                            newValue: Boolean ->
+                        openAlertDialog.value = newValue
+                    }
                 }
 
 
@@ -180,9 +202,88 @@ fun EventsScreen() {
         }
     }
 }
+@Composable
+fun DialogExamples(getOpenAlertDialog: () -> Boolean, changeStateDialog: (Boolean) ->Unit) {
+
+    when {
+        // ...
+        getOpenAlertDialog() -> {
+            AlertDialogExample(
+                onDismissRequest = { changeStateDialog(false) },
+                onConfirmation = {
+                    changeStateDialog(false)
+                    // Add logic here to handle confirmation.
+                },
+                dialogTitle = "Eliminar publicacion",
+                dialogText = "Estas a punto de eliminar una publicación, por lo que se borrará definitivamente. ¿Deseas continuar?",
+                icon = Icons.Default.Info
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+) {
+    AlertDialog(
+        icon = {//#495ECA
+            Icon(
+                icon, contentDescription = "Example Icon", tint = Color(0xFF495ECA))
+        },
+        title = {
+            Text(
+                text = dialogTitle,
+
+            )
+        },
+        text = {
+            Text(
+                text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = Color(0xFFC8DBF8),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text("Confirmar")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color(0xFF495ECA)
+                )
+            ) {
+                Text("Cancelar")
+            }
+        },
+        containerColor = Color.White,
+
+    )
+
+}
+
+
 
 @Composable
-fun PersonalSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?) {
+fun PersonalSection(navController:NavHostController,selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?,changeStateDialog: (Boolean)->Unit) {
     Column(
         modifier = Modifier.padding(7.dp)
     ) {
@@ -190,17 +291,17 @@ fun PersonalSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, 
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            UpcomingEvents(selectedImageUri,uris_goers, 23,true)
+            UpcomingEvents(changeStateDialog,navController,selectedImageUri,uris_goers, 23,true)
         }
         Spacer(modifier = Modifier.padding(7.dp))
         Column() {
-            TrendingNews(img1,true)
+            TrendingNews(navController,img1,true, changeStateDialog)
         }
     }
 }
 
 @Composable
-fun TrendSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?) {
+fun TrendSection(navController:NavHostController,selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img1: Uri?,changeStateDialog: (Boolean)->Unit) {
     Column(
         modifier = Modifier.padding(7.dp)
     ) {
@@ -208,11 +309,11 @@ fun TrendSection(selectedImageUri:Uri?, uris_goers: SnapshotStateList<Uri?>, img
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            UpcomingEvents(selectedImageUri,uris_goers, 23,false)
+            UpcomingEvents(changeStateDialog,navController,selectedImageUri,uris_goers, 23,false)
         }
         Spacer(modifier = Modifier.padding(7.dp))
         Column() {
-            TrendingNews(img1,false)
+            TrendingNews(navController,img1,false, changeStateDialog)
         }
     }
 }
@@ -372,7 +473,7 @@ fun ButtonTrends(
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun TrendingNews(img1: Uri?, editable: Boolean) {
+fun TrendingNews(navController: NavHostController,img1: Uri?, editable: Boolean, changeStateDialog: (Boolean) -> Unit) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -396,7 +497,11 @@ fun TrendingNews(img1: Uri?, editable: Boolean) {
                 )
             )
             if(editable){
-                TextButton(onClick = {}) {
+                TextButton(
+                    onClick = {
+                        navController.navigate(InternalScreens.AddNewScreen.route)
+                    }
+                ) {
                     Text(
                         text = "+ Agregar",
                         style = TextStyle(brush = brush)
@@ -411,9 +516,9 @@ fun TrendingNews(img1: Uri?, editable: Boolean) {
 
         ) {
 
-            NewPostCard(img1,null, editable)
+            NewPostCard(navController,img1,null, editable,changeStateDialog)
             Spacer(modifier = Modifier.padding(7.dp))
-            NewPostCard(img1, img1,editable)
+            NewPostCard(navController,img1, img1,editable, changeStateDialog)
 
         }
     }
@@ -421,7 +526,7 @@ fun TrendingNews(img1: Uri?, editable: Boolean) {
 }
 
 @Composable
-fun NewPostCard(img1: Uri?,img2: Uri?, editable: Boolean) {
+fun NewPostCard(navController:NavHostController,img1: Uri?,img2: Uri?, editable: Boolean, changeStateDialog: (Boolean) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -433,7 +538,7 @@ fun NewPostCard(img1: Uri?,img2: Uri?, editable: Boolean) {
             defaultElevation = 3.dp
         )
     ){
-        NewsPostHeader(img1, editable)
+        NewsPostHeader(navController,img1, editable, changeStateDialog)
         NewsPostContent(
             uri = img2,
             content = "Lorem \uD83D\uDE0A Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
@@ -556,7 +661,7 @@ fun NewsPostContent(uri: Uri?,content: String, maxLines: Int = 4) {
 }
 
 @Composable
-fun NewsPostHeader(img1: Uri?, editable: Boolean) {
+fun NewsPostHeader(navController: NavHostController,img1: Uri?, editable: Boolean, changeStateDialog: (Boolean) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -641,7 +746,7 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
                                     )
                             )
                         },
-                        onClick = { /* Handle edit! */ },
+                        onClick = { navController.navigate(InternalScreens.EditNewScreen.route) },
                         colors = MenuDefaults.itemColors(
                         )
                     )
@@ -658,7 +763,8 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
                                     )
                             )
                         },
-                        onClick = { /* Handle edit! */ },
+                        onClick = { changeStateDialog(true)
+                            expanded = false},
                     )
 
                 }
@@ -671,7 +777,7 @@ fun NewsPostHeader(img1: Uri?, editable: Boolean) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, nGoers: Int, editable: Boolean) {
+fun UpcomingEvents(changeStateDialog: (Boolean) ->Unit,navController:NavHostController, selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, nGoers: Int, editable: Boolean) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -693,7 +799,11 @@ fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, 
                 )
             )
             if(editable){
-                TextButton(onClick = {}) {
+                TextButton(
+                    onClick = {
+                        navController.navigate(InternalScreens.AddEventScreen.route)
+                    }
+                ) {
                     Text(
                         text = "+ Agregar",
                         style = TextStyle(brush = brush)
@@ -707,15 +817,15 @@ fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, 
         Spacer(modifier = Modifier.padding(7.dp))
         LazyRow(){
             item {
-                EventoCard(selectedImageUri,uris_goers, nGoers, editable)
+                EventoCard(navController,selectedImageUri,uris_goers, nGoers, editable,changeStateDialog)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
             item{
-                EventoCard(selectedImageUri,uris_goers, nGoers,editable)
+                EventoCard(navController,selectedImageUri,uris_goers, nGoers,editable,changeStateDialog)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
             item{
-                EventoCard(selectedImageUri,uris_goers, nGoers,editable)
+                EventoCard(navController,selectedImageUri,uris_goers, nGoers,editable,changeStateDialog)
                 Spacer(modifier = Modifier.padding(7.dp))
             }
 
@@ -725,7 +835,7 @@ fun UpcomingEvents(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>, 
 }
 
 @Composable
-fun TitleEventCard(title: String,editable:Boolean) {
+fun TitleEventCard(navController:NavHostController,title: String,editable:Boolean,changeStateDialog: (Boolean) ->Unit) {
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier= Modifier
@@ -781,7 +891,7 @@ fun TitleEventCard(title: String,editable:Boolean) {
                             )
 
                         },
-                        onClick = { /* Handle edit! */ },
+                        onClick = { navController.navigate(InternalScreens.EditEventScreen.route) },
                     )
                     DropdownMenuItem(
                         text = {
@@ -796,7 +906,8 @@ fun TitleEventCard(title: String,editable:Boolean) {
                                     )
                             )
                         },
-                        onClick = { /* Handle edit! */ },
+                        onClick = {changeStateDialog(true)
+                            expanded = false},
                     )
 
                 }
@@ -807,11 +918,12 @@ fun TitleEventCard(title: String,editable:Boolean) {
 }
 
 @Composable
-fun EventoCard(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoers:Int, editable: Boolean) {
+fun EventoCard(navController:NavHostController,selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoers:Int, editable: Boolean,changeStateDialog: (Boolean) ->Unit) {
     Card(
         modifier = Modifier
             .width(250.dp)
-            .height(290.dp),
+            .height(290.dp)
+            .clickable { },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
 
@@ -839,7 +951,7 @@ fun EventoCard(selectedImageUri: Uri?, uris_goers: SnapshotStateList<Uri?>,nGoer
                     .padding(top = 8.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                TitleEventCard("Open Day Interbank", editable)
+                TitleEventCard(navController,"Open Day Interbank", editable,changeStateDialog)
                 GoersEventCard(uris_goers, nGoers)
                 Spacer(modifier = Modifier.padding(4.dp))
                 PlaceEventCard()
