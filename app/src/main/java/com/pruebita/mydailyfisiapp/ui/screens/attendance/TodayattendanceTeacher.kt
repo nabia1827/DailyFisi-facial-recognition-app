@@ -38,12 +38,12 @@ import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 
 @Preview(showBackground = true)
 @Composable
-fun  TodayPreview(){
+fun  TodayTeacherPreview(){
     val navController = rememberNavController()
-    TodayScreen(navController)
+    TodayTeacherScreen(navController)
 }
 @Composable
-fun  TodayScreen(navController: NavHostController){
+fun  TodayTeacherScreen(navController: NavHostController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,11 +51,11 @@ fun  TodayScreen(navController: NavHostController){
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TodaySS(Modifier.padding(0.dp),navController)
+        TodayTeacherSS(Modifier.padding(0.dp),navController)
     }
 }
 @Composable
-fun TodaySS(modifier: Modifier,navController: NavHostController){
+fun TodayTeacherSS(modifier: Modifier,navController: NavHostController){
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(
@@ -144,7 +144,7 @@ fun TodaySS(modifier: Modifier,navController: NavHostController){
                     horizontalAlignment = Alignment.CenterHorizontally ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.width(5.dp))
-                    lineLogic(porcentaje = 0.4f)
+                    lineLogicAttendanceTeacher(porcentaje = 0.4f)
                 }
                 Column(modifier = Modifier.weight(0.85f)
                     .background(color = Color.White)
@@ -152,12 +152,12 @@ fun TodaySS(modifier: Modifier,navController: NavHostController){
                     horizontalAlignment = Alignment.Start
                 )
                 {
-                    CartillaCard("Calculo II:","Parte Teorica","12:00 - 13:30","Marcado",1)
-                    CartillaCard("Calculo II:","Parte Practica","13:30 - 14:40","Marcado",1)
-                    CartillaCard("Algoritmica I :","Parte Teórica ","15:00 - 16:00","Marcar",2)
-                    CartillaCard("Algoritmica I :","Parte Practica ","15:00 - 16:00","Marcar",3)
-                    CartillaCard("Marketing:","Parte Teorica","17:00 - 18:00","Marcar",3)
-                    CartillaCard("Marketing:","Parte Practica ","15:00 - 16:00","Marcar",3)
+                    CartillaCardAttendanceTeacher("Calculo II:","Parte Teorica","12:00 - 13:30","Marcado",1)
+                    CartillaCardAttendanceTeacher("Calculo II:","Parte Practica","13:30 - 14:40","Marcado",1)
+                    CartillaCardAttendanceTeacher("Algoritmica I :","Parte Teórica ","15:00 - 16:00","Iniciar",3)
+                    CartillaCardAttendanceTeacher("Algoritmica I :","Parte Practica ","15:00 - 16:00","Marcar",4)
+                    CartillaCardAttendanceTeacher("Marketing:","Parte Teorica","17:00 - 18:00","Marcar",4)
+                    CartillaCardAttendanceTeacher("Marketing:","Parte Practica ","15:00 - 16:00","Marcar",4)
                 }
             }
 
@@ -165,7 +165,7 @@ fun TodaySS(modifier: Modifier,navController: NavHostController){
 }
 }
 @Composable
-fun lineLogic(porcentaje: Float){
+fun lineLogicAttendanceTeacher(porcentaje: Float){
     Box {
 
         Canvas(
@@ -221,7 +221,7 @@ fun lineLogic(porcentaje: Float){
 }
 
 @Composable
-fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorType: Int){
+fun CartillaCardAttendanceTeacher(curso:String,prOtr:String, hora: String,isEvent: String,colorType: Int){
     Spacer(modifier = Modifier.height(14.dp))
     Row(
         modifier = Modifier
@@ -237,6 +237,8 @@ fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorTy
         val backgroundColor = when (colorType) {
             1 -> Color(0xFF6C5FDA) // Azul pastel
             2 -> Color(0xFF29D697) // Verde (puedes cambiar el código de color)
+            3 -> Color(0xFFC05AFF) // Verde (puedes cambiar el código de color)
+
             else -> Color.Gray // Color por defecto en caso de un valor no válido
         }
         Column(
@@ -304,10 +306,11 @@ fun CartillaCard(curso:String,prOtr:String, hora: String,isEvent: String,colorTy
     }
 }
 @Composable
-fun ButtonCustom(isEvent: String, colorType: Int) {
+fun ButtonCustomTeacher(isEvent: String, colorType: Int) {
     val backgroundColor = when (colorType) {
         1 -> Color(0xFF6C5FDA) // Azul pastel
         2 -> Color(0xFF29D697) // Verde (puedes cambiar el código de color)
+        3 -> Color(0xFFC05AFF)
         else -> Color.Gray // Color por defecto en caso de un valor no válido
     }
 
