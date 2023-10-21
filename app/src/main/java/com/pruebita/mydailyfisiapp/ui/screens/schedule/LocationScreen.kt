@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
@@ -35,10 +37,12 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil.compose.rememberImagePainter
 import com.pruebita.mydailyfisiapp.R
 @Composable
@@ -52,6 +56,13 @@ fun ZoomableImageWithButtonsAndTouch(
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
     var panx by remember { mutableStateOf(0f) }
     var pany by remember { mutableStateOf(0f) }
+
+    val context = LocalContext.current
+    val drawable = context.getDrawable(R.drawable.card_location)
+    val bitmap = drawable?.toBitmap()
+
+    val drawable_icon = context.getDrawable(R.drawable.map_pin)
+    val bitmap_icon = drawable_icon?.toBitmap()
 
 
 
@@ -135,6 +146,45 @@ fun ZoomableImageWithButtonsAndTouch(
                 }
             }
 
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    ),
+                onDraw = {
+                    bitmap?.let { image ->
+                        drawImage(image.asImageBitmap(), Offset(310f, 1650f))
+                    }
+                    bitmap_icon?.let { image ->
+                        drawImage(image.asImageBitmap(), Offset(360f, 1660f))
+                    }
+
+                    val text = "Aula 102"
+                    val textSize = 20f
+                    val textColor = Color.White
+                    val textPosition = Offset(340f, 1735f) // Posición del texto
+
+
+                    drawIntoCanvas { canvas ->
+                        val paint = Paint()
+                        paint.color = textColor.toArgb()
+                        paint.textSize = textSize
+                        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+
+                        canvas.nativeCanvas.drawText(
+                            text,
+                            textPosition.x,
+                            textPosition.y,
+                            paint
+                        )
+                    }
+                }
+            )
+
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
@@ -176,40 +226,7 @@ fun ZoomableImageWithButtonsAndTouch(
                     .offset(boxPosition.x.dp, boxPosition.y.dp)
                     .background(Color.Red)
             )*/
-            Canvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offset.x,
-                        translationY = offset.y
-                    ),
-                onDraw = {
 
-
-                    // Dibuja el texto sobre la imagen
-                    val text = "Texto sobre la imagen"
-                    val textSize = 20f
-                    val textColor = Color.White
-                    val textPosition = Offset(50f, 150f) // Posición del texto
-
-
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint()
-                        paint.color = textColor.toArgb()
-                        paint.textSize = textSize
-                        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-
-                        canvas.nativeCanvas.drawText(
-                            text,
-                            textPosition.x,
-                            textPosition.y,
-                            paint
-                        )
-                    }
-                }
-            )
 
 
 
