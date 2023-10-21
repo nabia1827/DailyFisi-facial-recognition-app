@@ -923,7 +923,7 @@ fun EventoCard(navController:NavHostController,selectedImageUri: Uri?, uris_goer
         modifier = Modifier
             .width(250.dp)
             .height(290.dp)
-            .clickable { },
+            .clickable { navController.navigate(InternalScreens.DetailsEventScreen.route) },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
 
@@ -942,7 +942,76 @@ fun EventoCard(navController:NavHostController,selectedImageUri: Uri?, uris_goer
                     .weight(0.5f)
                     .fillMaxWidth()
             ) {
-                ImageEventCard(selectedImageUri)
+                Box(
+                    modifier = Modifier.fillMaxSize().background(Color.LightGray)
+                ) {
+                    ImageEventCard(selectedImageUri)
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .background(Color.Transparent).padding(10.dp),
+                        contentAlignment = Alignment.TopEnd
+                    ){
+                        Column(
+                            modifier = Modifier.width(50.dp)
+                                .height(50.dp)
+                                .background(
+                                    color = Color(0xB2FFFFFF),
+                                    shape = RoundedCornerShape(size = 7.dp)
+                                ),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.date_ic),
+                                contentDescription = "my posts",
+                                modifier = Modifier.size(25.dp),
+                                tint = Color(0xFF2F68D7),
+                            )
+
+                        }
+                    }
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .background(Color.Transparent).padding(10.dp),
+                                contentAlignment = Alignment.TopStart
+                    ){
+                        Column(
+                            modifier = Modifier.width(50.dp)
+                                .height(60.dp)
+                                .background(color = Color(0xB2FFFFFF), shape = RoundedCornerShape(size = 7.dp)),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "10",
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    lineHeight = 0.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF2F68D7),
+
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+                            Text(
+                                text = "JUNE",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    lineHeight = 0.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF2F68D7),
+
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+
+                        }
+                    }
+                }
+
             }
             Column(
                 modifier = Modifier

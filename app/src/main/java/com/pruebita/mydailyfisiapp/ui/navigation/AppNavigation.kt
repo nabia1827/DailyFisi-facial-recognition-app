@@ -85,21 +85,21 @@ fun AppNavigation(navController: NavHostController, start:String) {
 
             //Modulo Eventos
             composable(route = InternalScreens.AddEventScreen.route){
-                AddEventScreen()
+                AddEventScreen(navController)
             }
 
             composable(route = InternalScreens.AddNewScreen.route){
-                AddNewScreen()
+                AddNewScreen(navController)
             }
 
             composable(route = InternalScreens.DetailsEventScreen.route){
-                DetailsEventScreen()
+                DetailsEventScreen(navController)
             }
             composable(route = InternalScreens.EditEventScreen.route){
-                EditEventScreen()
+                EditEventScreen(navController)
             }
             composable(route = InternalScreens.EditNewScreen.route){
-                EditNewScreen()
+                EditNewScreen(navController)
             }
 
 

@@ -39,11 +39,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    //SuperScreen(navController = navController)
+                    SuperScreen(navController = navController)
                     //FaceRecognizerScreen(navController)
                     //ScheduleScreen()
                     //HorarioScreen()
-                    AddReminderScreen()
+                    //AddReminderScreen()
                     //RecognizingScreen(navController)
                     //MainScreen(navController2 = navController)
                 }
