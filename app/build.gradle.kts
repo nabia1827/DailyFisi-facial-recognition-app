@@ -93,5 +93,5 @@ dependencies {
     //Google dependencies
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation ("org.jetbrains.kotlinx:kotlinx-datetime:0.3.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }
