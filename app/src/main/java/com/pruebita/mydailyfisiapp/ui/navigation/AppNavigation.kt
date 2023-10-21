@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.pruebita.mydailyfisiapp.ui.screens.login.*
 import com.pruebita.mydailyfisiapp.ui.screens.home.*
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.*
+import com.pruebita.mydailyfisiapp.ui.screens.attendance.student.*
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.*
 import com.pruebita.mydailyfisiapp.ui.screens.events.*
 import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
@@ -78,12 +79,12 @@ fun AppNavigation(navController: NavHostController, start:String) {
                 HelpScreen()
             }
             // Modulo Asistencias
-            composable(route = InternalScreens.TodayScreen.route){
-                TodayScreen(navController)
+            composable(route = InternalScreens.TodayAttendanceScreen.route){
+                TodayAttendanceScreen(navController)
             }
 
             composable(route = InternalScreens.AttendanceReportScreen.route){
-                AttendanceReportScreen()
+                AttedanceReportScreen(navController)
             }
 
             //Modulo Eventos

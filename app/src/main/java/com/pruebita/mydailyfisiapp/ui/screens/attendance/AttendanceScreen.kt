@@ -55,7 +55,6 @@ fun AttendanceScreen(navController: NavHostController){
         Attendance(Modifier.padding(0.dp),navController)
     }
 }
-
 @Composable
 fun Attendance(modifier: Modifier,navController: NavHostController){
     Box(modifier = Modifier.fillMaxSize()){
@@ -202,7 +201,7 @@ fun RectanguloConTextoYBoton2(text1: String, text2: String, navController: NavHo
 fun LoginButtonR1(navController: NavHostController) {
     ElevatedButton(
         onClick = {
-            navController.navigate(InternalScreens.TodayScreen.route)
+            navController.navigate(InternalScreens.TodayAttendanceScreen.route)
         },
         modifier = Modifier
             .width(62.dp)
