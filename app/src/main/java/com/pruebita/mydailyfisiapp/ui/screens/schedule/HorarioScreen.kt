@@ -173,6 +173,7 @@ fun Mapa() {
                 .background(Color(0x4D000000)),
             contentAlignment = Alignment.Center
         ){
+
             Image(
                 painter = painterResource(id = R.drawable.location_map),
                 contentDescription = null,
