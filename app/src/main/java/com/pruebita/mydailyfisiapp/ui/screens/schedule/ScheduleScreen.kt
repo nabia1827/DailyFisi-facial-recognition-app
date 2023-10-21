@@ -3,12 +3,12 @@ package com.pruebita.mydailyfisiapp.ui.screens.schedule
 import Kalendar
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,15 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -35,24 +33,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar.KalendarType
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardCurso
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardHora
+import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardRecordatorio
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import okhttp3.internal.wait
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -112,13 +109,21 @@ fun ScheduleScreen(){
                         currentDay = selectedDay
                     },
                 )
+
             }
 
             Box(
                 modifier = Modifier
             )
             {
-                gridCards()
+                gridCards(currentDay)
+            }
+
+            Column(
+                modifier = Modifier
+            )
+            {
+                Recordatorios()
             }
 
         }
@@ -126,7 +131,50 @@ fun ScheduleScreen(){
 }
 
 @Composable
-fun gridCards() {
+fun Recordatorios() {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Text(
+            text = "Recordatorios de Hoy",
+            fontSize = 18.sp,
+            fontFamily = poppins,
+            fontWeight = FontWeight.SemiBold
+        )
+        OutlinedButton(
+            onClick = {  },
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.agregar),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(18.dp),
+            )
+            Spacer(modifier = Modifier.padding(5.dp))
+            Text("Agregar")
+        }
+    }
+    CardRecordatorio()
+    CardRecordatorio()
+    CardRecordatorio()
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun gridCards(curr: LocalDate) {
+    var dia = curr.dayOfMonth.toString()
+    val locale = Locale("es", "ES")
+    var nombreMes = curr.month.getDisplayName(TextStyle.SHORT, locale)
+        .lowercase()
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+
+    if (dia.toInt()<10){
+        dia = String.format("%02d", dia.toInt())
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,7 +182,7 @@ fun gridCards() {
 
     ){
         Text(
-            text = "06 Sep",
+            text = "$dia $nombreMes",
             fontSize = 28.sp,
             fontFamily = poppins,
             fontWeight = FontWeight.SemiBold,
@@ -159,7 +207,10 @@ fun gridCards() {
                 CardHora()
                 CardHora()
             }
-            Spacer(Modifier.padding(15.dp))
+            Spacer(Modifier.padding(7.dp))
+            linea()
+
+            Spacer(Modifier.padding(7.dp))
             Column (
                 verticalArrangement = Arrangement.SpaceAround,
             ){
@@ -180,6 +231,26 @@ fun gridCards() {
         }
     }
 
+}
+@Composable
+fun linea() {
+
+    var distancia = 190 + 170*4
+    Box {
+        Canvas(
+            modifier = Modifier
+                .width(1.dp)
+                .height(distancia.dp)
+                .background(Color(0x99BCC1CD))
+        ) {
+            drawLine(
+                color = Color(0x99BCC1CD),
+                strokeWidth = 2f,
+                start = Offset(size.width / 2, 0f),
+                end = Offset(size.width / 2, size.height),
+            )
+        }
+    }
 }
 
 

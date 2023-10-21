@@ -20,6 +20,8 @@ import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.RecognizingScreen
 import com.pruebita.mydailyfisiapp.ui.screens.home.MainScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.LoginScreen
 import com.pruebita.mydailyfisiapp.ui.screens.login.StartScreen
+import com.pruebita.mydailyfisiapp.ui.screens.schedule.AddReminderScreen
+import com.pruebita.mydailyfisiapp.ui.screens.schedule.HorarioScreen
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.ScheduleScreen
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
 
@@ -37,9 +39,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    SuperScreen(navController = navController)
+                    //SuperScreen(navController = navController)
                     //FaceRecognizerScreen(navController)
                     //ScheduleScreen()
+                    //HorarioScreen()
+                    AddReminderScreen()
                     //RecognizingScreen(navController)
                     //MainScreen(navController2 = navController)
                 }

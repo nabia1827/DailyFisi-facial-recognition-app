@@ -100,7 +100,6 @@ fun CardCurso(isactual:Boolean = false){
                 }
 
             }
-            Spacer(Modifier.padding(5.dp))
 
             Text(
                 text = seccion,
@@ -111,7 +110,6 @@ fun CardCurso(isactual:Boolean = false){
                 modifier = Modifier
                     .weight(0.25f)
             )
-            Spacer(Modifier.padding(5.dp))
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,7 +143,6 @@ fun CardCurso(isactual:Boolean = false){
                     )
                 }
             }
-            Spacer(Modifier.padding(5.dp))
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
