@@ -38,9 +38,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar.KalendarType
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardCurso
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardHora
@@ -53,10 +57,17 @@ import kotlinx.datetime.todayIn
 import java.time.format.TextStyle
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun PreviewScheduleScreen(){
+    val navController = rememberNavController()
+    ScheduleScreen(navController)
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleScreen(){
+fun ScheduleScreen(navController: NavHostController){
     var today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     var currentDay by remember{
         mutableStateOf<LocalDate>(today)
@@ -109,21 +120,20 @@ fun ScheduleScreen(){
                         currentDay = selectedDay
                     },
                 )
-
             }
 
             Box(
                 modifier = Modifier
             )
             {
-                gridCards(currentDay)
+                gridCards(navController,currentDay)
             }
 
             Column(
                 modifier = Modifier
             )
             {
-                Recordatorios()
+                Recordatorios(navController)
             }
 
         }
@@ -131,7 +141,7 @@ fun ScheduleScreen(){
 }
 
 @Composable
-fun Recordatorios() {
+fun Recordatorios(navController: NavHostController) {
     Row (
         modifier = Modifier
             .fillMaxWidth(),
@@ -145,7 +155,7 @@ fun Recordatorios() {
             fontWeight = FontWeight.SemiBold
         )
         OutlinedButton(
-            onClick = {  },
+            onClick = { navController.navigate(InternalScreens.AddReminderScreen.route) },
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.agregar),
@@ -164,7 +174,7 @@ fun Recordatorios() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun gridCards(curr: LocalDate) {
+fun gridCards(navController: NavHostController,curr: LocalDate) {
     var dia = curr.dayOfMonth.toString()
     val locale = Locale("es", "ES")
     var nombreMes = curr.month.getDisplayName(TextStyle.SHORT, locale)
@@ -222,11 +232,11 @@ fun gridCards(curr: LocalDate) {
                     modifier = Modifier
                         .padding(start = 10.dp)
                 )
-                CardCurso(true)
-                CardCurso()
-                CardCurso()
-                CardCurso()
-                CardCurso()
+                CardCurso(navController = navController,true)
+                CardCurso(navController = navController)
+                CardCurso(navController = navController)
+                CardCurso(navController = navController)
+                CardCurso(navController = navController)
             }
         }
     }

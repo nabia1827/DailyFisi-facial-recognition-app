@@ -48,13 +48,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
+
 @Preview(showBackground = true)
 @Composable
-fun AddNewScreen(){
+fun PreviewAddNewScreen(){
+    val navController = rememberNavController()
+    AddNewScreen(navController)
+}
+@Composable
+fun AddNewScreen(navController: NavHostController) {
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imagenesnoticias/sin_imagen.png"))
     }
@@ -74,7 +82,7 @@ fun AddNewScreen(){
 
     ){
         item {
-            HeaderAddNew()
+            HeaderAddNew(navController)
         }
         item {
             FieldAddNew(
@@ -212,7 +220,7 @@ fun ButtonAddNew() {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderAddNew() {
+fun HeaderAddNew(navController: NavHostController) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -228,7 +236,7 @@ fun HeaderAddNew() {
             modifier = Modifier.weight(0.2f)
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(

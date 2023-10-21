@@ -1,5 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -16,6 +18,7 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SettingsScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navController: NavHostController, start:String) {
     NavHost(
@@ -62,11 +65,11 @@ fun AppNavigation(navController: NavHostController, start:String) {
             }
 
             composable(route = ItemMenu.ScheduleScreen.route){
-                ScheduleScreen()
+                ScheduleScreen(navController)
             }
 
             composable(route = ItemMenu.EventsScreen.route){
-                EventsScreen()
+                EventsScreen(navController)
             }
             composable(route = DrawerItem.SettingsScreen.route){
                 SettingsScreen()
@@ -74,7 +77,7 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = DrawerItem.HelpScreen.route){
                 HelpScreen()
             }
-            // Extra
+            // Modulo Asistencias
             composable(route = InternalScreens.TodayScreen.route){
                 TodayScreen(navController)
             }
@@ -82,6 +85,34 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = InternalScreens.AttendanceReportScreen.route){
                 AttendanceReportScreen()
             }
+
+            //Modulo Eventos
+            composable(route = InternalScreens.AddEventScreen.route){
+                AddEventScreen(navController)
+            }
+
+            composable(route = InternalScreens.AddNewScreen.route){
+                AddNewScreen(navController)
+            }
+
+            composable(route = InternalScreens.DetailsEventScreen.route){
+                DetailsEventScreen(navController)
+            }
+            composable(route = InternalScreens.EditEventScreen.route){
+                EditEventScreen(navController)
+            }
+            composable(route = InternalScreens.EditNewScreen.route){
+                EditNewScreen(navController)
+            }
+
+            // Modulo Horarios
+            composable(route = InternalScreens.AddReminderScreen.route){
+                AddReminderScreen(navController)
+            }
+            composable(route = InternalScreens.HorarioScreen.route){
+                HorarioScreen(navController)
+            }
+
 
         }
 

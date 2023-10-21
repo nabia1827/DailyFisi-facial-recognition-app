@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,16 +55,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
-
 @Preview(showBackground = true)
 @Composable
-fun AddReminderScreen() {
+fun PreviewAddReminderScreen(){
+    val navController = rememberNavController()
+    AddReminderScreen(navController)
+}
+
+
+@Composable
+fun AddReminderScreen(navController: NavHostController) {
     var selectedId by rememberSaveable { mutableIntStateOf(0) }
     var selectedDate by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
     val openDialog = remember { mutableStateOf(false) }
@@ -106,13 +111,13 @@ fun AddReminderScreen() {
     ) {
         Column (
             modifier = Modifier
-                .weight(0.15f)
+                .weight(0.19f)
         ){
-            HeaderAddEvent()
+            HeaderAddEvent(navController)
         }
         Column (
             modifier = Modifier
-                .weight(0.25f),
+                .weight(0.21f),
             verticalArrangement = Arrangement.Center
         ){
             FieldAddEvent(
@@ -889,7 +894,7 @@ fun FieldAddEvent(title: String, isSingleLine: Boolean, minLines: Int, maxLines:
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderAddEvent() {
+fun HeaderAddEvent(navController:NavHostController) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -905,7 +910,7 @@ fun HeaderAddEvent() {
             modifier = Modifier.weight(0.2f)
         ) {
             IconButton(
-                onClick = { },
+                onClick = {navController.popBackStack() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(

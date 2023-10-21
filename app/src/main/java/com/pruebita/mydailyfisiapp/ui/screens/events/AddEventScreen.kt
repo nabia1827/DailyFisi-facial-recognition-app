@@ -57,16 +57,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 @Preview(showBackground = true)
 @Composable
-fun AddEventScreen() {
+fun PreviewAddEventScreen()
+{
+    val navController = rememberNavController()
+    AddEventScreen(navController)
+}
+
+@Composable
+fun AddEventScreen(navController: NavHostController) {
     var selectedId by rememberSaveable { mutableIntStateOf(0) }
     var selectedDate by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
     val openDialog = remember { mutableStateOf(false) }
@@ -106,7 +114,7 @@ fun AddEventScreen() {
     ) {
 
         item {
-            HeaderAddEvent()
+            HeaderAddEvent(navController)
         }
         item {
             FieldAddEvent(
@@ -890,7 +898,7 @@ fun FieldAddEvent(title: String, isSingleLine: Boolean, minLines: Int, maxLines:
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderAddEvent() {
+fun HeaderAddEvent(navController: NavHostController) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -906,7 +914,7 @@ fun HeaderAddEvent() {
             modifier = Modifier.weight(0.2f)
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(

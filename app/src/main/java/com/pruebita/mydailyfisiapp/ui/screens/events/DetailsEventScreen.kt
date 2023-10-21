@@ -3,7 +3,6 @@ package com.pruebita.mydailyfisiapp.ui.screens.events
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -46,16 +43,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-
-@OptIn(ExperimentalTextApi::class)
 @Preview(showBackground = true)
 @Composable
-fun DetailsEventScreen(){
+fun PreviewDetailsEventScreen(){
+    val navController = rememberNavController()
+    DetailsEventScreen(navController)
+}
+@Composable
+fun DetailsEventScreen(navController: NavHostController) {
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imageneseventos/101.jpg"))
     }
@@ -94,7 +95,7 @@ fun DetailsEventScreen(){
                     contentAlignment = Alignment.BottomCenter
                 )
                 {
-                    HeaderBackDetailsEvent(selectedImageUri)
+                    HeaderBackDetailsEvent(navController,selectedImageUri)
                     HeaderFloating(uris)
                 }
             }
@@ -426,7 +427,7 @@ fun HeaderFloating(uris: MutableList<Uri?>) {
 }
 
 @Composable
-fun HeaderBackDetailsEvent(selectedImageUri: Uri?) {
+fun HeaderBackDetailsEvent(navController:NavHostController,selectedImageUri: Uri?) {
     Box(modifier = Modifier
         .fillMaxSize()
     ){
@@ -465,7 +466,7 @@ fun HeaderBackDetailsEvent(selectedImageUri: Uri?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navController.popBackStack() },
 
                 ) {
                 Icon(

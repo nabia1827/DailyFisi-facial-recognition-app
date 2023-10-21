@@ -1,6 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,11 +33,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+@Preview(showBackground = true)
+@Composable
+fun PreviewCardCurso(){
+    val navController = rememberNavController()
+    CardCurso(navController)
+}
 
 @Composable
-fun CardCurso(isactual:Boolean = false){
+fun CardCurso(navController: NavHostController,isactual:Boolean = false){
     var curso = "Calculo III"
     var seccion = "Seccion 3"
     var teoria = "Aula 102 NP"
@@ -58,7 +68,7 @@ fun CardCurso(isactual:Boolean = false){
             .wrapContentWidth()
             .height(170.dp)
             .padding(10.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(18.dp)).clickable { navController.navigate(InternalScreens.HorarioScreen.route) }
     ){
         Column(
             modifier = Modifier
