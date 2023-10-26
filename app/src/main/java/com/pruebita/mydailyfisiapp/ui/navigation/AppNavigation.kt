@@ -113,6 +113,9 @@ fun AppNavigation(navController: NavHostController, start:String) {
             composable(route = InternalScreens.HorarioScreen.route){
                 HorarioScreen(navController)
             }
+            composable(route = InternalScreens.LocationScreen.route){
+                LocationScreen(navController)
+            }
 
 
         }

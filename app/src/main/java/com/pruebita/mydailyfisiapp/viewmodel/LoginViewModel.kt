@@ -55,7 +55,7 @@ class LoginViewModel : ViewModel() {
 
     private fun isValidEmail(email: String): Boolean {
         if(Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            if(email =="taylor@gmail.com"){
+            if(email =="nabia.pachas@unmsm.edu.pe"){
                 _txtValidationUserCorrect.value = ""
                 return true
             }

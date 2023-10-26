@@ -15,5 +15,7 @@ sealed class InternalScreens(val route: String){
     object AddReminderScreen: InternalScreens("add_reminder_screen")
     object HorarioScreen: InternalScreens("horario_screen")
 
+    object LocationScreen: InternalScreens("location_screen")
+
 
 }

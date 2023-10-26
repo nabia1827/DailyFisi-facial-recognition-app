@@ -1,4 +1,5 @@
-package com.pruebita.mydailyfisiapp.ui.screens.attendance
+package com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher
+
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CircularCustomComponent
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CustomComponent
-import com.pruebita.mydailyfisiapp.ui.screens.schedule.HeaderAddEvent
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)

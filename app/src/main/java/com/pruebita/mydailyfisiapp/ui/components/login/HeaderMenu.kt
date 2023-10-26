@@ -83,7 +83,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
 
             ) {
                 Text(
-                    text = "Miguel Diaz Perez",
+                    text = "Nabia Pachas Lopez",
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 25.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -91,7 +91,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
                     color = Color.White
                 )
                 Text(
-                    text = "miguel.diaz@unmsm.edu.pe",
+                    text = "nabia.pachas@unmsm.edu.pe",
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Light,
