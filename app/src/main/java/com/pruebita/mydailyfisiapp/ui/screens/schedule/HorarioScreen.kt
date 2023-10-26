@@ -2,6 +2,7 @@ package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -46,6 +48,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 @Preview
 @Composable
@@ -141,7 +144,7 @@ fun HorarioScreen(navController: NavHostController) {
                 )
 
             ) {
-                Mapa()
+                Mapa(navController)
             }
 
         }
@@ -149,7 +152,7 @@ fun HorarioScreen(navController: NavHostController) {
 }
 
 @Composable
-fun Mapa() {
+fun Mapa(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -192,7 +195,15 @@ fun Mapa() {
                         colors = listOf(Color(0xFF1D93BB), Color(0xFF4579CB), Color(0xFF6C5FDA))
                     ),
                     shape = CircleShape
-                ),
+                ).shadow(
+                    elevation = 0.dp,
+                    shape = CircleShape,
+                    clip = true
+                )
+                .clickable {
+                    navController.navigate(InternalScreens.LocationScreen.route)
+
+                },
             contentAlignment = Alignment.BottomEnd
         ){
             Icon(

@@ -24,7 +24,6 @@ import com.pruebita.mydailyfisiapp.ui.screens.schedule.AddReminderScreen
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.DrawImageWithTextOnZoomableImage
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.HorarioScreen
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.ScheduleScreen
-import com.pruebita.mydailyfisiapp.ui.screens.schedule.ZoomableImageWithButtonsAndTouch
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,10 +40,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    //SuperScreen(navController = navController)
+                    SuperScreen(navController = navController)
                     //FaceRecognizerScreen(navController)
                     //ScheduleScreen()
-                    ZoomableImageWithButtonsAndTouch()
+                    //ZoomableImageWithButtonsAndTouch()
                     //HorarioScreen()
                     //DrawImageWithTextOnZoomableImage()
                     //AddReminderScreen()

@@ -43,11 +43,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.pruebita.mydailyfisiapp.R
-@Composable
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
+
 @Preview
-fun ZoomableImageWithButtonsAndTouch(
+@Composable
+fun PreviewLocationScreen(){
+    val navController = rememberNavController()
+    LocationScreen(navController)
+}
+
+@Composable
+fun LocationScreen(
+    navController: NavHostController,
     imageModifier: Modifier = Modifier,
     maxScale: Float = 2.0f,
     minScale: Float = 1.0f
@@ -252,7 +263,9 @@ fun ZoomableImageWithButtonsAndTouch(
                             shape = CircleShape,
                             clip = true
                         )
-                        .clickable{  },
+                        .clickable{
+                            navController.popBackStack()
+                        },
                     contentAlignment = Alignment.BottomEnd
                 ){
                     Icon(
