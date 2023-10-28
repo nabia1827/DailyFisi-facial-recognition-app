@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.events
+package com.pruebita.mydailyfisiapp.ui.screens.events.dele
 
 import android.net.Uri
 import androidx.compose.foundation.Image

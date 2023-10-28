@@ -13,11 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +42,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.pruebita.mydailyfisiapp.ui.screens.events.dele.EventsScreen
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 @Preview(showBackground = true)
 @Composable
-fun AttendanceListScreen(){
+fun PreviewAttendanceListTeacherScreen(){
+    val navController = rememberNavController()
+    AttendanceListTeacherScreen(navController)
+}
+
+
+@Composable
+fun AttendanceListTeacherScreen(navController: NavHostController) {
 
     LazyColumn(
         modifier = Modifier
@@ -62,12 +70,14 @@ fun AttendanceListScreen(){
             Column(
                 modifier = Modifier.height(120.dp)
             ) {
-                HeaderListScreen()
+                HeaderListScreen(navController)
             }
         }
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().height(40.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -184,7 +194,7 @@ fun StudentItem() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceChip() {
-    var selected by remember { mutableStateOf(false) }
+    var selected by rememberSaveable { mutableStateOf(false) }
 
     FilterChip(
         onClick = { selected = !selected },
@@ -249,7 +259,7 @@ fun AttendanceChip() {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderListScreen() {
+fun HeaderListScreen(navController: NavHostController) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -265,7 +275,7 @@ fun HeaderListScreen() {
             modifier = Modifier.weight(0.2f)
         ) {
             IconButton(
-                onClick = {},
+                onClick = {navController.popBackStack()},
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(

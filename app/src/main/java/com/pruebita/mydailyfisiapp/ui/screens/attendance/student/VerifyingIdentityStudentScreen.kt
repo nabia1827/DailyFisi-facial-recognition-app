@@ -1,5 +1,7 @@
-package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
+package com.pruebita.mydailyfisiapp.ui.screens.attendance.student
 
+
+import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,65 +44,64 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
+import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.HeaderVerifying
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FooterRecognizer
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
-import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewRecognizingScreen() {
+fun PreviewVerifyingIdentityStudentScreen(){
     val navController = rememberNavController()
-    RecognizingScreen(navController)
+    VerifyingIdentityStudentScreen(navController)
 }
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RecognizingScreen(navController: NavHostController) {
-    val recognizingViewModel: RecognizingViewModel = hiltViewModel()
-
+fun VerifyingIdentityStudentScreen(navController: NavHostController) {
     var error by remember {
         mutableStateOf<Boolean>(false)
     }
+    var selectedImageUri by remember {
+        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/predefinidos/img_verifyingposition.png"))
+    }
 
-    Column(
+    Column (
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+        verticalArrangement =  Arrangement.Top
+    ){
         Column(
             modifier = Modifier
                 .weight(0.3f)
-        ) {
-            HeaderRecognizer(Modifier.padding(0.dp))
+        ){
+            HeaderVerifying(navController)
         }
         Column(
             modifier = Modifier
                 .weight(0.8f)
-        ) {
-            ContentRecognizing(navController, error){
-                recognizingViewModel.getMainRoute()
-            }
+        ){
+            ContentRecognizing(navController,error,selectedImageUri)
         }
         Column(
             modifier = Modifier
                 .weight(0.1f)
-        ) {
+        ){
             FooterRecognizer()
         }
     }
@@ -107,12 +109,7 @@ fun RecognizingScreen(navController: NavHostController) {
 
 
 @Composable
-fun Recognizing(
-    porcentaje: MutableState<String>,
-    navController: NavHostController,
-    error: Boolean,
-    getMainRoute:() ->String
-) {
+fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostController, error: Boolean) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -140,8 +137,8 @@ fun Recognizing(
                 }
 
                 nuevo.value += 0.25
-                if (error) {
-                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
+                if(error){
+                    //navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
                 }
             }
         }
@@ -149,22 +146,20 @@ fun Recognizing(
 
     // Mostrar la cámara al inicio
     LaunchedEffect(Unit) {
-        delay(4000)
+        delay(2000)
         updatePercentageText()
     }
 
     if (porcentaje.value == "100") {
-        Canvas(
-            modifier = Modifier
-                .height(180.dp)
-        ) {
+        /*
+        Canvas(modifier = Modifier
+            .height(180.dp)) {
             drawCircle(Color(0xFFC8DBF8), radius = 140.dp.toPx())
-        }
+        }*/
 
         LaunchedEffect(Unit) {
-            val route = getMainRoute()
-            delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
-            navController.navigate(route) // Reemplaza "nuevo_screen" con la ruta de tu destino
+            delay(500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
+            //navController.navigate(AppScreens.MainScreen.route) // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
     }
 
@@ -189,24 +184,115 @@ fun Recognizing(
         progress = animationProgress.value // Asigna el progreso de la animación
     )
 
-    porcentaje.value =
-        ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
+    porcentaje.value = ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
+}
+@Composable
+fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHostController, error: Boolean, selectedImageUri:Uri?) {
+    val animationDurationMillis = 2000 // Duración total de 2 segundos
+
+    var nuevo = remember {
+        mutableStateOf(0.0)
+    }
+
+    // Crea un estado para el progreso de la animación
+    val animationProgress = remember { Animatable(0f) }
+
+    // Crea un CoroutineScope para manejar las actualizaciones del texto porcentual
+    val coroutineScope = rememberCoroutineScope()
+
+    fun updatePercentageText() {
+        coroutineScope.launch {
+            repeat(2) { // Repite 4 veces (4 iteraciones)
+                animationProgress.animateTo(
+                    targetValue = 1f, // Avanzar al 100%
+                    animationSpec = tween(durationMillis = animationDurationMillis)
+                )
+
+
+                // Reiniciar la animación al 0%
+                if (nuevo.value != 1.0) {
+                    animationProgress.snapTo(0f)
+                }
+
+                nuevo.value += 0.50
+                if(error){
+                    //navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
+                }
+            }
+        }
+    }
+
+    // Mostrar la cámara al inicio
+    LaunchedEffect(Unit) {
+        delay(2000)
+        updatePercentageText()
+    }
+
+    if (porcentaje2.value == "100") {
+        Canvas(modifier = Modifier
+            .height(180.dp)) {
+            drawCircle(Color(0xFFC8DBF8), radius = 140.dp.toPx())
+        }
+        LaunchedEffect(Unit) {
+            delay(500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
+            navController.popBackStack()
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .height(250.dp)
+            .width(250.dp)
+            .clip(RoundedCornerShape(190.dp))
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(selectedImageUri)
+                .build(),
+            contentDescription = "This is an example image",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(190.dp)),
+            contentScale = ContentScale.Crop
+
+        )
+    }
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.pruebacirculo)
+    )
+
+    LottieAnimation(
+        modifier = Modifier
+            .fillMaxSize(),
+        composition = composition,
+        contentScale = ContentScale.FillWidth,
+        progress = animationProgress.value // Asigna el progreso de la animación
+    )
+
+    porcentaje2.value = ((nuevo.value + (animationProgress.value / 2.0)) * 100).roundToInt().toString()
 }
 
 
+
 @Composable
-fun ContentRecognizing(navController: NavHostController, error: Boolean, getMainRoute: () -> String) {
+fun ContentRecognizing(navController: NavHostController, error: Boolean, img:Uri?) {
     var porcentaje = remember {
         mutableStateOf("")
     }
+    var porcentaje2 = remember {
+        mutableStateOf("")
+    }
+    var switch = remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-
-
-        ) {
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
         Box(
             modifier = Modifier
                 .weight(0.2f)
@@ -223,14 +309,18 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
             )
         }
 
-
         Box(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
-        ) {
-            Recognizing(porcentaje, navController, error, getMainRoute)
+        ){
+            if(porcentaje.value != "100"){
+                RecognizingFace(porcentaje,navController,error)
+            }
+            else{
+                RecognizingPosition(porcentaje2,navController,error,img)
+            }
         }
         Column(
             modifier = Modifier
@@ -240,11 +330,11 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
             horizontalAlignment = Alignment.CenterHorizontally,
         )
         {
-            if (porcentaje.value != "100") {
+            if(porcentaje.value != "100"){
                 Text(
-                    text = "Registrando ...",
+                    text = "Comprobando identidad ...",
                     textAlign = TextAlign.Center,
-                    fontSize = 28.sp,
+                    fontSize = 22.sp,
                     fontFamily = poppins,
                     color = Color(0xFF495ECA),
                     fontWeight = FontWeight.Normal
@@ -263,16 +353,39 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
                     fontWeight = FontWeight.SemiBold
                 )
 
-            } else {
+            }
+            else if(porcentaje2.value != "100") {
+                Text(
+                    text = "Comprobando ubicación ...",
+                    textAlign = TextAlign.Center,
+                    fontSize = 22.sp,
+                    fontFamily = poppins,
+                    color = Color(0xFF495ECA),
+                    fontWeight = FontWeight.Normal
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("${porcentaje2.value}%")
+                        }
+                    },
+                    textAlign = TextAlign.Center,
+                    fontSize = 34.sp,
+                    fontFamily = poppins,
+                    color = Color(0xFF495ECA),
+                    fontWeight = FontWeight.SemiBold
+                )
+
+            }
+            else{
                 Row(
                     modifier = Modifier.clickable {
-                        val route = getMainRoute()
-                        navController.navigate(route)
+                        //navController.navigate(AppScreens.MainScreen.route)
                     },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
 
-                ) {
+                ){
                     Text(
                         text = "Hecho",
                         textAlign = TextAlign.Center,
@@ -283,7 +396,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
                     Image(
-                        painter = painterResource(id = R.drawable.checkfat),
+                        painter = painterResource(id =  R.drawable.checkfat),
                         contentDescription = "CheckFat",
 
                         modifier = Modifier.size(40.dp, 40.dp),
@@ -291,7 +404,6 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
                     )
 
                 }
-
             }
 
         }

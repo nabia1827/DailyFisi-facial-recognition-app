@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.events
+package com.pruebita.mydailyfisiapp.ui.screens.events.dele
 
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -53,18 +53,17 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-
-
 @Preview(showBackground = true)
 @Composable
-fun PreviewAddNewScreen(){
+fun PreviewEditNewScreen(){
     val navController = rememberNavController()
-    AddNewScreen(navController)
+    EditNewScreen(navController)
 }
+
 @Composable
-fun AddNewScreen(navController: NavHostController) {
+fun EditNewScreen(navController: NavHostController) {
     var selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imagenesnoticias/sin_imagen.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba1.png"))
     }
     // Selected image from gallery
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -82,35 +81,35 @@ fun AddNewScreen(navController: NavHostController) {
 
     ){
         item {
-            HeaderAddNew(navController)
+            HeaderEditNew(navController)
         }
         item {
-            FieldAddNew(
-                title = "Contenido",
+            FieldEditNew(
+                title = "Contenido","Este es el contenido de un evento...",
                 isSingleLine = false, 12,20
             )
-            FieldUpload(photoPickerLauncher) { selectedImageUri }
+            FieldUploadEdit(photoPickerLauncher) { selectedImageUri }
         }
         item {
-            ButtonAddNew()
+            ButtonEditNew(navController)
         }
     }
 
 }
 
 @Composable
-fun FieldUpload(
+fun FieldUploadEdit(
     photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     getImage: () -> Uri?
 ) {
-    FieldUploadImage(photoPickerLauncher,getImage)
+    FieldUploadImageEdit(photoPickerLauncher,getImage)
 
 }
 
 
 
 @Composable
-fun FieldUploadImage(
+fun FieldUploadImageEdit(
     photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     getImage: () -> Uri?
 ) {
@@ -183,9 +182,9 @@ fun FieldUploadImage(
 
 
 @Composable
-fun ButtonAddNew() {
+fun ButtonEditNew(navController: NavHostController) {
     ElevatedButton(
-        onClick = { },
+        onClick = { navController.popBackStack()},
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)
@@ -220,7 +219,7 @@ fun ButtonAddNew() {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderAddNew(navController: NavHostController) {
+fun HeaderEditNew(navController: NavHostController) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -275,8 +274,8 @@ fun HeaderAddNew(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FieldAddNew(title: String, isSingleLine: Boolean, minLines: Int, maxLines: Int) {
-    var text by remember { mutableStateOf("") }
+fun FieldEditNew(title: String, content:String, isSingleLine: Boolean, minLines: Int, maxLines: Int) {
+    var text by remember { mutableStateOf(content) }
     Column(
         modifier = Modifier.padding(top = 18.dp)
     ) {

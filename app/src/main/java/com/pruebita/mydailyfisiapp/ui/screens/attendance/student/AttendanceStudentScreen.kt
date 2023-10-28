@@ -38,12 +38,12 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
 @Composable
-fun AttendanceScreenPreview(){
+fun AttendanceStudentScreenPreview(){
     val navAttendance = rememberNavController()
-    AttendanceScreen(navAttendance)
+    AttendanceStudentScreen(navAttendance)
 }
 @Composable
-fun AttendanceScreen(navController: NavHostController){
+fun AttendanceStudentScreen(navController: NavHostController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -200,7 +200,7 @@ fun RectanguloConTextoYBoton2(text1: String, text2: String, navController: NavHo
 fun LoginButtonR1(navController: NavHostController) {
     ElevatedButton(
         onClick = {
-            navController.navigate(InternalScreens.TodayAttendanceScreen.route)
+            navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route)
         },
         modifier = Modifier
             .width(62.dp)
@@ -237,7 +237,7 @@ fun LoginButtonR1(navController: NavHostController) {
 fun LoginButtonR2(navController: NavHostController) {
     ElevatedButton(
         onClick = {
-            navController.navigate(InternalScreens.AttendanceReportScreen.route)
+            navController.navigate(InternalScreens.AttendanceReportStudentScreen.route)
         },
         modifier = Modifier
             .width(62.dp)

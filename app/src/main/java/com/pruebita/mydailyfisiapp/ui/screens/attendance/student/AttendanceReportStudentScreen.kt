@@ -43,14 +43,14 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewAttedanceReportScreen() {
+fun PreviewAttedanceReportStudentScreen() {
     val navController = rememberNavController()
-    AttedanceReportScreen(navController)
+    AttedanceReportStudentScreen(navController)
 }
 
 
 @Composable
-fun AttedanceReportScreen(navController: NavHostController) {
+fun AttedanceReportStudentScreen(navController: NavHostController) {
     var globalValue = remember {
         mutableStateOf<Int>(70)
     }

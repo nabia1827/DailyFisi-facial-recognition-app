@@ -1,5 +1,6 @@
-    package com.pruebita.mydailyfisiapp.ui.screens.login
+package com.pruebita.mydailyfisiapp.ui.screens.login
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,9 +56,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.di.AppModule.provideContext
 import com.pruebita.mydailyfisiapp.ui.components.login.ForgotPasswordDialog
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderLogin
 import com.pruebita.mydailyfisiapp.ui.components.login.SendCodeDialog
@@ -66,19 +71,24 @@ import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-
     val navController = rememberNavController()
     LoginScreen(navController)
 }
 
+
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
+    val loginViewModel: LoginViewModel = hiltViewModel()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +97,7 @@ fun LoginScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Login(Modifier.padding(0.dp), LoginViewModel(), navController)
+        Login(Modifier.padding(0.dp), loginViewModel, navController)
 
     }
 }
@@ -117,7 +127,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
     var showForgotPasswordDialog by remember {
         mutableStateOf(false)
     }
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.Bottom
@@ -146,7 +156,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                         txtPassCorrect
                     ) { viewModel.onLoginChanged(email, it) }
                     Spacer(modifier = Modifier.padding(10.dp))
-                    ForgotPassword(Modifier.align(Alignment.End)){
+                    ForgotPassword(Modifier.align(Alignment.End)) {
                         showSendCodeDialog = true // Mostrar el primer diálogo
                     }
                 }
@@ -165,7 +175,15 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                 verticalArrangement = Arrangement.Center
             )
             {
-                LoginButton(true, isFirstLogin, navController){ viewModel.onLoginSelected() }
+                LoginButton(
+                    true,
+                    isFirstLogin,
+                    navController,
+                    { viewModel.onLoginSelected() },
+                    { viewModel.saveLocallyUserData() }) {
+                    viewModel.getMainRoute()
+                }
+
             }
 
             //Dialog 1
@@ -205,22 +223,30 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                 modifier = Modifier.padding(16.dp),
                 containerColor = Color.Black,
                 contentColor = Color.White,
-                content = { Text("Cambio realizado con exito")}
+                content = { Text("Cambio realizado con exito") }
             )
         }
     }
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, isFirstLogin:Boolean, navController: NavHostController, onLoginSelected:()->Boolean) {
+fun LoginButton(
+    loginEnable: Boolean,
+    isFirstLogin: Boolean,
+    navController: NavHostController,
+    onLoginSelected: () -> Boolean,
+    saveUser: () -> Unit,
+    getMainRoute: () -> String
+) {
     ElevatedButton(
         onClick = {
             if (onLoginSelected()) {
-                if(isFirstLogin){
+                saveUser()
+                if (isFirstLogin) {
                     navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false")
-                }
-                else{
-                    navController.navigate(route = AppScreens.MainScreen.route)
+                } else {
+                    val route = getMainRoute()
+                    navController.navigate(route)
                 }
 
             }
@@ -254,7 +280,7 @@ fun LoginButton(loginEnable: Boolean, isFirstLogin:Boolean, navController: NavHo
 
 @Composable
 fun ForgotPassword(
-    modifier:Modifier,
+    modifier: Modifier,
     activate: () -> Unit
 ) {
 
@@ -302,7 +328,7 @@ fun ForgotPassword(
         ) {
             Text(
                 text = "Olvidaste tu contraseña?",
-                modifier = modifier.clickable {activate() },
+                modifier = modifier.clickable { activate() },
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF4678CA),
@@ -346,7 +372,9 @@ fun PasswordField(
             Icon(
                 imageVector = Icons.Default.Lock,
                 contentDescription = "User",
-                tint = if(isPassCorrect) if(!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(0xFFF44336)
+                tint = if (isPassCorrect) if (!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(
+                    0xFFF44336
+                )
             )
         },
         trailingIcon = {
@@ -355,14 +383,18 @@ fun PasswordField(
                     painter = painterResource(id = R.drawable.baseline_visibility_24),
                     contentDescription = "User",
                     modifier = Modifier.clickable { passwordVisible = false },
-                    tint = if(isPassCorrect) if(!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(0xFFF44336)
+                    tint = if (isPassCorrect) if (!isPressed) Color(0xFF495ECA) else Color(
+                        0xFF7F8388
+                    ) else Color(0xFFF44336)
                 )
             } else {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_visibility_off_24),
                     contentDescription = "User",
                     modifier = Modifier.clickable { passwordVisible = true },
-                    tint = if(isPassCorrect) if(!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(0xFFF44336)
+                    tint = if (isPassCorrect) if (!isPressed) Color(0xFF495ECA) else Color(
+                        0xFF7F8388
+                    ) else Color(0xFFF44336)
                 )
             }
         },
@@ -388,7 +420,7 @@ fun PasswordField(
             focusedTrailingIconColor = Color(0xFF495ECA),
         ),
         isError = !isPassCorrect,
-        supportingText = {Text(text = passError, fontSize = 13.sp, fontFamily = poppins)  }
+        supportingText = { Text(text = passError, fontSize = 13.sp, fontFamily = poppins) }
 
     )
 
@@ -430,7 +462,9 @@ fun EmailField(
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = "User",
-                tint = if(isUserCorrect) if(!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(0xFFF44336)
+                tint = if (isUserCorrect) if (!isPressed) Color(0xFF495ECA) else Color(0xFF7F8388) else Color(
+                    0xFFF44336
+                )
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),

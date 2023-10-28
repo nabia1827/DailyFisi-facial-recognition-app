@@ -76,6 +76,7 @@ import com.pruebita.mydailyfisiapp.ui.components.login.HeaderMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.DrawerItem
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu.*
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
@@ -86,7 +87,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController2: NavHostController) {
+fun MainStudentScreen(navController2: NavHostController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navController = rememberNavController()
 
@@ -153,14 +154,14 @@ fun MainScreen(navController2: NavHostController) {
                             )
 
                         },
-                        selected = currentRoute == item.route,
+                        selected = currentRoute == item.routeStudent,
                         onClick = {
                             scope.launch {
                                 drawerState.apply {
                                     close()
                                 }
                             }
-                            navController.navigate(item.route) },
+                            navController.navigate(item.routeStudent) },
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
@@ -184,14 +185,14 @@ fun MainScreen(navController2: NavHostController) {
                     showMyDialog = newValue
                 }
             },
-            bottomBar = { MyBottomBar(navController, navigationBottomItems) },
+            bottomBar = { MyStudentBottomBar(navController, navigationBottomItems) },
             content = { padding ->
                 Column(
                     modifier = Modifier
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = "main")
+                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeStudent)
 
                 }
             },
@@ -208,7 +209,7 @@ fun currentRoute(navController: NavHostController): String? {
 
 
 @Composable
-fun MyBottomBar(navController: NavHostController, navigationBottomItems: List<ItemMenu>) {
+fun MyStudentBottomBar(navController: NavHostController, navigationBottomItems: List<ItemMenu>) {
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,13 +220,13 @@ fun MyBottomBar(navController: NavHostController, navigationBottomItems: List<It
                 val currentRoute = currentRoute(navController = navController)
                 navigationBottomItems.forEach { item ->
                     NavigationBarItem(
-                        selected = currentRoute == item.route,
-                        onClick = { navController.navigate(item.route) },
+                        selected = currentRoute == item.routeStudent,
+                        onClick = { navController.navigate(item.routeStudent) },
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
                                 contentDescription = item.title,
-                                tint = if (currentRoute == item.route) Color(0xFF495ECA) else Color(
+                                tint = if (currentRoute == item.routeStudent) Color(0xFF495ECA) else Color(
                                     0xFF8B97A8
                                 )
                             )

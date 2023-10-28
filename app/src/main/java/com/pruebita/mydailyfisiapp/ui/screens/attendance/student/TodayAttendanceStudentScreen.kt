@@ -1,5 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher
-
+package com.pruebita.mydailyfisiapp.ui.screens.attendance.student
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,9 +25,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -40,18 +44,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTodayAttendanceScreen(){
+fun PreviewTodayAttendanceStudentScreen() {
     val navController = rememberNavController()
-    TodayAttendanceScreen(navController)
+    TodayAttendanceStudentScreen(navController)
 }
 
 
 @Composable
-fun TodayAttendanceScreen(navController: NavHostController) {
+fun TodayAttendanceStudentScreen(navController: NavHostController) {
 
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -65,21 +70,21 @@ fun TodayAttendanceScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
 
-    ){
+    ) {
         item {
             HeaderTodayAttendance(navController)
-            Spacer(modifier =Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(25.dp))
         }
         item {
             Row(
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(0.15f),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .height(15.dp)
@@ -116,18 +121,19 @@ fun TodayAttendanceScreen(navController: NavHostController) {
                 }
             }
 
-            RowAsignature(1,false)
-            RowAsignature(1,false)
-            RowAsignature(1,false)
-            RowAsignature(1, false)
-            RowAsignature(4, true)
+            RowAsignature(1, false, navController)
+            RowAsignature(1, false, navController)
+            RowAsignature(1, false, navController)
+            RowAsignature(2, false, navController)
+            RowAsignature(3, true, navController)
         }
 
     }
 
 }
+
 @Composable
-fun RowAsignature(type: Int, isEnd: Boolean){
+fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostController) {
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF495ECA), Color(0xFF495ECA))
     )
@@ -137,11 +143,7 @@ fun RowAsignature(type: Int, isEnd: Boolean){
     val brushDisabled = Brush.verticalGradient(
         colors = listOf(Color(0xFFBBB8C0), Color(0xFFBBB8C0))
     )
-
-    val brushInProcess = Brush.verticalGradient(
-        colors = listOf(Color(0xFF495ECA), Color(0xFFC05AFF))
-    )
-
+    var type by rememberSaveable { mutableIntStateOf(typeCard) }
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -151,7 +153,7 @@ fun RowAsignature(type: Int, isEnd: Boolean){
                 .weight(0.15f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if(type ==1){
+            if (type == 1) {
                 Box(
                     modifier = Modifier
                         .height(125.dp)
@@ -160,8 +162,7 @@ fun RowAsignature(type: Int, isEnd: Boolean){
                 ) {
                     Text(text = "")
                 }
-            }
-            else if(type ==2){
+            } else if (type == 2) {
                 Box(
                     modifier = Modifier
                         .height(125.dp)
@@ -170,23 +171,12 @@ fun RowAsignature(type: Int, isEnd: Boolean){
                 ) {
                     Text(text = "")
                 }
-            }
-            else if(type ==3){
+            } else {
                 Box(
                     modifier = Modifier
                         .height(125.dp)
                         .width(4.dp)
                         .background(brushDisabled)
-                ) {
-                    Text(text = "")
-                }
-            }
-            else{
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brushInProcess)
                 ) {
                     Text(text = "")
                 }
@@ -198,31 +188,33 @@ fun RowAsignature(type: Int, isEnd: Boolean){
             modifier = Modifier.weight(0.85f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardAsignature(type)
+            CardAsignature({ type }, { newValue: Int ->
+                type = newValue
+            }, navController)
         }
 
     }
-    if(isEnd){
+    if (isEnd) {
         Row(
             modifier = Modifier.fillMaxWidth()
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(0.15f),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Box(
                     modifier = Modifier
                         .height(15.dp)
                         .width(15.dp)
                         .background(
-                            when (type) {
-                                1 -> Color(0xFF495ECA)
-                                2 -> Color(0xFF29D697)
-                                3 -> Color(0xFFBBB8C0)
-                                else -> Color(0xFFC05AFF)
-                            }, CircleShape
+                            if (type == 1)
+                                Color(0xFF495ECA)
+                            else if (type == 2)
+                                Color(0xFF29D697)
+                            else
+                                Color(0xFFBBB8C0), CircleShape
                         )
                 ) {
 
@@ -244,8 +236,7 @@ fun RowAsignature(type: Int, isEnd: Boolean){
                         color = when (type) {
                             1 -> Color(0xFF495ECA)
                             2 -> Color(0xFF29D697)
-                            3 -> Color(0xFFBBB8C0)
-                            else -> Color(0xFFC05AFF)
+                            else -> Color(0xFFBBB8C0)
                         },
                     )
                 )
@@ -256,7 +247,11 @@ fun RowAsignature(type: Int, isEnd: Boolean){
 }
 
 @Composable
-fun CardAsignature(type: Int) {
+fun CardAsignature(
+    getTypeCard: () -> Int,
+    setTypeCard: (Int) -> Unit,
+    navController: NavHostController
+) {
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
@@ -265,9 +260,6 @@ fun CardAsignature(type: Int) {
     )
     val brushDisabled = Brush.verticalGradient(
         colors = listOf(Color(0xFFBBB8C0), Color(0xFFBBB8C0))
-    )
-    val brushInProcess = Brush.verticalGradient(
-        colors = listOf(Color(0xFFC05AFF), Color(0xFFC05AFF))
     )
 
 
@@ -283,7 +275,7 @@ fun CardAsignature(type: Int) {
             containerColor = Color.White
         ),
         shape = RoundedCornerShape(12.dp),
-        elevation =ButtonDefaults.buttonElevation(
+        elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 10.dp,
             pressedElevation = 15.dp,
             disabledElevation = 0.dp
@@ -299,13 +291,7 @@ fun CardAsignature(type: Int) {
                     .fillMaxHeight()
                     .width(15.dp)
                     .background(
-                        brush =
-                        when (type) {
-                            1 -> brush
-                            2 -> brushOpen
-                            3 -> brushDisabled
-                            else -> brushInProcess
-                        },
+                        brush = if (getTypeCard() == 1) brush else if (getTypeCard() == 2) brushOpen else brushDisabled,
                     ),
             ) {
             }
@@ -371,7 +357,13 @@ fun CardAsignature(type: Int) {
                         modifier = Modifier.weight(0.4f)
                     ) {
                         ElevatedButton(
-                            onClick = {},
+                            onClick = {
+                                if (getTypeCard() == 2) {
+                                    navController.navigate(InternalScreens.VerifyingIdentityStudentScreen.route)
+                                    setTypeCard(1)
+                                }
+
+                            },
                             modifier = Modifier
                                 .padding(start = 8.dp, end = 8.dp)
                                 .fillMaxWidth()
@@ -380,36 +372,24 @@ fun CardAsignature(type: Int) {
                                 containerColor = Color.Transparent,
                                 contentColor = Color(0xFFFFFFFF),
                                 disabledContainerColor = Color(0xFFB3B6C4),
-                                disabledContentColor = if (type != 3) Color.White else Color(
+                                disabledContentColor = if (getTypeCard() != 3) Color.White else Color(
                                     0xFF404650
                                 )
 
                             ), contentPadding = PaddingValues(),
-                            enabled = type == 2 || type ==4
+                            enabled = getTypeCard() == 2
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(
-                                        brush =
-                                        when (type) {
-                                            1 -> brush
-                                            2 -> brushOpen
-                                            3 -> brushDisabled
-                                            else -> brushInProcess
-                                        },
+                                        brush = if (getTypeCard() == 1) brush else if (getTypeCard() == 2) brushOpen else brushDisabled,
                                         shape = RoundedCornerShape(22.dp)
                                     ),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text =
-                                    when (type) {
-                                        1 -> "Marcado"
-                                        2 -> "Iniciar"
-                                        3 -> "Iniciar"
-                                        else -> "En proceso"
-                                    },
+                                    text = if (getTypeCard() == 1) "Marcado" else if (getTypeCard() == 2) "Marcar" else "Marcar",
                                     fontSize = 12.sp,
                                     fontFamily = poppins
                                 )
@@ -422,7 +402,7 @@ fun CardAsignature(type: Int) {
 
         }
     }
-    Spacer(modifier =Modifier.height(20.dp))
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 
@@ -458,7 +438,7 @@ fun HeaderTodayAttendance(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier= Modifier
+                    modifier = Modifier
                         .weight(0.3f)
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.Center,
@@ -476,7 +456,7 @@ fun HeaderTodayAttendance(navController: NavHostController) {
                     )
                 }
                 Column(
-                    modifier= Modifier
+                    modifier = Modifier
                         .weight(0.7f)
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.Center,
