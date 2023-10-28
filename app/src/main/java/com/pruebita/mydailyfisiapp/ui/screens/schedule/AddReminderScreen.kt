@@ -821,7 +821,7 @@ fun ButtonAddEvent() {
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = "Crear Evento", fontSize = 16.sp, fontFamily = poppins)
+            Text(text = "Guardar", fontSize = 16.sp, fontFamily = poppins)
         }
     }
 }

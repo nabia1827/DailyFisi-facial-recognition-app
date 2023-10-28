@@ -2,7 +2,10 @@ package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
 import android.graphics.Bitmap
 import android.graphics.BlendMode
+import android.graphics.ColorFilter
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -37,6 +40,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -48,6 +52,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
+import kotlin.math.absoluteValue
 
 @Preview
 @Composable
@@ -60,26 +65,43 @@ fun PreviewLocationScreen(){
 fun LocationScreen(
     navController: NavHostController,
     imageModifier: Modifier = Modifier,
-    maxScale: Float = 2.0f,
-    minScale: Float = 1.0f
+    maxScale: Float = 4f,
+    minScale: Float = 2.1f
 ) {
-    var scale by remember { mutableStateOf(1f) }
+    var scale by remember { mutableStateOf(2.1f) }
+    var maxOffsetX by remember{ mutableStateOf((200 * (scale - 1)).coerceAtLeast(0f))}
+    var maxOffsetY by remember{ mutableStateOf( (200 * (scale - 1.8)).coerceAtLeast(0.0))}
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
-    var panx by remember { mutableStateOf(0f) }
-    var pany by remember { mutableStateOf(0f) }
 
     val context = LocalContext.current
     val drawable = context.getDrawable(R.drawable.card_location)
     val bitmap = drawable?.toBitmap()
 
-    val drawable_icon = context.getDrawable(R.drawable.map_pin)
-    val bitmap_icon = drawable_icon?.toBitmap()
+    val drawable_icon = context.getDrawable(R.drawable.baseline_location_on_24)
+    drawable_icon?.setTint(0xFFFFFFFF.toInt())
+    val bitmap_icon = drawable_icon?.toBitmap(height = 25, width = 25)
 
+    var columnHeight = remember { mutableStateOf(240) }
+
+    var xpos = remember {
+        mutableStateOf(40)
+    }
+    var ypos = remember {
+        mutableStateOf(135)
+    }
+    var labelLocation = remember{
+        mutableStateOf("Aula 102")
+    }
+
+    var istheoric = remember {
+        mutableStateOf(true)
+    }
 
 
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -88,8 +110,8 @@ fun LocationScreen(
                     detectTransformGestures { _, pan, zoom, _ ->
                         val newScale = (scale * zoom).coerceIn(minScale, maxScale)
 
-                        val maxOffsetX = (200 * (scale - 1)).coerceAtLeast(0f)
-                        val maxOffsetY = (380 * (scale - 1)).coerceAtLeast(0f)
+                        maxOffsetX = (200 * (scale - 1)).coerceAtLeast(0f)
+                        maxOffsetY = (200 * (scale - 1.6)).coerceAtLeast(0.0)
 
 
                         val newOffset = Offset(
@@ -103,20 +125,15 @@ fun LocationScreen(
                             )
                         )
 
-                        Log.d("vista de X", newOffset.x.toString())
-                        Log.d("vista de Y", newOffset.y.toString())
-
                         scale = newScale
                         offset = newOffset
-                        panx = pan.x
-                        pany = pan.y
                     }
                 }
         ){
             Image(
-                painter = rememberImagePainter(data = "https://dfapruebaf.blob.core.windows.net/mapas/piso_1.png"),
+                painter = rememberImagePainter(data = "https://dfapruebaf.blob.core.windows.net/mapas/Fisi_piso_1.png"),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer(
@@ -129,13 +146,13 @@ fun LocationScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(end = 16.dp )
+                    .padding(end = 16.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.End
             ) {
                 ZoomButton(
-                    id = R.drawable.baseline_zoom_in_24
+                    id = R.drawable.baseline_zoom_in_24 
                 ) {
                     val newScale = (scale * 1.2f).coerceAtMost(maxScale)
                     scale = newScale
@@ -147,15 +164,21 @@ fun LocationScreen(
                 ) {
                     val newScale = (scale * 0.8f).coerceAtLeast(minScale)
                     scale = newScale
-                    val maxOffsetX = (200 * (scale - 1)).coerceAtLeast(0f)
-                    val maxOffsetY = (380 * (scale - 1)).coerceAtLeast(0f)
+
                     val newOffset = Offset(
-                        x = ((offset.x + panx * scale * 10) * 4).coerceIn(-maxOffsetX, maxOffsetX),
-                        y = ((offset.y + pany * scale) * 38).coerceIn(-maxOffsetY, maxOffsetY)
+                        x = (offset.x).coerceIn(
+                            -maxOffsetX,
+                            maxOffsetX
+                        ),
+                        y = (offset.y).coerceIn(
+                            (-maxOffsetY).toFloat(),
+                            maxOffsetY.toFloat()
+                        )
                     )
                     offset = newOffset
                 }
             }
+
 
             Canvas(
                 modifier = Modifier
@@ -167,27 +190,38 @@ fun LocationScreen(
                         translationY = offset.y
                     ),
                 onDraw = {
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+
+                    val imageX = (canvasWidth/120)*xpos.value
+                    val imageY = (canvasHeight/255)*ypos.value
+
+                    var imageWidth = 0f
+                    var imageHeight = 0f
                     bitmap?.let { image ->
-                        drawImage(image.asImageBitmap(), Offset(310f, 1650f))
+
+                        drawImage(image.asImageBitmap(), Offset(imageX,  imageY))
                     }
                     bitmap_icon?.let { image ->
-                        drawImage(image.asImageBitmap(), Offset(360f, 1660f))
+                        imageWidth = image.width.dp.toPx()
+                        imageHeight = image.height.dp.toPx()
+                        drawImage(image.asImageBitmap(), Offset(imageX+4*imageWidth/9,  imageY+imageHeight/16))
                     }
 
-                    val text = "Aula 102"
-                    val textSize = 20f
+
+                    val textSize = 15.dp
                     val textColor = Color.White
-                    val textPosition = Offset(340f, 1735f) // Posición del texto
+                    val textPosition = Offset(imageX+3*imageWidth/14, imageY+6*imageHeight/8) // Posición del texto
 
 
                     drawIntoCanvas { canvas ->
                         val paint = Paint()
                         paint.color = textColor.toArgb()
-                        paint.textSize = textSize
+                        paint.textSize = textSize.value
                         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
 
                         canvas.nativeCanvas.drawText(
-                            text,
+                            labelLocation.value,
                             textPosition.x,
                             textPosition.y,
                             paint
@@ -198,7 +232,7 @@ fun LocationScreen(
 
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
+                contentAlignment = if(ypos.value>(columnHeight.value/2))Alignment.TopCenter else Alignment.BottomEnd
             ){
                 ElevatedButton(
                     onClick = {
@@ -220,26 +254,15 @@ fun LocationScreen(
                     )
 
                 ) {
-                    CardTeorica()
+                    if(istheoric.value){
+                        CardTeorica()
+                    }
+                    else{
+                        CardPractica()
+                    }
                 }
 
             }
-
-            /*val boxSize = 20.dp
-            val boxPosition = Offset(
-                x = 50 * scale - offset.x,
-                y = 50 * scale + offset.y
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(boxSize)
-                    .offset(boxPosition.x.dp, boxPosition.y.dp)
-                    .background(Color.Red)
-            )*/
-
-
-
 
             Row(
                 modifier = Modifier
@@ -254,7 +277,11 @@ fun LocationScreen(
                         .clip(CircleShape)
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(Color(0xFF1D93BB), Color(0xFF4579CB), Color(0xFF6C5FDA))
+                                colors = listOf(
+                                    Color(0xFF1D93BB),
+                                    Color(0xFF4579CB),
+                                    Color(0xFF6C5FDA)
+                                )
                             ),
                             shape = CircleShape
                         )
@@ -263,8 +290,15 @@ fun LocationScreen(
                             shape = CircleShape,
                             clip = true
                         )
-                        .clickable{
-                            navController.popBackStack()
+                        .clickable {
+                            if(istheoric.value){
+                                navController.popBackStack()
+                            }
+                            else{
+                                xpos.value = 40
+                                ypos.value = 135
+                                istheoric.value = true
+                            }
                         },
                     contentAlignment = Alignment.BottomEnd
                 ){
@@ -281,7 +315,11 @@ fun LocationScreen(
                         .clip(CircleShape)
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(Color(0xFF1D93BB), Color(0xFF4579CB), Color(0xFF6C5FDA))
+                                colors = listOf(
+                                    Color(0xFF1D93BB),
+                                    Color(0xFF4579CB),
+                                    Color(0xFF6C5FDA)
+                                )
                             ),
                             shape = CircleShape
                         )
@@ -290,7 +328,16 @@ fun LocationScreen(
                             shape = CircleShape,
                             clip = true
                         )
-                        .clickable{  },
+                        .clickable {
+                            if(istheoric.value){
+                                xpos.value = 40
+                                ypos.value = 85
+                                istheoric.value = false
+                            }
+                            else{
+                                navController.popBackStack()
+                            }
+                        },
                     contentAlignment = Alignment.BottomEnd
                 ){
                     Icon(
@@ -319,7 +366,7 @@ fun ZoomButton(
                 shape = CircleShape,
                 clip = true
             )
-            .clickable{ onClick() },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Image(
