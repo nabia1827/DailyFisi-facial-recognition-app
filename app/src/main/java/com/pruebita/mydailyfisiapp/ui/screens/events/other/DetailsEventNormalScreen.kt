@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -318,6 +319,7 @@ fun HeaderFloating(uris: MutableList<Uri?>) {
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
+    var selected by rememberSaveable { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .width(350.dp)
@@ -383,7 +385,7 @@ fun HeaderFloating(uris: MutableList<Uri?>) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     ElevatedButton(
-                        onClick = {},
+                        onClick = {selected = !selected},
                         modifier = Modifier
                             .padding(start = 8.dp, end = 8.dp)
                             .fillMaxWidth()
@@ -410,7 +412,11 @@ fun HeaderFloating(uris: MutableList<Uri?>) {
                                 ),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(text = "Agendar", fontSize = 12.sp, fontFamily = poppins)
+                            Text(
+                                text = if(selected){"Agendado"}else {"Agendar"},
+                                fontSize = 12.sp,
+                                fontFamily = poppins
+                            )
                         }
                     }
                 }
