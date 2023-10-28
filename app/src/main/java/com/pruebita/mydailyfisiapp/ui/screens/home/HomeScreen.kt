@@ -18,8 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,13 +35,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import kotlin.math.floor
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen() {
+    val viewModel: ClockViewModel = viewModel()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +65,7 @@ fun HomeScreen() {
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
-            ClasesSection()
+            ClasesSection(viewModel)
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
@@ -192,14 +199,14 @@ fun AttendanceSectionTitle() {
 }
 
 @Composable
-fun ClasesSection() {
+fun ClasesSection(viewModel: ClockViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
 
     ){
         ClasesSectionTitle()
-        ClasesSectionInstantClass()
+        ClasesSectionInstantClass(viewModel)
         Spacer(modifier = Modifier.padding(7.dp))
         ClasesSectionLaterClass()
     }
@@ -221,7 +228,8 @@ fun ClasesSectionLaterClass() {
                 .background(
                     color = Color(0xFFF8F8F8),
                     shape = RoundedCornerShape(size = 10.dp)
-                ).padding(start=12.dp),
+                )
+                .padding(start = 12.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -235,7 +243,8 @@ fun ClasesSectionLaterClass() {
                 .background(
                     color = Color(0xFFF8F8F8),
                     shape = RoundedCornerShape(size = 10.dp)
-                ).padding(start=10.dp),
+                )
+                .padding(start = 10.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -246,7 +255,7 @@ fun ClasesSectionLaterClass() {
 }
 
 @Composable
-fun ClasesSectionInstantClass() {
+fun ClasesSectionInstantClass(viewModel:ClockViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -260,7 +269,8 @@ fun ClasesSectionInstantClass() {
         Column(
             modifier = Modifier
                 .weight(0.55f)
-                .fillMaxHeight().padding(start =15.dp),
+                .fillMaxHeight()
+                .padding(start = 15.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -273,14 +283,15 @@ fun ClasesSectionInstantClass() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            InstantClassDer()
+            InstantClassDer(viewModel)
         }
 
     }
 }
 
 @Composable
-fun InstantClassDer() {
+fun InstantClassDer(viewModel: ClockViewModel) {
+    val currentTime: String by viewModel.currentTime.observeAsState(initial = "")
     Text(
         text = "5 minutos para iniciar",
         style = TextStyle(
@@ -292,7 +303,7 @@ fun InstantClassDer() {
         )
     )
     Text(
-        text = "11:55:56",
+        text = currentTime,
         style = TextStyle(
             fontSize = 24.sp,
             lineHeight = 36.sp,

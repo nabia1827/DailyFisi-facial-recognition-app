@@ -5,14 +5,53 @@ import com.pruebita.mydailyfisiapp.R
 sealed class DrawerItem(
     val icon: Int,
     val title: String,
-    val route: String,
+    val routeStudent: String,
+    val routeDele: String,
+    val routeTeacher: String,
 ){
-    object HomeScreen: DrawerItem(R.drawable.casa,"Inicio", "home_screen")
-    object AttendanceScreen: DrawerItem(R.drawable.ic_asistencias,"Asistencia", "attendance_screen")
-    object ScheduleScreen: DrawerItem(R.drawable.ic_horarios,"Horario", "schedule_screen")
+    object HomeScreen: DrawerItem(
+        icon = R.drawable.casa,
+        title = "Inicio",
+        routeStudent = "home_student_screen",
+        routeDele = "home_dele_screen",
+        routeTeacher = "home_teacher_screen"
+    )
+    object AttendanceScreen: DrawerItem(
+        icon = R.drawable.ic_asistencias,
+        title = "Asistencia",
+        routeStudent = "attendance_student_screen",
+        routeDele = "attendance_dele_screen",
+        routeTeacher = "attendance_teacher_screen"
+    )
 
-    object EventsScreen: DrawerItem(R.drawable.ic_eventos,"Eventos", "events_screen")
-    object SettingsScreen: DrawerItem(R.drawable.ic_settings,"Configuracion", "settings_screen")
-    object HelpScreen: DrawerItem(R.drawable.ic_help,"Ayuda", "help_screen")
+    object ScheduleScreen: DrawerItem(
+        icon = R.drawable.ic_horarios,
+        title = "Horario",
+        routeStudent = "schedule_student_screen",
+        routeDele = "schedule_dele_screen",
+        routeTeacher = "schedule_teacher_screen"
+    )
+
+    object EventsScreen: DrawerItem(
+        icon = R.drawable.ic_eventos,
+        title = "Eventos",
+        routeStudent = "events_student_screen",
+        routeDele = "events_dele_screen",
+        routeTeacher = "events_teacher_screen"
+    )
+    object SettingsScreen: DrawerItem(
+        icon = R.drawable.ic_settings,
+        title = "Configuracion",
+        routeStudent = "settings_student_screen",
+        routeDele = "settings_dele_screen",
+        routeTeacher = "settings_teacher_screen"
+    )
+    object HelpScreen: DrawerItem(
+        icon = R.drawable.ic_help,
+        title ="Ayuda",
+        routeStudent ="help_student_screen",
+        routeDele = "help_dele_screen",
+        routeTeacher = "help_teacher_screen"
+    )
 
 }

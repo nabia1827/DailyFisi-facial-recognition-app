@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -278,7 +279,7 @@ fun HeaderRecognizer(modifier: Modifier) {
             painter = painterResource(id = R.drawable.polygon_gradient_recognizer),
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().fillMaxHeight(),
             contentScale = ContentScale.FillBounds
         )
         Column (

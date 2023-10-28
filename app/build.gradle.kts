@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -31,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -60,6 +62,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("com.google.dagger:hilt-android:2.44")
+
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     //New dependencies
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -97,4 +102,14 @@ dependencies {
 
     implementation ("androidx.compose.foundation:foundation:1.0.0")
 
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+}
+kapt {
+    correctErrorTypes = true
 }

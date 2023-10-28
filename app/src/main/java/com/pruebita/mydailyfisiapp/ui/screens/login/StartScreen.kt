@@ -129,8 +129,3 @@ fun WithGoogleButton() {
     }
 
 }
-
-@Composable
-fun MyDialog(){
-
-}

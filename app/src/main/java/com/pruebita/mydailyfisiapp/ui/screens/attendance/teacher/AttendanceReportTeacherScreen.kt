@@ -2,6 +2,7 @@ package com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,20 +39,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CircularCustomComponent
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CustomComponent
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewAttedanceReportScreen() {
+fun PreviewAttedanceReportTeacherScreen() {
     val navController = rememberNavController()
-    AttedanceReportScreen(navController)
+    AttedanceReportTeacherScreen(navController)
 }
 
 
 @Composable
-fun AttedanceReportScreen(navController: NavHostController) {
+fun AttedanceReportTeacherScreen(navController: NavHostController) {
     var globalValue = remember {
         mutableStateOf<Int>(70)
     }
@@ -121,12 +123,12 @@ fun AttedanceReportScreen(navController: NavHostController) {
 
         }
         item {
-            CursoAsistenciasCard(80)
-            CursoAsistenciasCard(75)
-            CursoAsistenciasCard(30)
-            CursoAsistenciasCard(80)
-            CursoAsistenciasCard(75)
-            CursoAsistenciasCard(30)
+            CursoAsistenciasCard(80,navController)
+            CursoAsistenciasCard(75,navController)
+            CursoAsistenciasCard(30,navController)
+            CursoAsistenciasCard(80,navController)
+            CursoAsistenciasCard(75,navController)
+            CursoAsistenciasCard(30,navController)
         }
 
 
@@ -135,11 +137,11 @@ fun AttedanceReportScreen(navController: NavHostController) {
 }
 
 @Composable
-fun CursoAsistenciasCard(value: Int) {
+fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp),
+            .height(130.dp).clickable { navController.navigate(InternalScreens.CurseReportTeacherScreen.route) },
         contentAlignment = Alignment.Center
     ) {
         Box(

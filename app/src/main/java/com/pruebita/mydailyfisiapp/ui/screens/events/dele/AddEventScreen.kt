@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.events
+package com.pruebita.mydailyfisiapp.ui.screens.events.dele
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -161,7 +161,7 @@ fun AddEventScreen(navController: NavHostController) {
         }
 
         item {
-            ButtonAddEvent()
+            ButtonAddEvent(navController)
         }
 
     }
@@ -799,9 +799,9 @@ fun SelectorHora(
 }
 
 @Composable
-fun ButtonAddEvent() {
+fun ButtonAddEvent(navController: NavHostController) {
     ElevatedButton(
-        onClick = { },
+        onClick = {navController.popBackStack() },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)

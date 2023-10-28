@@ -1,5 +1,8 @@
 package com.pruebita.mydailyfisiapp.ui.screens
 
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SuperScreen(navController: NavHostController){
     Column(

@@ -1,13 +1,30 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
+import android.content.Context
 import android.util.Patterns
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
+import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
+import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val context: Context) : ViewModel() {
+    private val repo: UserRepositoryImpl = UserRepositoryImpl()
+
+    private val userManager: UserManager= UserManager(context)
+
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User> = _currentUser
+
     private val _userErrors = listOf("Campo vacio", "Usuario no valido", "Usuario no registrado")
     private val _passwordErrors = listOf("Campo vacio", "Contraseña incorrecta")
 
@@ -55,7 +72,7 @@ class LoginViewModel : ViewModel() {
 
     private fun isValidEmail(email: String): Boolean {
         if(Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            if(email =="nabia.pachas@unmsm.edu.pe"){
+            if(email =="lucia.rivera@unmsm.edu.pe"){
                 _txtValidationUserCorrect.value = ""
                 return true
             }
@@ -87,5 +104,42 @@ class LoginViewModel : ViewModel() {
             return false
         }
     }
+
+    private fun loadUserData():Unit{
+        val email = _email.value
+        val password = _password.value
+        if (email != null && password != null){
+            _currentUser.value = repo.getUser(email, password)
+        }
+
+    }
+
+    fun saveLocallyUserData():Unit{
+        loadUserData()
+        val curr = _currentUser.value
+        if(curr != null){
+            userManager.saveUser(curr)
+        }
+    }
+
+    fun getMainRoute():String{
+        val user = _currentUser.value
+        var route = ItemMenu.HomeScreen.routeStudent
+        if(user !=null){
+            val rol = user.idRol
+
+            route = when (rol) {
+                1 -> { AppScreens.MainStudentScreen.route }
+                2 -> { AppScreens.MainDeleScreen.route }
+                else -> { AppScreens.MainTeacherScreen.route }
+            }
+        }
+        return route
+
+    }
+
+
+
+
 
 }
