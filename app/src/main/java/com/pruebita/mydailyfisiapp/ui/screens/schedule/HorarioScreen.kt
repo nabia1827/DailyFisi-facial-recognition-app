@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,7 +74,8 @@ fun HorarioScreen(navController: NavHostController) {
         }
         Column(
             modifier = Modifier
-                .weight(0.31f),
+                .weight(0.35f)
+                .padding(top = 10.dp),
             verticalArrangement = Arrangement.Center
         ){
             ElevatedButton(
@@ -81,9 +83,10 @@ fun HorarioScreen(navController: NavHostController) {
 
                 },
                 modifier = Modifier
+                    .heightIn(min = 0.dp, max = 95.dp)
                     .padding(top = 10.dp, bottom = 10.dp, end = 30.dp, start = 30.dp)
                     .fillMaxWidth()
-                    .height(95.dp),
+                    .weight(0.5f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent
@@ -103,9 +106,10 @@ fun HorarioScreen(navController: NavHostController) {
 
                 },
                 modifier = Modifier
+                    .heightIn(min = 0.dp, max = 95.dp)
                     .padding(top = 10.dp, bottom = 10.dp, end = 30.dp, start = 30.dp)
                     .fillMaxWidth()
-                    .height(95.dp),
+                    .weight(0.5f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent
@@ -123,7 +127,8 @@ fun HorarioScreen(navController: NavHostController) {
         }
         Column(
             modifier = Modifier
-                .weight(0.38f)
+                .weight(0.35f)
+                .padding(top = 10.dp)
         ){
             ElevatedButton(
                 onClick = {
