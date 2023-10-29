@@ -40,12 +40,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 
 @Composable
-fun CardRecordatorio(showMyDialog: MutableState<Boolean>) {
+fun CardRecordatorio(showMyDialog: MutableState<Boolean>, navController: NavHostController) {
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -141,7 +143,10 @@ fun CardRecordatorio(showMyDialog: MutableState<Boolean>) {
 
                 DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false },
+                    onDismissRequest = {
+                        expanded = false
+
+                    },
                     offset = DpOffset(x = 0.dp, y = -60.dp),
                     modifier = Modifier
                         .background(Color.White)
@@ -161,7 +166,7 @@ fun CardRecordatorio(showMyDialog: MutableState<Boolean>) {
                             )
 
                         },
-                        onClick = {  },
+                        onClick = { navController.navigate(InternalScreens.EditReminderScreen.route) },
                     )
                     DropdownMenuItem(
                         modifier = Modifier.weight(0.5f),
