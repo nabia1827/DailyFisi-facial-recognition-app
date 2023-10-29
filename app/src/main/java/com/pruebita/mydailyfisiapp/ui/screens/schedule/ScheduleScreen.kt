@@ -177,9 +177,9 @@ fun Recordatorios(navController: NavHostController, showMyDialog: MutableState<B
             Text("Agregar")
         }
     }
-    CardRecordatorio(showMyDialog)
-    CardRecordatorio(showMyDialog)
-    CardRecordatorio(showMyDialog)
+    CardRecordatorio(showMyDialog, navController)
+    CardRecordatorio(showMyDialog,navController)
+    CardRecordatorio(showMyDialog, navController)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

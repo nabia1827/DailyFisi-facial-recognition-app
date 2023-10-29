@@ -155,7 +155,7 @@ fun AddReminderScreen(navController: NavHostController) {
                 .weight(0.2f),
             verticalArrangement = Arrangement.Center
         ){
-            ButtonAddEvent()
+            ButtonAddEvent(navController)
         }
     }
 
@@ -795,9 +795,11 @@ fun SelectorHora(
 }
 
 @Composable
-fun ButtonAddEvent() {
+fun ButtonAddEvent(navController: NavHostController) {
     ElevatedButton(
-        onClick = { },
+        onClick = {
+                  navController.popBackStack()
+             },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)

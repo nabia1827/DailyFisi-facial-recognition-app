@@ -159,7 +159,7 @@ fun EditReminderScreen(navController: NavHostController) {
                 .weight(0.2f),
             verticalArrangement = Arrangement.Center
         ){
-            ButtonEditEvent()
+            ButtonEditEvent(navController)
         }
     }
 
@@ -222,9 +222,12 @@ fun HeaderEditEvent(navController:NavHostController) {
 
 
 @Composable
-fun ButtonEditEvent() {
+fun ButtonEditEvent(navController: NavHostController) {
     ElevatedButton(
-        onClick = { },
+        onClick =
+        {
+           navController.popBackStack()
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)

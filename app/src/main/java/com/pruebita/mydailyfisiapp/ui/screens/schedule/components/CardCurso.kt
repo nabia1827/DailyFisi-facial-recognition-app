@@ -151,7 +151,10 @@ fun CardCurso(
                                 )
 
                             },
-                            onClick = {  },
+                            onClick = {
+                                expanded = false
+                                navController.navigate(InternalScreens.HorarioScreen.route)
+                            },
                         )
                         if(isactual){
                             DropdownMenuItem(
@@ -167,7 +170,10 @@ fun CardCurso(
                                         )
                                     )
                                 },
-                                onClick = {expanded = false},
+                                onClick = {
+                                    expanded = false
+                                    navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route)
+                                          },
                             )
 
                         }

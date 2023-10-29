@@ -127,7 +127,6 @@ fun AppNavigation(navController: NavHostController, start:String) {
             TodayAttendanceTeacherScreen(navController)
         }
 
-
         /*
         *  SUBMODULE OF SCHEDULE
         * */
@@ -145,6 +144,9 @@ fun AppNavigation(navController: NavHostController, start:String) {
         // Sub screens
         composable(route = InternalScreens.AddReminderScreen.route){
             AddReminderScreen(navController)
+        }
+        composable(route = InternalScreens.EditReminderScreen.route){
+            EditReminderScreen(navController)
         }
         composable(route = InternalScreens.HorarioScreen.route){
             HorarioScreen(navController)
@@ -197,9 +199,6 @@ fun AppNavigation(navController: NavHostController, start:String) {
         composable(route = DrawerItem.HelpScreen.routeStudent){
             HelpScreen()
         }
-
-
-
 
     }
 
