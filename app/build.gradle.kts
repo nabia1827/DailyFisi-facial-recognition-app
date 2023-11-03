@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 

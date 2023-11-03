@@ -7,7 +7,7 @@ class UserRepositoryImpl: UserRepository {
     override fun getUser(email:String, password:String): User {
         return User(
             idUser = 1,
-            idRol = 3,
+            idRol = 1,
             names = "Lucia Alejandra",
             firstLastName = "Rivera",
             secondLastName = "Benites",

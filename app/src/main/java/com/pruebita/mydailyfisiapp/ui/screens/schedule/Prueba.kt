@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,73 +27,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 
 
-@Preview
+
 @Composable
-fun DrawImageWithTextOnZoomableImage() {
-    val maxScale = 2.0f
-    val minScale = 1.0f
+fun Prueba(){
 
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset(0f, 0f)) }
-
-    val painter = rememberImagePainter(data = "https://dfapruebaf.blob.core.windows.net/mapas/piso_1.png")
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
-
-                        val maxOffsetX = (200.dp.toPx() * (newScale - 1)).coerceAtLeast(0f)
-                        val maxOffsetY = (200.dp.toPx() * (newScale - 1)).coerceAtLeast(0f)
-
-                        val newOffset = Offset(
-                            x = (offset.x + pan.x * scale).coerceIn(-maxOffsetX, maxOffsetX),
-                            y = (offset.y + pan.y * scale).coerceIn(-maxOffsetY, maxOffsetY)
-                        )
-
-                        scale = newScale
-                        offset = newOffset
-                    }
-                }
-        ) {
-            Canvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offset.x,
-                        translationY = offset.y
-                    ),
-                onDraw = {
-
-
-                    // Dibuja el texto sobre la imagen
-                    val text = "Texto sobre la imagen"
-                    val textSize = 20f
-                    val textColor = Color.White
-                    val textPosition = Offset(50f, 150f) // Posición del texto
-
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint()
-                        paint.color = textColor.toArgb()
-                        paint.textSize = textSize
-                        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-
-                        canvas.nativeCanvas.drawText(
-                            text,
-                            textPosition.x,
-                            textPosition.y,
-                            paint
-                        )
-                    }
-                }
-            )
-        }
-    }
 }
