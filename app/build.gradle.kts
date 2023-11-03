@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
+    implementation("com.google.firebase:firebase-auth:22.2.0")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 

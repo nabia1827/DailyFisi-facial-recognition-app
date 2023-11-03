@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "888574150595-qvm87lq36e89c2oibi1rhmc3bt1psesr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pruebita.mydailyfisiapp",
+            "certificate_hash": "e159f6dff214866be8d35479e8b09f04ef369b1f"
+          }
+        },
+        {
           "client_id": "888574150595-gcn5m4hp5e1dteafac4sho5vr6cc0fd1.apps.googleusercontent.com",
           "client_type": 3
         }

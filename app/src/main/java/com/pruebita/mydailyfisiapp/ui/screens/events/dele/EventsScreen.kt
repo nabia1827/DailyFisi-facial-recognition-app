@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import com.pruebita.mydailyfisiapp.R
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -54,6 +56,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -97,6 +100,21 @@ fun EventsScreen(navController: NavHostController) {
     var img3 by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba3.png"))
     }
+
+    var selectFilterCard = remember {
+        mutableStateOf(listOf(
+            Pair("Deportes", false),
+            Pair("Estudios", false),
+            Pair("Logros", false)
+        ))
+    }
+
+    var pressed = remember {
+        mutableStateOf(false)
+    }
+
+
+
     var openAlertDialog = rememberSaveable  { mutableStateOf(false) }
     val uris_goers = remember { mutableStateListOf(img1, img2, img3) }
 
@@ -146,19 +164,19 @@ fun EventsScreen(navController: NavHostController) {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(45.dp)
+                        .height(55.dp)
                         .padding(start = 10.dp),
                 ) {
                     item {
-                        FilterCard(Color(0xFFF25E56), R.drawable.pelota_ic, "Deportes")
+                        FilterCard(Color(0xFFF25E56), R.drawable.pelota_ic, "Deportes",selectFilterCard)
                         Spacer(modifier = Modifier.padding(2.dp))
                     }
                     item {
-                        FilterCard(Color(0xFFFA9032), R.drawable.book_ic, "Estudios")
+                        FilterCard(Color(0xFFFA9032), R.drawable.book_ic, "Estudios",selectFilterCard)
                         Spacer(modifier = Modifier.padding(2.dp))
                     }
                     item {
-                        FilterCard(Color(0xFF29D697), R.drawable.medal_ic, "Logros")
+                        FilterCard(Color(0xFF29D697), R.drawable.medal_ic, "Logros",selectFilterCard)
                         Spacer(modifier = Modifier.padding(2.dp))
                     }
                 }
@@ -1129,39 +1147,106 @@ fun ImageEventCard(selectedImageUri: Uri?) {
 
 
 @Composable
-fun FilterCard(color: Color, id: Int, text: String) {
-    Row(
+fun FilterCard(
+    color: Color,
+    id: Int,
+    text: String,
+    selectFilterCard: MutableState<List<Pair<String, Boolean>>>,
+) {
+    val pairSelected= selectFilterCard.value.find { it.first == text }
+    val estado = pairSelected?.second
+
+    var colorCard = Color.White
+    var colorInside = color
+
+    if(estado == true){
+        colorCard = color
+        colorInside = Color.White
+    }
+
+
+    ElevatedButton(
+        onClick = {
+
+        },
         modifier = Modifier
             .width(140.dp)
             .height(55.dp)
-            .background(
-                color = color,
-                shape = RoundedCornerShape(size = 20.96263.dp)
-            )
             .padding(5.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    )
-    {
-        Icon(
-            painter = painterResource(id = id),
-            contentDescription = "ball",
-            tint = Color.White,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent
+
+        ),contentPadding = PaddingValues(),
+        enabled = false,
+        shape = RoundedCornerShape(14.dp),
+        elevation = ButtonDefaults.buttonElevation(
+            disabledElevation = 3.dp
         )
-        Spacer(modifier = Modifier.padding(2.dp))
-        Text(
-            text = text,
-            style = TextStyle(
-                fontSize = 15.sp,
-                lineHeight = 25.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight(600),
-                color = Color.White,
+
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .shadow(
+                    elevation = 0.dp,
+                    shape = RoundedCornerShape(size = 20.96263.dp),
+                    clip = true
+                )
+                .clickable {
+                    if(estado == false){
+                        selectFilterCard.value = selectFilterCard.value.map { (texto, booleano) ->
+                            if (texto == text) {
+                                Pair(texto, true)
+                            } else {
+                                Pair(texto, booleano)
+                            }
+                        }
+                    }
+                    else{
+                        selectFilterCard.value = selectFilterCard.value.map { (texto, booleano) ->
+                            if (texto == text) {
+                                Pair(texto, false)
+                            } else {
+                                Pair(texto, booleano)
+                            }
+                        }
+                    }
+                }
+                .background(
+                    color = colorCard,
+                    shape = RoundedCornerShape(size = 20.96263.dp)
+                ),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        )
+        {
+            Icon(
+                painter = painterResource(id = id),
+                contentDescription = "ball",
+                tint = colorInside,
             )
-        )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = text,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    lineHeight = 25.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight(600),
+                    color = colorInside,
+                )
+            )
+
+
+        }
 
 
     }
+
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

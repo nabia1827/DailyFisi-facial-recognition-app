@@ -19,9 +19,7 @@ class UserRepositoryImpl: UserRepository {
             idFacialIdentity = "lucia_rivera_fi",
             sessionActive = true,
             userActive = true,
-
         )
     }
-
 
 }
