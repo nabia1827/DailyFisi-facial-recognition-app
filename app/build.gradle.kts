@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
@@ -77,6 +78,7 @@ dependencies {
     //Map dependencies
     implementation("com.google.maps.android:maps-compose:2.11.4")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -104,7 +106,8 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")

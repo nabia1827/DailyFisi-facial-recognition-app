@@ -1,6 +1,5 @@
 package com.pruebita.mydailyfisiapp.ui.screens.login
 
-import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,13 +55,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.di.AppModule.provideContext
+import com.pruebita.mydailyfisiapp.data.model.SignInState
 import com.pruebita.mydailyfisiapp.ui.components.login.ForgotPasswordDialog
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderLogin
 import com.pruebita.mydailyfisiapp.ui.components.login.SendCodeDialog
@@ -71,24 +69,23 @@ import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.scopes.FragmentScoped
-import javax.inject.Inject
 
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
-    LoginScreen(navController)
+    //LoginScreen(navController)
 }
 
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-
-    val loginViewModel: LoginViewModel = hiltViewModel()
+fun LoginScreen(
+    navController: NavHostController,
+    state: SignInState,
+    onSignInClick: () -> Unit,
+    loginViewModel: LoginViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,13 +94,13 @@ fun LoginScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Login(Modifier.padding(0.dp), loginViewModel, navController)
+        Login(Modifier.padding(0.dp), loginViewModel, navController, onSignInClick)
 
     }
 }
 
 @Composable
-fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController, onSignInClick: () ->Unit) {
     var snackbarVisible = remember { mutableStateOf(false) }
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
@@ -164,7 +161,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                 Column {
                     Continue()
                     Spacer(modifier = Modifier.padding(3.dp))
-                    ContinueWithGoogle()
+                    ContinueWithGoogle(onSignInClick = onSignInClick)
                 }
 
             }
@@ -528,14 +525,14 @@ fun Continue() {
 }
 
 @Composable
-fun ContinueWithGoogle() {
+fun ContinueWithGoogle(onSignInClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
 
         ) {
         OutlinedIconButton(
-            onClick = { },
+            onClick = onSignInClick,
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(2.dp, Color(0xFF969AA0)),
             colors = IconButtonDefaults.outlinedIconButtonColors(

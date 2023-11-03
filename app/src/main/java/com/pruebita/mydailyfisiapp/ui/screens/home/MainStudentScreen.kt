@@ -192,7 +192,7 @@ fun MainStudentScreen(navController2: NavHostController) {
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeStudent)
+                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeStudent, null, null,null)
 
                 }
             },

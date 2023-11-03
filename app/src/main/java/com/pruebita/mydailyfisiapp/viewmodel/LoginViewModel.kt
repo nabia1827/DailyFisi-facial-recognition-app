@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pruebita.mydailyfisiapp.data.model.SignInResult
+import com.pruebita.mydailyfisiapp.data.model.SignInState
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.model.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
@@ -14,6 +16,9 @@ import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +53,9 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
     private val _isFirstLogin = MutableLiveData<Boolean>()
     val isFirstLogin: LiveData<Boolean> = _isFirstLogin
+
+    private val _state = MutableStateFlow(SignInState())
+    val state = _state.asStateFlow()
 
 
     fun onLoginChanged(email: String, password: String) {
@@ -136,6 +144,20 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         }
         return route
 
+    }
+
+
+    fun onSignWithGoogleResult(result: SignInResult){
+        _state.update {
+            it.copy(
+                isSignInSuccessful = result.data !=null,
+                signInError = result.errorMessage
+            )
+        }
+    }
+
+    fun resetState(){
+        _state.update { SignInState() }
     }
 
 

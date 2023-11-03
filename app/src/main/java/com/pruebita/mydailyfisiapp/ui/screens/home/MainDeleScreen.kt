@@ -154,7 +154,7 @@ fun MainDeleScreen(navController2: NavHostController){
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeDele)
+                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeDele, null, null,null)
 
                 }
             },

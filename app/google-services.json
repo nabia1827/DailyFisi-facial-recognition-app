@@ -12,7 +12,20 @@
           "package_name": "com.pruebita.mydailyfisiapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "888574150595-brt8d4pfjro4017cli5on2dqova5e62l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pruebita.mydailyfisiapp",
+            "certificate_hash": "73315d6ec1cc86ac42283df5e9833640201074ae"
+          }
+        },
+        {
+          "client_id": "888574150595-gcn5m4hp5e1dteafac4sho5vr6cc0fd1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBOI2Y8M2OehcQ5rek0vOOr5Tu8-I3THdc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888574150595-gcn5m4hp5e1dteafac4sho5vr6cc0fd1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

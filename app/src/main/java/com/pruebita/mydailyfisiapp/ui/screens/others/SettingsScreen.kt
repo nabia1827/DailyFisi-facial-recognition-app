@@ -68,13 +68,13 @@ fun SettingsScreen() {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imageneseventos/101.jpg"))
     }
     var notificationActive by remember { mutableStateOf(true) }
-    var changePasswordActive by remember { mutableStateOf(true) }
+    var changePasswordActive by remember { mutableStateOf(false) }
     var curseActive by remember { mutableStateOf(true) }
     var eventsActive by remember { mutableStateOf(true) }
     var remainderActive by remember { mutableStateOf(true) }
 
     val viewModel: SettingsViewModel = SettingsViewModel()
-    val password: String by viewModel.password.observeAsState(initial = "")
+    val password: String by viewModel.password.observeAsState(initial = "123456")
     val isPassCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
 
