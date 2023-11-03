@@ -54,17 +54,8 @@ import java.io.File
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-@OptIn(ExperimentalPermissionsApi::class)
+
 @Composable
 fun Prueba(){
-    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-    LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
-    }
-    Column (
-        modifier = Modifier.fillMaxSize()
-    ){
-        Camera()
-    }
-}
 
+}
