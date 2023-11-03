@@ -165,9 +165,14 @@ fun AppNavigation(
                             val userGoogle = googleAuthUiClient.getSignedUser()
                             if (userGoogle != null) {
                                 loginViewModel.saveLocallyUserDataFromGoogle(userGoogle)
-                                val actualRoute = loginViewModel.getMainRoute()
-                                navController.navigate("$actualRoute/true")
-                                loginViewModel.resetState()
+                                if(loginViewModel.isFirstLogin.value == true){
+                                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false"+"/true")
+                                }else{
+                                    val actualRoute = loginViewModel.getMainRoute()
+                                    navController.navigate("$actualRoute/true")
+                                    loginViewModel.resetState()
+                                }
+
                             }
 
                         }
@@ -202,24 +207,23 @@ fun AppNavigation(
                 val isGoogleAccount = it.arguments?.getBoolean("isGoogleAccount")?:false
                 MainStudentScreen(
                     navController,
-                    isGoogleAccount,
-                    {
-                        if (lifecycleScope != null) {
-                            lifecycleScope.launch {
-                                if (googleAuthUiClient != null) {
-                                    googleAuthUiClient.signOut()
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "out",
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                    isGoogleAccount
+                ) {
+                    if (lifecycleScope != null) {
+                        lifecycleScope.launch {
+                            if (googleAuthUiClient != null) {
+                                googleAuthUiClient.signOut()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "out",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                                    //Navigate back
-                                }
+                                //Navigate back
                             }
                         }
                     }
-                )
+                }
             }
 
             composable(
@@ -246,18 +250,28 @@ fun AppNavigation(
 
 
             composable(
-                route = AppScreens.FaceRecognizerScreen.route + "/{error}",
+                route = AppScreens.FaceRecognizerScreen.route + "/{error}"+"/{isGoogleAccount}",
                 arguments = listOf(navArgument(name = "error") {
                     type = NavType.BoolType
-                })
+                },
+                    navArgument(name = "isGoogleAccount") {
+                        type = NavType.BoolType
+                    })
             )
             {
                 val errorParam = it.arguments?.getBoolean("error") ?: false
-                FaceRecognizerScreen(navController, errorParam)
+                val isGoogleAccount = it.arguments?.getBoolean("error") ?: false
+                FaceRecognizerScreen(navController, errorParam, isGoogleAccount)
             }
 
-            composable(route = AppScreens.RecognizingScreen.route) {
-                RecognizingScreen(navController)
+            composable(route = AppScreens.RecognizingScreen.route + "/{isGoogleAccount}",
+                arguments = listOf(
+                    navArgument(name = "isGoogleAccount") {
+                        type = NavType.BoolType
+                    })
+            ) {
+                val isGoogleAccount = it.arguments?.getBoolean("error") ?: false
+                RecognizingScreen(navController, isGoogleAccount)
             }
 
         }

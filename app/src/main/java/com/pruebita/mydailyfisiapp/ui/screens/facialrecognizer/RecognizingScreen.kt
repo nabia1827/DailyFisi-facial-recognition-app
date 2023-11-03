@@ -64,13 +64,16 @@ import kotlin.math.roundToInt
 @Composable
 fun PreviewRecognizingScreen() {
     val navController = rememberNavController()
-    RecognizingScreen(navController)
+    RecognizingScreen(navController, false)
 }
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RecognizingScreen(navController: NavHostController) {
+fun RecognizingScreen(
+    navController: NavHostController,
+    isGoogleAccount: Boolean
+) {
     val recognizingViewModel: RecognizingViewModel = hiltViewModel()
 
     var error by remember {
@@ -94,7 +97,7 @@ fun RecognizingScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.8f)
         ) {
-            ContentRecognizing(navController, error, recognizingViewModel)
+            ContentRecognizing(navController, error, recognizingViewModel, isGoogleAccount)
         }
         Column(
             modifier = Modifier
@@ -111,7 +114,8 @@ fun Recognizing(
     porcentaje: MutableState<String>,
     navController: NavHostController,
     error: Boolean,
-    RecognizingViewModel: RecognizingViewModel
+    RecognizingViewModel: RecognizingViewModel,
+    isGoogleAccount: Boolean
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
     val context = LocalContext.current
@@ -125,7 +129,6 @@ fun Recognizing(
     var nuevo = remember {
         mutableStateOf(0.0)
     }
-
 
 
     // Crea un estado para el progreso de la animación
@@ -179,7 +182,7 @@ fun Recognizing(
         LaunchedEffect(Unit) {
             val route = RecognizingViewModel.getMainRoute()
             delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
-            navController.navigate(route) // Reemplaza "nuevo_screen" con la ruta de tu destino
+            navController.navigate("$route/$isGoogleAccount") // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
     }
 
@@ -189,7 +192,7 @@ fun Recognizing(
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera(cameraController,lifecycle)
+        Camera(cameraController, lifecycle)
     }
 
     val composition by rememberLottieComposition(
@@ -210,7 +213,12 @@ fun Recognizing(
 
 
 @Composable
-fun ContentRecognizing(navController: NavHostController, error: Boolean, RecognizingViewModel: RecognizingViewModel) {
+fun ContentRecognizing(
+    navController: NavHostController,
+    error: Boolean,
+    RecognizingViewModel: RecognizingViewModel,
+    isGoogleAccount:Boolean
+) {
     var porcentaje = remember {
         mutableStateOf("")
     }
@@ -245,7 +253,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, Recogni
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Recognizing(porcentaje, navController, error, RecognizingViewModel)
+            Recognizing(porcentaje, navController, error, RecognizingViewModel, isGoogleAccount)
         }
         Column(
             modifier = Modifier
@@ -282,7 +290,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, Recogni
                 Row(
                     modifier = Modifier.clickable {
                         val route = RecognizingViewModel.getMainRoute()
-                        navController.navigate(route)
+                        navController.navigate("$route/$isGoogleAccount")
                     },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
