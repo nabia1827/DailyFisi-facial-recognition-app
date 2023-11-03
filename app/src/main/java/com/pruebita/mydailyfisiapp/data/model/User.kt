@@ -10,8 +10,8 @@ data class User(
     val secondLastName: String = "",
     val email: String = "",
     val cellphone: String = "",
-    val imageUser: String = "",
+    var imageUser: String = "",
     val idFacialIdentity: String = "",
     val sessionActive: Boolean = false,
-    val userActive: Boolean = false,
+    val userActive: Boolean = true,
 )

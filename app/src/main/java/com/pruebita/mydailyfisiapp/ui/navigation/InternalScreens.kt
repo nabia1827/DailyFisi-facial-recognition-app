@@ -11,6 +11,7 @@ sealed class InternalScreens(val route: String){
     object AttendanceListTeacherScreen: InternalScreens("attendance_list_teacher_screen")
     object AttendanceReportTeacherScreen: InternalScreens("attendance_report_teacher_screen")
     object CurseReportTeacherScreen: InternalScreens("curse_report_teacher_screen")
+    object CurseReportStudentScreen: InternalScreens("curse_report_student_screen")
     object TodayAttendanceTeacherScreen: InternalScreens("today_attendance_teacher_screen")
 
     /*

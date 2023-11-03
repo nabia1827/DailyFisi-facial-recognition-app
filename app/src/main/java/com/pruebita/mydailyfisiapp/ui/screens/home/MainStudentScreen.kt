@@ -49,6 +49,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -67,19 +68,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.DrawerItem
-import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu.*
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -87,19 +90,32 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainStudentScreen(navController2: NavHostController) {
+fun MainStudentScreen(
+    navController2: NavHostController,
+    isGoogleAccount: Boolean,
+    onSignOutGoogle: () -> Unit
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navController = rememberNavController()
+    val viewModel: MainViewModel = hiltViewModel()
+    val currentUser: User by viewModel.currentUser.observeAsState(initial = User())
+    val currentUserRol: String by viewModel.currentUserRol.observeAsState(initial = "")
+    viewModel.refreshCurrentUser()
 
     // Init image
     var selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://img2.storyblok.com/f/83829/1200x628/96185170bd/esperance-vie-akita-inu.jpg"))
+        mutableStateOf<Uri?>(Uri.parse(currentUser.imageUser))
     }
+    println(currentUser.imageUser)
+    println(currentUser.names)
     // Selected image from gallery
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) {
         selectedImageUri = it
+        if (it != null) {
+            viewModel.setUserImageUri(it)
+        }
     }
 
     val scope = rememberCoroutineScope()
@@ -122,7 +138,17 @@ fun MainStudentScreen(navController2: NavHostController) {
     }
 
 
-    MyDialog(showMyDialog,navController2, photoPickerLauncher,selectedImageUri) { newValue ->
+    MyDialog(
+        showMyDialog,
+        navController2,
+        photoPickerLauncher,
+        selectedImageUri,
+        viewModel.getUserFullName(),
+        currentUserRol,
+        isGoogleAccount,
+        onSignOutGoogle,
+        {viewModel.logOut()}
+    ) { newValue ->
         showMyDialog = newValue
     }
 
@@ -132,18 +158,25 @@ fun MainStudentScreen(navController2: NavHostController) {
 
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(328.0.dp)
+                modifier = Modifier
+                    .width(328.0.dp)
                     .background(color = Color.White),
                 drawerContainerColor = Color.White,
             ) {
-                HeaderMenu(selectedImageUri)
+                HeaderMenu(
+                    selectedImageUri,
+                    viewModel.getUserFullName(),
+                    currentUser.email,
+                    currentUserRol
+                )
                 val currentRoute = currentRoute(navController = navController)
                 navigationMenuItems.forEach() { item ->
                     Spacer(modifier = Modifier.padding(5.dp))
                     NavigationDrawerItem(
                         label = {
 
-                            Text(text = item.title,
+                            Text(
+                                text = item.title,
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontFamily = poppins,
@@ -161,7 +194,8 @@ fun MainStudentScreen(navController2: NavHostController) {
                                     close()
                                 }
                             }
-                            navController.navigate(item.routeStudent) },
+                            navController.navigate(item.routeStudent)
+                        },
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
@@ -181,7 +215,7 @@ fun MainStudentScreen(navController2: NavHostController) {
     ) {
         Scaffold(
             topBar = {
-                MyTopBar(drawerState, scope,showMyDialog,selectedImageUri){ newValue ->
+                MyTopBar(drawerState, scope, showMyDialog, selectedImageUri) { newValue ->
                     showMyDialog = newValue
                 }
             },
@@ -192,7 +226,13 @@ fun MainStudentScreen(navController2: NavHostController) {
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeStudent)
+                    AppNavigation(
+                        navController = navController,
+                        start = ItemMenu.HomeScreen.routeStudent,
+                        null,
+                        null,
+                        null
+                    )
 
                 }
             },
@@ -275,7 +315,7 @@ fun MyTopBar(
                 showNot = newValue
             }
 
-            Avatar(showMyDialog,selectedImageUri) { newValue ->
+            Avatar(showMyDialog, selectedImageUri) { newValue ->
                 onShowMyDialog(newValue)
             }
 
@@ -283,15 +323,22 @@ fun MyTopBar(
 
     )
 }
+
 @Composable
 fun MyDialog(
     showMyDialog: Boolean,
     navController: NavHostController,
     photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     selectedImageUri: Any?,
+    fullName: String,
+    rol: String,
+    isGoogleAccount: Boolean,
+    onSignOutGoogle: () -> Unit,
+    onSignOut: ()->Unit,
     onShowMyDialog: (Boolean) -> Unit,
-){
-    if(showMyDialog){
+
+    ) {
+    if (showMyDialog) {
         Dialog(
             onDismissRequest = { onShowMyDialog(false) },
             properties = DialogProperties(
@@ -325,13 +372,13 @@ fun MyDialog(
                 Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .background(Color.Red, shape = CircleShape) , // Tamaño de la imagen circular
+                        .background(Color.Red, shape = CircleShape), // Tamaño de la imagen circular
                     contentAlignment = Alignment.Center,
 
                     ) {
 
                     Image(
-                        painter =  rememberAsyncImagePainter(model = selectedImageUri),
+                        painter = rememberAsyncImagePainter(model = selectedImageUri),
                         contentDescription = null, // Proporciona una descripción significativa si es necesario
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -347,28 +394,31 @@ fun MyDialog(
                         modifier = Modifier
                             .size(40.dp) // Tamaño del círculo pequeño
                             .align(Alignment.BottomEnd) // Alineación en la parte inferior derecha
-                            .background(Color.Red, shape = CircleShape) // Color y forma del círculo pequeño
-                    ){
+                            .background(
+                                Color.Red,
+                                shape = CircleShape
+                            ) // Color y forma del círculo pequeño
+                    ) {
                         PerfilButton(photoPickerLauncher)
                     }
                 }
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 Text(
-                    text = "Miguel Perez Diaz",
+                    text = fullName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight(600),
                     color = Color(0xFF000000),
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = "Estudiante",
+                    text = rol,
                     fontSize = 15.sp,
                     fontWeight = FontWeight(400),
                     color = Color(0xFF000000),
                 )
                 Spacer(modifier = Modifier.padding(10.dp))
-                LogOutButton(navController)
+                LogOutButton(navController, isGoogleAccount,onSignOutGoogle, onSignOut)
             }
 
         }
@@ -376,14 +426,22 @@ fun MyDialog(
     }
 
 
-
 }
 
 @Composable
-fun LogOutButton(navController: NavHostController) {
+fun LogOutButton(
+    navController: NavHostController,
+    isGoogleAccount: Boolean,
+    onSignOutGoogle: () -> Unit,
+    onSignOut: () -> Unit
+) {
 
     ElevatedButton(
         onClick = {
+            if(isGoogleAccount){
+                onSignOutGoogle()
+            }
+            onSignOut()
             navController.navigate(route = AppScreens.LoginScreen.route)
         },
         modifier = Modifier
@@ -410,8 +468,11 @@ fun LogOutButton(navController: NavHostController) {
         ) {
             Row(
 
-            ){
-                Icon(painter = painterResource(id = R.drawable.baseline_logout_24),contentDescription = "LogOut")
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_logout_24),
+                    contentDescription = "LogOut"
+                )
                 Spacer(modifier = Modifier.padding(3.dp))
                 Text(text = "Cerrar Sesión", fontSize = 16.sp, fontFamily = poppins)
             }
@@ -453,28 +514,33 @@ fun PerfilButton(photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMe
         ) {
             Row(
 
-            ){
-                Icon(imageVector = Icons.Default.Edit,contentDescription = "LogOut")
+            ) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = "LogOut")
             }
 
         }
     }
 }
+
 @Composable
-fun Notificacion(showNot: Boolean, onShowNotChanged: (Boolean) -> Unit){
+fun Notificacion(showNot: Boolean, onShowNotChanged: (Boolean) -> Unit) {
 
     IconButton(onClick = {
         onShowNotChanged(!showNot)// showNot =! showNot
     }) {
         if (showNot)
-            Icon(painter = painterResource(
-                id = R.drawable.baseline_notifications_off_24),
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.baseline_notifications_off_24
+                ),
                 contentDescription = "Menu",
                 tint = Color(0xFF8B97A8)
             )
         else
-            Icon(painter = painterResource(
-                id = R.drawable.baseline_notifications_active_24),
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.baseline_notifications_active_24
+                ),
                 contentDescription = "Menu",
                 tint = Color(0xFF2F68D7)
 
@@ -484,7 +550,7 @@ fun Notificacion(showNot: Boolean, onShowNotChanged: (Boolean) -> Unit){
 }
 
 @Composable
-fun Avatar(showMyDialog: Boolean, selectedImageUri: Uri?, onShowMyDialog: (Boolean) -> Unit){
+fun Avatar(showMyDialog: Boolean, selectedImageUri: Uri?, onShowMyDialog: (Boolean) -> Unit) {
     Box(
         modifier = Modifier
             .padding(8.dp) // Espacio alrededor de la imagen dentro del contenedor

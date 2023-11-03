@@ -36,7 +36,7 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 
 @Composable
-fun HeaderMenu(selectedImageUri: Uri?){
+fun HeaderMenu(userProfile: Uri?, name: String, email: String, rol:String){
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopStart
@@ -66,7 +66,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
             Box(contentAlignment = Alignment.Center) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(selectedImageUri)
+                        .data(userProfile)
                         .transformations(CircleCropTransformation())
                         .build(),
                     contentDescription = "This is an example image",
@@ -83,7 +83,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
 
             ) {
                 Text(
-                    text = "Nabia Pachas Lopez",
+                    text = name,
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 25.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -91,7 +91,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
                     color = Color.White
                 )
                 Text(
-                    text = "nabia.pachas@unmsm.edu.pe",
+                    text = email,
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Light,
@@ -106,7 +106,7 @@ fun HeaderMenu(selectedImageUri: Uri?){
 
                 ){
                     Text(
-                        text = "Estudiante",
+                        text = rol,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Light,
                         fontFamily = poppins,
