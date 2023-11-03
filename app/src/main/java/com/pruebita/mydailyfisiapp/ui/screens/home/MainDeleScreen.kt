@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,30 +39,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.navigation.DrawerItem
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainDeleScreen(navController2: NavHostController){
+fun MainDeleScreen(
+    navController2: NavHostController,
+    isGoogleAccount: Boolean,
+    onSignOutGoogle: () -> Unit
+
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val navController = rememberNavController()
+    val viewModel: MainViewModel = hiltViewModel()
+    val currentUser: User by viewModel.currentUser.observeAsState(initial = User())
+    val currentUserRol: String by viewModel.currentUserRol.observeAsState(initial = "")
+    viewModel.refreshCurrentUser()
 
     // Init image
     var selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://img2.storyblok.com/f/83829/1200x628/96185170bd/esperance-vie-akita-inu.jpg"))
+        mutableStateOf<Uri?>(Uri.parse(currentUser.imageUser))
     }
     // Selected image from gallery
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) {
         selectedImageUri = it
+        if (it != null) {
+            viewModel.setUserImageUri(it)
+        }
     }
 
     val scope = rememberCoroutineScope()
@@ -84,7 +100,17 @@ fun MainDeleScreen(navController2: NavHostController){
     }
 
 
-    MyDialog(showMyDialog,navController2, photoPickerLauncher,selectedImageUri) { newValue ->
+    MyDialog(
+        showMyDialog,
+        navController2,
+        photoPickerLauncher,
+        selectedImageUri,
+        viewModel.getUserFullName(),
+        currentUserRol,
+        isGoogleAccount,
+        onSignOutGoogle,
+        {viewModel.logOut()}
+    ) { newValue ->
         showMyDialog = newValue
     }
 
@@ -94,18 +120,25 @@ fun MainDeleScreen(navController2: NavHostController){
 
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(328.0.dp)
+                modifier = Modifier
+                    .width(328.0.dp)
                     .background(color = Color.White),
                 drawerContainerColor = Color.White,
             ) {
-                HeaderMenu(selectedImageUri)
+                HeaderMenu(
+                    selectedImageUri,
+                    viewModel.getUserFullName(),
+                    currentUser.email,
+                    currentUserRol
+                )
                 val currentRoute = currentRoute(navController = navController)
                 navigationMenuItems.forEach() { item ->
                     Spacer(modifier = Modifier.padding(5.dp))
                     NavigationDrawerItem(
                         label = {
 
-                            Text(text = item.title,
+                            Text(
+                                text = item.title,
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontFamily = poppins,
@@ -123,7 +156,8 @@ fun MainDeleScreen(navController2: NavHostController){
                                     close()
                                 }
                             }
-                            navController.navigate(item.routeDele) },
+                            navController.navigate(item.routeDele)
+                        },
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
@@ -143,7 +177,7 @@ fun MainDeleScreen(navController2: NavHostController){
     ) {
         Scaffold(
             topBar = {
-                MyTopBar(drawerState, scope,showMyDialog,selectedImageUri){ newValue ->
+                MyTopBar(drawerState, scope, showMyDialog, selectedImageUri) { newValue ->
                     showMyDialog = newValue
                 }
             },
@@ -154,7 +188,13 @@ fun MainDeleScreen(navController2: NavHostController){
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeDele, null, null,null)
+                    AppNavigation(
+                        navController = navController,
+                        start = ItemMenu.HomeScreen.routeDele,
+                        null,
+                        null,
+                        null
+                    )
 
                 }
             },

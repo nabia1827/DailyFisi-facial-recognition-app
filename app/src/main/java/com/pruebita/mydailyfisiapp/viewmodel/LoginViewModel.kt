@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.pruebita.mydailyfisiapp.data.model.SignInResult
 import com.pruebita.mydailyfisiapp.data.model.SignInState
 import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
 import com.pruebita.mydailyfisiapp.data.model.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(private val context: Context) : ViewModel() {
     private val repo: UserRepositoryImpl = UserRepositoryImpl()
 
-    private val userManager: UserManager= UserManager(context)
+    private val userManager: UserManager = UserManager(context)
 
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> = _currentUser
@@ -64,14 +65,13 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
     }
 
 
-
     private fun isValidPassword(password: String): Boolean {
-        if(password =="123"){
+        if (password == "123") {
             _txtValidationPassCorrect.value = ""
             return true
 
-        }else{
-            _txtValidationPassCorrect.value =_passwordErrors[1]
+        } else {
+            _txtValidationPassCorrect.value = _passwordErrors[1]
             return false
         }
 
@@ -79,16 +79,14 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
     }
 
     private fun isValidEmail(email: String): Boolean {
-        if(Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            if(email =="lucia.rivera@unmsm.edu.pe"){
+        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            if (email == "lucia.rivera@unmsm.edu.pe") {
                 _txtValidationUserCorrect.value = ""
                 return true
-            }
-            else{
+            } else {
                 _txtValidationUserCorrect.value = _userErrors[2]
             }
-        }
-        else{
+        } else {
             _txtValidationUserCorrect.value = _userErrors[1]
         }
         return false
@@ -103,9 +101,9 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
             _isValidationPassCorrect.value = isValidPassword(password)
             return _isValidationUserCorrect.value == true && _isValidationPassCorrect.value == true
         } else {
-            if(email == null)
+            if (email == null)
                 _txtValidationUserCorrect.value = _userErrors[0]
-            if(password == null)
+            if (password == null)
                 _txtValidationPassCorrect.value = _passwordErrors[0]
             _isValidationUserCorrect.value = false
             _isValidationPassCorrect.value = false
@@ -113,33 +111,59 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         }
     }
 
-    private fun loadUserData():Unit{
+    private fun loadUserData(): Unit {
         val email = _email.value
         val password = _password.value
-        if (email != null && password != null){
+        if (email != null && password != null) {
             _currentUser.value = repo.getUser(email, password)
         }
 
     }
 
-    fun saveLocallyUserData():Unit{
+    //--
+    private fun loadUserDataFromGoogle(user: UserFromGmail): Unit {
+        _currentUser.value = repo.getUserFromGoogle(user)
+
+    }
+
+    fun saveLocallyUserData(): Unit {
         loadUserData()
         val curr = _currentUser.value
-        if(curr != null){
+        if (curr != null) {
+            repo.setActiveSession(curr.idUser, true)
             userManager.saveUser(curr)
         }
     }
 
-    fun getMainRoute():String{
+    fun saveLocallyUserDataFromGoogle(user: UserFromGmail): Unit {
+        if (user.email != null) {
+            loadUserDataFromGoogle(user)
+
+            val curr = _currentUser.value
+            if (curr != null) {
+                userManager.saveUser(curr)
+            }
+        }
+    }
+
+    fun getMainRoute(): String {
         val user = _currentUser.value
         var route = ItemMenu.HomeScreen.routeStudent
-        if(user !=null){
+        if (user != null) {
             val rol = user.idRol
 
             route = when (rol) {
-                1 -> { AppScreens.MainStudentScreen.route }
-                2 -> { AppScreens.MainDeleScreen.route }
-                else -> { AppScreens.MainTeacherScreen.route }
+                1 -> {
+                    AppScreens.MainStudentScreen.route
+                }
+
+                2 -> {
+                    AppScreens.MainDeleScreen.route
+                }
+
+                else -> {
+                    AppScreens.MainTeacherScreen.route
+                }
             }
         }
         return route
@@ -147,19 +171,18 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
     }
 
 
-    fun onSignWithGoogleResult(result: SignInResult){
+    fun onSignWithGoogleResult(result: SignInResult) {
         _state.update {
             it.copy(
-                isSignInSuccessful = result.data !=null,
+                isSignInSuccessful = result.data != null,
                 signInError = result.errorMessage
             )
         }
     }
 
-    fun resetState(){
+    fun resetState() {
         _state.update { SignInState() }
     }
-
 
 
 

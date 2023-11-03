@@ -60,12 +60,22 @@ fun AppNavigation(
                 SplashScreen(navController)
             }
             composable(route = AppScreens.StartScreen.route) {
-                StartScreen(navController)
-            }
-            composable(route = AppScreens.LoginScreen.route) {
                 if(lifecycleScope != null && googleAuthUiClient != null && applicationContext !=null){
                     val loginViewModel: LoginViewModel = hiltViewModel()
                     val state by loginViewModel.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(key1 = Unit){
+                        if(googleAuthUiClient.getSignedUser() !=null){
+                            val userGoogle = googleAuthUiClient.getSignedUser()
+                            if (userGoogle != null) {
+                                loginViewModel.saveLocallyUserDataFromGoogle(userGoogle)
+                                val actualRoute = loginViewModel.getMainRoute()
+                                navController.navigate("$actualRoute/true")
+                                loginViewModel.resetState()
+                            }
+                        }
+                    }
+
+
                     val launcher = rememberLauncherForActivityResult(
                         contract = ActivityResultContracts.StartIntentSenderForResult(),
                         onResult = { result ->
@@ -87,6 +97,79 @@ fun AppNavigation(
                                 "yaaaa",
                                 Toast.LENGTH_LONG
                             ).show()
+                            val userGoogle = googleAuthUiClient.getSignedUser()
+                            if (userGoogle != null) {
+                                loginViewModel.saveLocallyUserDataFromGoogle(userGoogle)
+                                val actualRoute = loginViewModel.getMainRoute()
+                                navController.navigate("$actualRoute/true")
+                                loginViewModel.resetState()
+                            }
+
+                        }
+                    }
+
+                    StartScreen(
+                        navController = navController,
+                        onSignInClick = {
+
+                            lifecycleScope.launch {
+                                val signInIntentSender = googleAuthUiClient.signIn()
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        signInIntentSender ?: return@launch
+                                    ).build()
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+            composable(route = AppScreens.LoginScreen.route) {
+                if(lifecycleScope != null && googleAuthUiClient != null && applicationContext !=null){
+                    val loginViewModel: LoginViewModel = hiltViewModel()
+                    val state by loginViewModel.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(key1 = Unit){
+                        if(googleAuthUiClient.getSignedUser() !=null){
+                            val userGoogle = googleAuthUiClient.getSignedUser()
+                            if (userGoogle != null) {
+                                loginViewModel.saveLocallyUserDataFromGoogle(userGoogle)
+                                val actualRoute = loginViewModel.getMainRoute()
+                                navController.navigate("$actualRoute/true")
+                                loginViewModel.resetState()
+                            }
+                        }
+                    }
+
+
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartIntentSenderForResult(),
+                        onResult = { result ->
+                            if (result.resultCode == RESULT_OK) {
+                                lifecycleScope.launch {
+                                    val signInResult = googleAuthUiClient.signInWithIntent(
+                                        intent = result.data ?: return@launch
+                                    )
+                                    loginViewModel.onSignWithGoogleResult(signInResult)
+                                }
+
+                            }
+                        }
+                    )
+                    LaunchedEffect(key1 = state.isSignInSuccessful){
+                        if(state.isSignInSuccessful){
+                            Toast.makeText(
+                                applicationContext,
+                                "yaaaa",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            val userGoogle = googleAuthUiClient.getSignedUser()
+                            if (userGoogle != null) {
+                                loginViewModel.saveLocallyUserDataFromGoogle(userGoogle)
+                                val actualRoute = loginViewModel.getMainRoute()
+                                navController.navigate("$actualRoute/true")
+                                loginViewModel.resetState()
+                            }
+
                         }
                     }
 
@@ -109,15 +192,58 @@ fun AppNavigation(
                 }
             }
 
-            composable(route = AppScreens.MainStudentScreen.route) {
-                MainStudentScreen(navController)
+            composable(
+                route = AppScreens.MainStudentScreen.route +"/{isGoogleAccount}",
+                arguments = listOf(navArgument(name = "isGoogleAccount"){
+                    type = NavType.BoolType
+                })
+
+            ) {
+                val isGoogleAccount = it.arguments?.getBoolean("isGoogleAccount")?:false
+                MainStudentScreen(
+                    navController,
+                    isGoogleAccount,
+                    {
+                        if (lifecycleScope != null) {
+                            lifecycleScope.launch {
+                                if (googleAuthUiClient != null) {
+                                    googleAuthUiClient.signOut()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "out",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    //Navigate back
+                                }
+                            }
+                        }
+                    }
+                )
             }
-            composable(route = AppScreens.MainDeleScreen.route) {
-                MainDeleScreen(navController)
+
+            composable(
+                route = AppScreens.MainDeleScreen.route +"/{isGoogleAccount}",
+                arguments = listOf(navArgument(name = "isGoogleAccount"){
+                    type = NavType.BoolType
+                })
+
+            ) {
+                val isGoogleAccount = it.arguments?.getBoolean("isGoogleAccount")?:false
+                MainDeleScreen(navController,isGoogleAccount,{})
             }
-            composable(route = AppScreens.MainTeacherScreen.route) {
-                MainTeacherScreen(navController)
+
+            composable(
+                route = AppScreens.MainTeacherScreen.route +"/{isGoogleAccount}",
+                arguments = listOf(navArgument(name = "isGoogleAccount"){
+                    type = NavType.BoolType
+                })
+
+            ) {
+                val isGoogleAccount = it.arguments?.getBoolean("isGoogleAccount")?:false
+                MainTeacherScreen(navController,isGoogleAccount,{})
             }
+
 
             composable(
                 route = AppScreens.FaceRecognizerScreen.route + "/{error}",
