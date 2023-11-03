@@ -65,6 +65,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
     implementation("com.google.firebase:firebase-auth:22.2.0")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
