@@ -46,7 +46,11 @@ import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Composable
-fun FaceRecognizerScreen(navController: NavHostController, error:Boolean = false) {
+fun FaceRecognizerScreen(
+    navController: NavHostController,
+    error: Boolean = false,
+    isGoogleAccount: Boolean
+) {
 
     Column (
         modifier = Modifier
@@ -65,7 +69,7 @@ fun FaceRecognizerScreen(navController: NavHostController, error:Boolean = false
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizer(error,navController)
+            ContentRecognizer(error,navController, isGoogleAccount)
         }
         Column(
             modifier = Modifier
@@ -89,7 +93,7 @@ fun FooterRecognizer() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ContentRecognizer(error: Boolean, navController: NavHostController) {
+fun ContentRecognizer(error: Boolean, navController: NavHostController,isGoogleAccount:Boolean) {
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
     val deshabilitado = Brush.horizontalGradient(
         colors = listOf(Color(0xFFEBECF0), Color(0xFFEBECF0))
@@ -152,7 +156,7 @@ fun ContentRecognizer(error: Boolean, navController: NavHostController) {
         {
             ElevatedButton(
                 onClick = {
-                    navController.navigate(AppScreens.RecognizingScreen.route)
+                    navController.navigate(AppScreens.RecognizingScreen.route + "/$isGoogleAccount")
                 },
                 modifier = Modifier
                     .height(40.dp)

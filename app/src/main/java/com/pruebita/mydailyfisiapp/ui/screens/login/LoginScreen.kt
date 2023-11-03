@@ -108,7 +108,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
     val isPassCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtUserCorrect: String by viewModel.txtValidationUserCorrect.observeAsState(initial = "")
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
-    val isFirstLogin: Boolean by viewModel.isFirstLogin.observeAsState(initial = false)
+    val isFirstLogin: Boolean by viewModel.isFirstLogin.observeAsState(initial = true)
     val coroutineScope = rememberCoroutineScope()
 
     //Mutable
@@ -240,7 +240,7 @@ fun LoginButton(
             if (onLoginSelected()) {
                 saveUser()
                 if (isFirstLogin) {
-                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false")
+                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false"+"/false")
                 } else {
                     val route = getMainRoute()
                     navController.navigate("$route/false")
