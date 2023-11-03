@@ -2,6 +2,7 @@ package com.pruebita.mydailyfisiapp.ui.screens.attendance.student
 
 
 import android.net.Uri
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -115,6 +117,11 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
     var nuevo = remember {
         mutableStateOf(0.0)
     }
+    val context = LocalContext.current
+    val cameraController = remember {
+        LifecycleCameraController(context)
+    }
+    val lifecycle = LocalLifecycleOwner.current
 
     // Crea un estado para el progreso de la animación
     val animationProgress = remember { Animatable(0f) }
@@ -169,7 +176,7 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera()
+        Camera(cameraController, lifecycle)
     }
 
     val composition by rememberLottieComposition(

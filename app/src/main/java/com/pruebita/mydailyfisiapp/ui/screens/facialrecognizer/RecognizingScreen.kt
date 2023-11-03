@@ -1,5 +1,6 @@
 package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
 
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -32,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,8 +44,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -52,7 +55,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -92,9 +94,7 @@ fun RecognizingScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.8f)
         ) {
-            ContentRecognizing(navController, error){
-                recognizingViewModel.getMainRoute()
-            }
+            ContentRecognizing(navController, error, recognizingViewModel)
         }
         Column(
             modifier = Modifier
@@ -111,13 +111,22 @@ fun Recognizing(
     porcentaje: MutableState<String>,
     navController: NavHostController,
     error: Boolean,
-    getMainRoute:() ->String
+    RecognizingViewModel: RecognizingViewModel
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
+    val context = LocalContext.current
+    val cameraController = remember {
+        LifecycleCameraController(context)
+    }
+    val lifecycle = LocalLifecycleOwner.current
+    val executor = ContextCompat.getMainExecutor(context)
+
 
     var nuevo = remember {
         mutableStateOf(0.0)
     }
+
+
 
     // Crea un estado para el progreso de la animación
     val animationProgress = remember { Animatable(0f) }
@@ -151,6 +160,12 @@ fun Recognizing(
     LaunchedEffect(Unit) {
         delay(4000)
         updatePercentageText()
+        RecognizingViewModel.takePicture(
+            cameraController,
+            executor,
+            "prueba",
+            "iiii"
+        )
     }
 
     if (porcentaje.value == "100") {
@@ -162,7 +177,7 @@ fun Recognizing(
         }
 
         LaunchedEffect(Unit) {
-            val route = getMainRoute()
+            val route = RecognizingViewModel.getMainRoute()
             delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
             navController.navigate(route) // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
@@ -174,7 +189,7 @@ fun Recognizing(
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera()
+        Camera(cameraController,lifecycle)
     }
 
     val composition by rememberLottieComposition(
@@ -195,7 +210,7 @@ fun Recognizing(
 
 
 @Composable
-fun ContentRecognizing(navController: NavHostController, error: Boolean, getMainRoute: () -> String) {
+fun ContentRecognizing(navController: NavHostController, error: Boolean, RecognizingViewModel: RecognizingViewModel) {
     var porcentaje = remember {
         mutableStateOf("")
     }
@@ -230,7 +245,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Recognizing(porcentaje, navController, error, getMainRoute)
+            Recognizing(porcentaje, navController, error, RecognizingViewModel)
         }
         Column(
             modifier = Modifier
@@ -266,7 +281,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, getMain
             } else {
                 Row(
                     modifier = Modifier.clickable {
-                        val route = getMainRoute()
+                        val route = RecognizingViewModel.getMainRoute()
                         navController.navigate(route)
                     },
                     horizontalArrangement = Arrangement.Center,
