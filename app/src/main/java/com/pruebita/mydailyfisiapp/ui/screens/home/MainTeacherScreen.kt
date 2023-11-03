@@ -154,7 +154,7 @@ fun MainTeacherScreen(navController2: NavHostController){
                         .padding(padding)
                 )
                 {
-                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeTeacher)
+                    AppNavigation(navController = navController, start = ItemMenu.HomeScreen.routeTeacher, null, null,null)
 
                 }
             },

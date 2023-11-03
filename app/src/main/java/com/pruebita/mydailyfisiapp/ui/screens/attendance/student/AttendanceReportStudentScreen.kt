@@ -1,6 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.screens.attendance.student
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CircularCustomComponent
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CustomComponent
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
@@ -120,12 +122,12 @@ fun AttedanceReportStudentScreen(navController: NavHostController) {
 
         }
         item {
-            CursoAsistenciasCard(80)
-            CursoAsistenciasCard(75)
-            CursoAsistenciasCard(30)
-            CursoAsistenciasCard(80)
-            CursoAsistenciasCard(75)
-            CursoAsistenciasCard(30)
+            CursoAsistenciasCard(80, navController)
+            CursoAsistenciasCard(75, navController)
+            CursoAsistenciasCard(30, navController)
+            CursoAsistenciasCard(80, navController)
+            CursoAsistenciasCard(75, navController)
+            CursoAsistenciasCard(30, navController)
         }
 
 
@@ -134,7 +136,7 @@ fun AttedanceReportStudentScreen(navController: NavHostController) {
 }
 
 @Composable
-fun CursoAsistenciasCard(value: Int) {
+fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +157,7 @@ fun CursoAsistenciasCard(value: Int) {
                         spotColor = Color(0xC98B8BFF),
                         ambientColor = Color(0xC47697D3),
                         shape = RoundedCornerShape(15.dp)
-                    )
+                    ).clickable { navController.navigate(InternalScreens.CurseReportStudentScreen.route) }
                     .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFC8DBF8)),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
