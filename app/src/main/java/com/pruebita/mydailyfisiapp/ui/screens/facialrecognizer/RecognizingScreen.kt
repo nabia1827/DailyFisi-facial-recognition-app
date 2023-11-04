@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,11 +54,17 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
@@ -75,7 +82,7 @@ fun RecognizingScreen(
     isGoogleAccount: Boolean
 ) {
     val recognizingViewModel: RecognizingViewModel = hiltViewModel()
-
+    val currentUser: User by recognizingViewModel.currentUser.observeAsState(initial = User())
     var error by remember {
         mutableStateOf<Boolean>(false)
     }
@@ -97,7 +104,7 @@ fun RecognizingScreen(
             modifier = Modifier
                 .weight(0.8f)
         ) {
-            ContentRecognizing(navController, error, recognizingViewModel, isGoogleAccount)
+            ContentRecognizing(navController, error, recognizingViewModel, isGoogleAccount,currentUser)
         }
         Column(
             modifier = Modifier
@@ -115,7 +122,8 @@ fun Recognizing(
     navController: NavHostController,
     error: Boolean,
     RecognizingViewModel: RecognizingViewModel,
-    isGoogleAccount: Boolean
+    isGoogleAccount: Boolean,
+    currentUser: User
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
     val context = LocalContext.current
@@ -139,7 +147,7 @@ fun Recognizing(
 
     fun updatePercentageText() {
         coroutineScope.launch {
-            repeat(4) { // Repite 4 veces (4 iteraciones)
+            repeat(5) { // Repite 4 veces (4 iteraciones)
                 animationProgress.animateTo(
                     targetValue = 1f, // Avanzar al 100%
                     animationSpec = tween(durationMillis = animationDurationMillis)
@@ -151,7 +159,7 @@ fun Recognizing(
                     animationProgress.snapTo(0f)
                 }
 
-                nuevo.value += 0.25
+                nuevo.value += 0.20
                 if (error) {
                     navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
                 }
@@ -162,13 +170,19 @@ fun Recognizing(
     // Mostrar la cámara al inicio
     LaunchedEffect(Unit) {
         delay(4000)
+        val deferredTasks = (0 until 50).map { it ->
+            async {
+                RecognizingViewModel.takePicture(
+                    cameraController,
+                    executor,
+                    "photo_$it",
+                    "user_${currentUser.idUser}",
+                    "facial_identity"
+                )
+            }
+        }
+        deferredTasks.awaitAll()
         updatePercentageText()
-        RecognizingViewModel.takePicture(
-            cameraController,
-            executor,
-            "prueba",
-            "iiii"
-        )
     }
 
     if (porcentaje.value == "100") {
@@ -208,8 +222,10 @@ fun Recognizing(
     )
 
     porcentaje.value =
-        ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
+        ((nuevo.value + (animationProgress.value / 5.0)) * 100).roundToInt().toString()
 }
+
+
 
 
 @Composable
@@ -217,7 +233,8 @@ fun ContentRecognizing(
     navController: NavHostController,
     error: Boolean,
     RecognizingViewModel: RecognizingViewModel,
-    isGoogleAccount:Boolean
+    isGoogleAccount:Boolean,
+    currentUser: User
 ) {
     var porcentaje = remember {
         mutableStateOf("")
@@ -236,8 +253,9 @@ fun ContentRecognizing(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
+
             Text(
-                text = "Miguel Perez",
+                text = currentUser.names,
                 textAlign = TextAlign.Center,
                 fontSize = 34.sp,
                 fontFamily = poppins,
@@ -253,7 +271,7 @@ fun ContentRecognizing(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Recognizing(porcentaje, navController, error, RecognizingViewModel, isGoogleAccount)
+            Recognizing(porcentaje, navController, error, RecognizingViewModel, isGoogleAccount,currentUser)
         }
         Column(
             modifier = Modifier

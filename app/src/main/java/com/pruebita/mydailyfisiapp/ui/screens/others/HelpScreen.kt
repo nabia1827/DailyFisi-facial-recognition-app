@@ -207,7 +207,7 @@ fun RotateImage(pagerState: PagerState) {
 
             ){
                 Image(
-                    painter = painterResource(id = pantalla[pagerState.currentPage]),
+                    painter = painterResource(id = pantalla[page]),
                     contentDescription ="valor",
                     modifier = Modifier.fillMaxWidth()
                 )
