@@ -12,7 +12,7 @@ class StorageImagesImpl{
     fun uploadImageToStorage(imageUri: Uri, nameImage:String,  nameSubFolder: String, namePrincipalFolder: String): String {
         val path = "$namePrincipalFolder/$nameSubFolder/$nameImage"
         val imagesRef: StorageReference = storageReference.child(path)
-        val uploadTask =  imagesRef.putFile(imageUri)
+        val uploadTask= imagesRef.putFile(imageUri)
         var imageUrl = ""
         uploadTask.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { downloadUri ->
@@ -24,5 +24,11 @@ class StorageImagesImpl{
             println("No reconoce el Uri")
         }
         return imageUrl
+    }
+
+    fun ImageToStorageFirebase(imageUri: Uri, nameImage:String,  nameSubFolder: String, namePrincipalFolder: String){
+        val path = "$namePrincipalFolder/$nameSubFolder/$nameImage"
+        val imagesRef: StorageReference = storageReference.child(path)
+        imagesRef.putFile(imageUri)
     }
 }
