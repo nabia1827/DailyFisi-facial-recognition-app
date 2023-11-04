@@ -1,5 +1,6 @@
 package com.pruebita.mydailyfisiapp.ui.screens.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,11 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,14 +40,24 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.Event
+import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.HomeViewModel
 import kotlin.math.floor
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen() {
     val viewModel: ClockViewModel = viewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val currentUser: User by homeViewModel.currentUser.observeAsState(initial = User())
+    val currentUserRol: String by homeViewModel.currentUserRol.observeAsState(initial = "")
+    val listTodayEvents: MutableList<Event> by homeViewModel.todayEvents.observeAsState(initial = mutableListOf())
+    val pagerState = rememberPagerState()
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -57,11 +69,15 @@ fun HomeScreen() {
     ) {
         item{
             Spacer(modifier = Modifier.padding(2.dp))
-            HeaderHome()
+            HeaderHome(currentUser.names,currentUser.idRol) { listTodayEvents.size }
         }
         item {
             Spacer(modifier = Modifier.padding(8.dp))
-            CardEvent()
+            HorizontalPager(pageCount = listTodayEvents.size, state = pagerState) {
+                    index ->CardEvent(listTodayEvents[index], index%3)
+
+            }
+
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
@@ -499,11 +515,15 @@ fun ClasesSectionTitle() {
 }
 
 @Composable
-fun CardEvent() {
+fun CardEvent(event: Event, i: Int) {
+    val backgroundList: MutableList<Int> = mutableListOf(
+        R.drawable.fondo_evento_1,
+        R.drawable.fondo_evento_2,
+        R.drawable.fondo_evento_3)
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(150.dp).padding(10.dp)
             .background(
                 color = Color(0xFF495ECA),
                 shape = RoundedCornerShape(size = 20.dp)
@@ -512,7 +532,7 @@ fun CardEvent() {
     ) {
         Box(){
             Image(
-                painter = painterResource(id = R.drawable.fondo_evento_home),
+                painter = painterResource(id = backgroundList[i]),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
@@ -596,9 +616,15 @@ fun ContentCardEvent() {
 }
 
 @Composable
-fun HeaderHome() {
+fun HeaderHome(
+    name:String,
+    rol:Int,
+    getNumEvents: () ->Int
+) {
     Text(
-        text = "¡Hola, Miguel!",
+        text =
+        if(rol == 3){"¡Hola, Prof. $name!"}
+        else{ "¡Hola, $name!" },
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 28.sp,
@@ -610,7 +636,7 @@ fun HeaderHome() {
 
     )
     Text(
-        text = "Hay un evento en la facultad esta mañana ",
+        text = "Hay ${getNumEvents()} evento(s) en la facultad hoy ",
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 15.sp,

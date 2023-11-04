@@ -193,26 +193,20 @@ fun RotateImage(pagerState: PagerState) {
             Modifier
                 .fillMaxHeight()
                 .width(420.dp)
-
-                .graphicsLayer {
-                    val pageOffset = (
-                            (pagerState.currentPage - page) + pagerState
-                                .currentPageOffsetFraction
-                            ).absoluteValue
-                    alpha = lerp(0.5f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
-                },
+,
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Row(
 
             ){
                 Image(
-                    painter = painterResource(id = pantalla[pagerState.currentPage]),
+                    painter = painterResource(id = pantalla[page]),
                     contentDescription ="valor",
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
+
     }
 }
 
