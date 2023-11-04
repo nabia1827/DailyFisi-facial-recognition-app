@@ -8,12 +8,13 @@ import androidx.lifecycle.ViewModel
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.model.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.RolRepositoryImpl
+import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val context: Context): ViewModel(){
+class MainViewModel @Inject constructor(private val context: Context) : ViewModel() {
 
     private val userManager: UserManager = UserManager(context)
 
@@ -21,15 +22,16 @@ class MainViewModel @Inject constructor(private val context: Context): ViewModel
     val currentUser: LiveData<User> = _currentUser
 
     private val _currentUserRol = MutableLiveData<String>()
-    val currentUserRol : LiveData<String> = _currentUserRol
+    val currentUserRol: LiveData<String> = _currentUserRol
 
     private val repo: UserRepositoryImpl = UserRepositoryImpl()
     private val repoRol: RolRepositoryImpl = RolRepositoryImpl()
+    private val storage: StorageImagesImpl = StorageImagesImpl()
 
-    fun getUserFullName():String{
+    fun getUserFullName(): String {
         val user = _currentUser.value
-        if(user != null){
-            return user.names + " " +user.firstLastName
+        if (user != null) {
+            return user.names + " " + user.firstLastName
         }
         return "desconocido"
     }
@@ -42,23 +44,28 @@ class MainViewModel @Inject constructor(private val context: Context): ViewModel
             _currentUserRol.value = repoRol.getRol(tmp.idRol)
         }
     }
-    fun setUserImageUri(uri: Uri){
 
-    }
-
-    fun setUserImage(img: String){
-        var tmp = _currentUser.value
-        if(tmp != null ){
-            tmp.imageUser = img
-            _currentUser.value = tmp
-            repo.updateUser(tmp)
+    fun setUserImageUri(uri: Uri) {
+        val user = _currentUser.value
+        val urlString = ""
+        if (user != null) {
+            val nameImage = "user_" + user.idUser
+            user.imageUser = storage.uploadImageToStorage(
+                uri,
+                nameImage,
+                "profiles",
+                "users"
+            )
+            _currentUser.value = user
+            repo.updateUser(user)
         }
     }
 
-    fun logOut(){
+
+    fun logOut() {
         var tmp = _currentUser.value
         if (tmp != null) {
-            repo.setActiveSession(tmp.idUser,false)
+            repo.setActiveSession(tmp.idUser, false)
         }
     }
 }

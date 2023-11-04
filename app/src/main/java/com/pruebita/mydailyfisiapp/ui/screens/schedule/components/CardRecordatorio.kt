@@ -36,7 +36,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +58,7 @@ fun CardRecordatorio(showMyDialog: MutableState<Boolean>, navController: NavHost
 
     ) {
         Image(
-            painter = painterResource(id = R.drawable.fondo_evento_home),
+            painter = painterResource(id = R.drawable.fondo_evento_1),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds

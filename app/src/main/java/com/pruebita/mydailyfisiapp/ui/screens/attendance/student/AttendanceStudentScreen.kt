@@ -85,7 +85,7 @@ fun Attendance(modifier: Modifier,navController: NavHostController){
                         contentAlignment = Alignment.Center // Centra el contenido del Box
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.fondo_evento_home),
+                            painter = painterResource(id = R.drawable.fondo_evento_1),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.FillBounds
@@ -109,7 +109,7 @@ fun Attendance(modifier: Modifier,navController: NavHostController){
                         contentAlignment = Alignment.Center // Centra el contenido del Box
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.fondo_evento_home),
+                            painter = painterResource(id = R.drawable.fondo_evento_1),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.FillBounds
