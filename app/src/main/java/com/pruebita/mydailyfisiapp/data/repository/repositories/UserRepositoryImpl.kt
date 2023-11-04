@@ -16,7 +16,7 @@ class UserRepositoryImpl: UserRepository {
             password = password,
             email = email,
             cellphone = "950415842",
-            imageUser = "https://img2.storyblok.com/f/83829/1200x628/96185170bd/esperance-vie-akita-inu.jpg",
+            imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/profiles%2Fusers%2Fuser_1?alt=media&token=aacb20d6-53da-4950-99cf-8b87aa7230d1&_gl=1*jfgqh8*_ga*ODYxODYyNzM3LjE2OTg5ODIwNDg.*_ga_CW55HF8NVT*MTY5OTA0NjMyNy41LjEuMTY5OTA1NDE1NS41Ny4wLjA",
             idFacialIdentity = "lucia_rivera_fi",
             sessionActive = true,
             userActive = true,

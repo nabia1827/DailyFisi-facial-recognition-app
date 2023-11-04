@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RecognizingViewModel @Inject constructor(private val context: Context) : ViewModel() {
     private val userManager: UserManager = UserManager(context)
-    private val StorageImage: StorageImagesImpl = StorageImagesImpl()
+    private val storageImage: StorageImagesImpl = StorageImagesImpl()
 
     fun getMainRoute():String{
         var route = when (userManager.getIdRol()) {
@@ -47,7 +47,9 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
             object: ImageCapture.OnImageSavedCallback{
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     println(outputFileResults.savedUri)
-                    outputFileResults.savedUri?.let {StorageImage.uploadImageToStorage(it,nameFile,"nuevo","a") }
+                    outputFileResults.savedUri?.let {
+                        storageImage.uploadImageToStorage(it,nameFile,"nuevo","a")
+                    }
                 }
                 override fun onError(exception: ImageCaptureException) {
                     println("error")
