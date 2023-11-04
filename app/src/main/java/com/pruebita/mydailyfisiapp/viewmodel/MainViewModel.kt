@@ -53,22 +53,14 @@ class MainViewModel @Inject constructor(private val context: Context) : ViewMode
             user.imageUser = storage.uploadImageToStorage(
                 uri,
                 nameImage,
-                "users",
-                "profiles"
+                "profiles",
+                "users"
             )
             _currentUser.value = user
             repo.updateUser(user)
         }
     }
 
-    fun setUserImage(img: String) {
-        var tmp = _currentUser.value
-        if (tmp != null) {
-            tmp.imageUser = img
-            _currentUser.value = tmp
-            repo.updateUser(tmp)
-        }
-    }
 
     fun logOut() {
         var tmp = _currentUser.value

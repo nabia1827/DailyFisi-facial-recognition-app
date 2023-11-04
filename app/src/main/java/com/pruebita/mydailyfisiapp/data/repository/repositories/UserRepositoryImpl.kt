@@ -16,7 +16,7 @@ class UserRepositoryImpl: UserRepository {
             password = password,
             email = email,
             cellphone = "950415842",
-            imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/profiles%2Fusers%2Fuser_1?alt=media&token=aacb20d6-53da-4950-99cf-8b87aa7230d1&_gl=1*jfgqh8*_ga*ODYxODYyNzM3LjE2OTg5ODIwNDg.*_ga_CW55HF8NVT*MTY5OTA0NjMyNy41LjEuMTY5OTA1NDE1NS41Ny4wLjA",
+            imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.png?alt=media&token=a585563f-5523-453b-8938-3ec23da43615&_gl=1*1ixammm*_ga*ODYxODYyNzM3LjE2OTg5ODIwNDg.*_ga_CW55HF8NVT*MTY5OTA4MTk4MC45LjEuMTY5OTA4NDY3OC4xMC4wLjA",
             idFacialIdentity = "lucia_rivera_fi",
             sessionActive = true,
             userActive = true,
