@@ -42,6 +42,7 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -54,6 +55,8 @@ fun AppNavigation(
     applicationContext: Context?
 ) {
     val clockViewModel: ClockViewModel = hiltViewModel()
+    //val todayAttendanceStudentViewModel: TodayAttendanceStudentViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = start
@@ -308,6 +311,7 @@ fun AppNavigation(
 
         // Sub screens
         composable(route = InternalScreens.TodayAttendanceStudentScreen.route) {
+
             TodayAttendanceStudentScreen(navController)
         }
 

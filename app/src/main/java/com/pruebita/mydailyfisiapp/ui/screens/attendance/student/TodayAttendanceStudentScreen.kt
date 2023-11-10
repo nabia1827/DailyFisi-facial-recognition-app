@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.DateManager
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -57,7 +61,8 @@ fun PreviewTodayAttendanceStudentScreen() {
 
 @Composable
 fun TodayAttendanceStudentScreen(navController: NavHostController) {
-
+    val viewModel: TodayAttendanceStudentViewModel = hiltViewModel()
+    val dateManager: DateManager by viewModel.dateManager.observeAsState(initial = DateManager())
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
@@ -72,7 +77,13 @@ fun TodayAttendanceStudentScreen(navController: NavHostController) {
 
     ) {
         item {
-            HeaderTodayAttendance(navController)
+            HeaderTodayAttendance(
+                navController,
+                dateManager.getCurrentDay(),
+                dateManager.getCurrentDayOfWeek(),
+                dateManager.getCurrentMonth(),
+                dateManager.getCurrentYear()
+            )
             Spacer(modifier = Modifier.height(25.dp))
         }
         item {
@@ -407,7 +418,13 @@ fun CardAsignature(
 
 
 @Composable
-fun HeaderTodayAttendance(navController: NavHostController) {
+fun HeaderTodayAttendance(
+    navController: NavHostController,
+    day: Int,
+    dayOfWeek: String,
+    month: String,
+    year: Int
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -445,7 +462,7 @@ fun HeaderTodayAttendance(navController: NavHostController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "06",
+                        text = "$day",
                         style = TextStyle(
                             fontSize = 32.sp,
                             fontFamily = poppins,
@@ -463,7 +480,7 @@ fun HeaderTodayAttendance(navController: NavHostController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Miercoles",
+                        text = "$dayOfWeek",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = poppins,
@@ -473,7 +490,7 @@ fun HeaderTodayAttendance(navController: NavHostController) {
                             )
                     )
                     Text(
-                        text = "Septiembre 2023",
+                        text = "$month $year",
                         style = TextStyle(
                             fontSize = 12.sp,
                             fontFamily = poppins,

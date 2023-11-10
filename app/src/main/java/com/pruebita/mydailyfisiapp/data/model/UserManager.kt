@@ -67,4 +67,7 @@ class UserManager(private val context: Context) {
     fun getIdRol(): Int {
         return sharedPreferences.getInt("idRol", 0)
     }
+    fun getIdUser(): Int {
+        return sharedPreferences.getInt("idUser", 0)
+    }
 }
