@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -34,35 +36,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.Course
 import com.pruebita.mydailyfisiapp.data.model.Event
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
-import com.pruebita.mydailyfisiapp.viewmodel.HomeViewModel
+import java.util.Calendar
 import kotlin.math.floor
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview(showBackground = true)
 @Composable
-fun HomeScreen() {
-    val viewModel: ClockViewModel = viewModel()
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    val currentUser: User by homeViewModel.currentUser.observeAsState(initial = User())
-    val currentUserRol: String by homeViewModel.currentUserRol.observeAsState(initial = "")
-    val listTodayEvents: MutableList<Event> by homeViewModel.todayEvents.observeAsState(initial = mutableListOf())
+fun HomeScreen(clockViewModel: ClockViewModel) {
+
+    val currentUser: User by clockViewModel.user.observeAsState(initial = User())
+
+    val listTodayEvents: MutableList<Event> by clockViewModel.todayEvents.observeAsState(initial = mutableListOf())
+    val listCourses: MutableList<Course> by clockViewModel.courses.observeAsState(initial = mutableListOf())
+
     val pagerState = rememberPagerState()
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(start = 15.dp, end = 15.dp),
+            .padding(start = 18.dp, end = 18.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
 
@@ -72,57 +72,57 @@ fun HomeScreen() {
             HeaderHome(currentUser.names,currentUser.idRol) { listTodayEvents.size }
         }
         item {
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.padding(4.dp))
             HorizontalPager(pageCount = listTodayEvents.size, state = pagerState) {
                     index ->CardEvent(listTodayEvents[index], index%3)
-
             }
-
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
-            ClasesSection(viewModel)
+            ClasesSection(clockViewModel)
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
-            AttendanceSection()
+            AttendanceSection(listCourses)
 
         }
-
-
     }
 }
 
 @Composable
-fun AttendanceSection() {
+fun AttendanceSection(listCourses: MutableList<Course>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
 
     ){
         AttendanceSectionTitle()
-        AttendanceSectionContent(4)
+        AttendanceSectionContent(listCourses)
 
     }
 }
 
 @Composable
-fun AttendanceSectionContent(cantidad: Int) {
-    val rows = floor(cantidad/2.0).toInt()
+fun AttendanceSectionContent(listCourses: MutableList<Course>) {
+    val rows = floor(listCourses.size/2.0).toInt()
     for (i in 0 until rows) {
-        AttendanceSectionCard(2)
+        AttendanceSectionCard(listCourses[2*i],listCourses[2*i+1])
         Spacer(modifier = Modifier.padding(4.dp))
     }
-    if(cantidad%2!=0){
-        AttendanceSectionCard(1)
+    if(listCourses.size % 2 != 0){
+        AttendanceSectionCard(listCourses[listCourses.size - 1],null)
     }
 }
 
 @Composable
-fun AttendanceSectionCard(num:Int) {
+fun AttendanceSectionCard(course1: Course, course2: Course?) {
+    val backgroundList: MutableList<Int> = mutableListOf(
+        R.drawable.espiral_background,
+        R.drawable.fondo_evento_2,
+        R.drawable.fondo_evento_3)
     Row(
         modifier = Modifier
-            .height(50.dp)
+            .height(100.dp)
             .fillMaxWidth()
     ){
         Column(
@@ -138,19 +138,46 @@ fun AttendanceSectionCard(num:Int) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Algoritmica I",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    lineHeight = 22.sp,
-                    fontFamily = poppins,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFFFFFFFF),
-                )
-            )
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ){
+                /*Image(
+                        painter = painterResource(id = backgroundList[0]),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds
+                    )*/
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = course1.courseName,
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            lineHeight = 22.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                    Text(
+                        text = "Seccion ${course1.section}",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 22.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFFFFFFFF),
+                        )
+                    )
+                }
+            }
+
         }
         Spacer(modifier = Modifier.padding(4.dp))
-        if(num ==2){
+        if(course2 != null){
             Column(
                 modifier = Modifier
                     .weight(0.5f)
@@ -164,16 +191,42 @@ fun AttendanceSectionCard(num:Int) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Algoritmica I",
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        lineHeight = 22.sp,
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFFFFFFFF),
-                    )
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    /*Image(
+                        painter = painterResource(id = backgroundList[0]),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds
+                    )*/
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = course2.courseName,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                lineHeight = 22.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFFFFFFFF),
+                            )
+                        )
+                        Text(
+                            text = "Seccion ${course2.section}",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                lineHeight = 22.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFFFFFFF),
+                            )
+                        )
+                    }
+                }
             }
 
         }else{
@@ -216,26 +269,43 @@ fun AttendanceSectionTitle() {
 
 @Composable
 fun ClasesSection(viewModel: ClockViewModel) {
+    val pendingCourses:Int by viewModel.pendingCourses.observeAsState(initial = 0)
+    val actualCourse: Course? by viewModel.actualCourse.observeAsState(initial = null )
+    val nextCourse: Course? by viewModel.nextCourse.observeAsState(initial = null )
+    val subNextCourse: Course? by viewModel.subNextCourse.observeAsState(initial = null )
+    val isFinished: Boolean by viewModel.isFinished.observeAsState(initial = true)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
 
     ){
-        ClasesSectionTitle()
-        ClasesSectionInstantClass(viewModel)
-        Spacer(modifier = Modifier.padding(7.dp))
-        ClasesSectionLaterClass()
+        ClasesSectionTitle(pendingCourses)
+        if(!isFinished){
+
+            ClasesSectionInstantClass(viewModel,actualCourse)
+            if(nextCourse != null){
+                Spacer(modifier = Modifier.padding(7.dp))
+                ClasesSectionLaterClass(nextCourse,subNextCourse,viewModel)
+            }
+
+        }else{
+            Image(
+                painter = painterResource(id = R.drawable.ic_no_classes),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.padding(15.dp)
+            )
+        }
     }
 }
 
 @Composable
-fun ClasesSectionLaterClass() {
+fun ClasesSectionLaterClass(nextCourse: Course?, subNextCourse: Course?, viewModel: ClockViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-
-
     ){
         Column(
             modifier = Modifier
@@ -249,8 +319,11 @@ fun ClasesSectionLaterClass() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LaterClassContent()
+            if (nextCourse != null) {
+                LaterClassContent(nextCourse){ calendar -> viewModel.formatHour(calendar) }
+            }
         }
+
         Spacer(modifier = Modifier.padding(5.dp))
         Column(
             modifier = Modifier
@@ -264,14 +337,23 @@ fun ClasesSectionLaterClass() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LaterClassContent()
-        }
 
+            if(subNextCourse != null){
+                LaterClassContent(subNextCourse){ calendar -> viewModel.formatHour(calendar) }
+            }else{
+                Icon(
+                    painter = painterResource(id = R.drawable.book_bookmark),
+                    contentDescription = "bookmark",
+                    tint = Color(0xFF495ECA),
+                )
+            }
+
+        }
     }
 }
 
 @Composable
-fun ClasesSectionInstantClass(viewModel:ClockViewModel) {
+fun ClasesSectionInstantClass(viewModel: ClockViewModel, course: Course?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -290,7 +372,9 @@ fun ClasesSectionInstantClass(viewModel:ClockViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            InstantClassIzq()
+            if (course != null) {
+                InstantClassIzq(course) { calendar -> viewModel.formatHour(calendar) }
+            }
         }
         Column(
             modifier = Modifier
@@ -307,11 +391,12 @@ fun ClasesSectionInstantClass(viewModel:ClockViewModel) {
 
 @Composable
 fun InstantClassDer(viewModel: ClockViewModel) {
-    val currentTime: String by viewModel.currentTime.observeAsState(initial = "")
+    val currentTime: String by viewModel.currentTimeText.observeAsState(initial = "")
+    val timeRemaining: String by viewModel.timeRemaining.observeAsState(initial = "")
     Text(
-        text = "5 minutos para iniciar",
+        text = timeRemaining,
         style = TextStyle(
-            fontSize = 11.sp,
+            fontSize = 13.sp,
             lineHeight = 15.sp,
             fontFamily = poppins,
             fontWeight = FontWeight(500),
@@ -330,9 +415,9 @@ fun InstantClassDer(viewModel: ClockViewModel) {
     )
 }
 @Composable
-fun LaterClassContent() {
+fun LaterClassContent(course: Course, dateToString: (Calendar) -> String) {
     Text(
-        text = "Calculo II ",
+        text = course.courseName,
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 20.sp,
@@ -362,7 +447,7 @@ fun LaterClassContent() {
                     .padding(start = 6.dp, top = 4.dp, end = 6.dp, bottom = 4.dp)
             ){
                 Text(
-                    text = " Aula 102 ",
+                    text = " ${course.theoryPart.room.typeRoom} ${course.theoryPart.room.idRoom} ",
                     style = TextStyle(
                         fontSize = 13.sp,
                         lineHeight = 14.sp,
@@ -393,7 +478,7 @@ fun LaterClassContent() {
 
                     )
                 Text(
-                    text = "12:00AM",
+                    text = "${dateToString(course.theoryPart.startHour)}",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = poppins,
@@ -414,9 +499,9 @@ fun LaterClassContent() {
 
 
 @Composable
-fun InstantClassIzq() {
+fun InstantClassIzq(course: Course, dateToString: (Calendar) -> String) {
     Text(
-        text = "Calculo II ",
+        text = course.courseName,
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 24.sp,
@@ -446,7 +531,7 @@ fun InstantClassIzq() {
                     .padding(start = 6.dp, top = 4.dp, end = 6.dp, bottom = 4.dp)
             ){
                 Text(
-                    text = " Aula 102 ",
+                    text = " ${course.theoryPart.room.typeRoom} ${course.theoryPart.room.idRoom} ",
                     style = TextStyle(
                         fontSize = 15.sp,
                         lineHeight = 14.sp,
@@ -477,7 +562,7 @@ fun InstantClassIzq() {
 
                 )
                 Text(
-                    text = "12:00AM",
+                    text = "${dateToString(course.theoryPart.startHour)}",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = poppins,
@@ -494,10 +579,10 @@ fun InstantClassIzq() {
 }
 
 @Composable
-fun ClasesSectionTitle() {
+fun ClasesSectionTitle(numOfClasses: Int) {
     Row(){
         Text(
-            text = "4 Clases Pendientes ",
+            text = "$numOfClasses Clase(s) pendiente(s) hoy",
             style = TextStyle(
                 fontSize = 18.sp,
                 fontFamily = poppins,
@@ -505,11 +590,20 @@ fun ClasesSectionTitle() {
                 color = Color.Black,
             )
         )
-        Icon(
-            painter = painterResource(id = R.drawable.warning),
-            contentDescription = "class",
-            tint = Color(0xFFF44336)
-        )
+        Spacer(modifier = Modifier.padding(4.dp))
+        if(numOfClasses !=0){
+            Icon(
+                painter = painterResource(id = R.drawable.warning),
+                contentDescription = "class",
+                tint = Color(0xFFF44336)
+            )
+        }else{
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "class",
+                tint = Color.Black
+            )
+        }
 
     }
 }
@@ -523,7 +617,8 @@ fun CardEvent(event: Event, i: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp).padding(10.dp)
+            .height(150.dp)
+            .padding(10.dp)
             .background(
                 color = Color(0xFF495ECA),
                 shape = RoundedCornerShape(size = 20.dp)
@@ -537,14 +632,14 @@ fun CardEvent(event: Event, i: Int) {
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
             )
-            ContentCardEvent()
+            ContentCardEvent(event)
         }
 
     }
 }
 
 @Composable
-fun ContentCardEvent() {
+fun ContentCardEvent(event: Event) {
     Row(
         modifier = Modifier
             .padding(15.dp)
@@ -558,7 +653,7 @@ fun ContentCardEvent() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Hackathon",
+                    text = event.title,
                     style = TextStyle(
                         fontSize = 28.sp,
                         lineHeight = 34.sp,
@@ -569,7 +664,7 @@ fun ContentCardEvent() {
                     )
                 )
                 Text(
-                    text = "Vol 2",
+                    text = "   ",
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
@@ -581,7 +676,7 @@ fun ContentCardEvent() {
             }
             Row(){
                 Text(
-                    text = "El día de hoy se presentaran 5 grupos en el Auditorio.",
+                    text = event.shortDescription,
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 19.sp,
@@ -596,7 +691,9 @@ fun ContentCardEvent() {
             modifier = Modifier.weight(0.3f)
         ) {
             ElevatedButton(
-                onClick = { },
+                onClick = {
+                          //Navigate with event
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),

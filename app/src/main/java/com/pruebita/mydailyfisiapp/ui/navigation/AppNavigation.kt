@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -39,6 +40,7 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SettingsScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
+import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -51,6 +53,7 @@ fun AppNavigation(
     googleAuthUiClient: GoogleAuthUiClient?,
     applicationContext: Context?
 ) {
+    val clockViewModel: ClockViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = start
@@ -281,13 +284,13 @@ fun AppNavigation(
             * */
 
         composable(route = ItemMenu.HomeScreen.routeStudent) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         composable(route = ItemMenu.HomeScreen.routeDele) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         composable(route = ItemMenu.HomeScreen.routeTeacher) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         /*
         *  SUBMODULE OF ATTENDANCE

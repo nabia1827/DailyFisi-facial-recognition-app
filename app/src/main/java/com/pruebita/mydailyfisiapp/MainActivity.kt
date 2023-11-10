@@ -12,13 +12,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.auth.api.identity.*
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.GoogleAuthUiClient
 import com.pruebita.mydailyfisiapp.ui.screens.SuperScreen
-import com.google.android.gms.auth.api.identity.*
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,6 +47,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
+
                     val navController = rememberNavController()
                     var currentUser = User()
 
@@ -58,5 +65,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
