@@ -16,6 +16,7 @@ import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.GoogleAuthUiClient
 import com.pruebita.mydailyfisiapp.ui.screens.SuperScreen
 import com.google.android.gms.auth.api.identity.*
+import com.pruebita.mydailyfisiapp.ui.screens.schedule.Prueba
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     var currentUser = User()
 
                     SuperScreen(navController = navController,lifecycleScope, googleAuthUiClient, applicationContext)
-                    //FaceRecognizerScreen(navController)
+                    //Prueba()
                     //ScheduleScreen()
                     //ZoomableImageWithButtonsAndTouch()
                     //HorarioScreen()

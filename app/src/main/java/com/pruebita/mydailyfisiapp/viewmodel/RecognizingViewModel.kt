@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModel
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.repositories.PythonAPIImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,7 @@ import javax.inject.Inject
 class RecognizingViewModel @Inject constructor(private val context: Context) : ViewModel() {
     private val userManager: UserManager = UserManager(context)
     private val StorageImage: StorageImagesImpl = StorageImagesImpl()
-    private var recording: Recording? = null
+    private val PythonAPI: PythonAPIImpl = PythonAPIImpl()
 
     private val _currentUser = MutableLiveData(userManager.getUser() ?: User())
     val currentUser: LiveData<User> = _currentUser
@@ -54,28 +55,6 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
             else -> { AppScreens.MainTeacherScreen.route }
         }
         return route
-    }
-    //Facial_Identity
-    //user_id
-    //photo_1
-
-    //Profile
-    //
-    fun takeAllPictures(
-        camaraController: LifecycleCameraController,
-        executor: Executor,
-        nameSubFolder: String,
-        nameMainFolder: String
-    ){
-        for (i in 1..50) {
-            takePicture(
-                camaraController,
-                executor,
-                "photo_$i",
-                nameSubFolder,
-                nameMainFolder
-            )
-        }
     }
 
 
@@ -97,11 +76,16 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
                     outputFileResults.savedUri?.let {StorageImage.ImageToStorageFirebase(it,nameImage,nameSubFolder,nameMainFolder) }
                 }
                 override fun onError(exception: ImageCaptureException) {
-                    println("error")
+                    println("error capturando${exception.localizedMessage}")
                 }
             }
         )
     }
+
+    fun sentImages(id_user: Int){
+        PythonAPI.sendPostImage(id_user = id_user.toString())
+    }
+
     /*@androidx.annotation.OptIn(androidx.camera.view.video.ExperimentalVideo::class)
     fun recordVideo(
         context: Context,

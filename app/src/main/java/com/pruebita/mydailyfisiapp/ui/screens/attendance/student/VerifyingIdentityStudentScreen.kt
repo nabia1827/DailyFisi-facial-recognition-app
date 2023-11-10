@@ -2,6 +2,8 @@ package com.pruebita.mydailyfisiapp.ui.screens.attendance.student
 
 
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -46,6 +48,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -59,10 +63,14 @@ import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.HeaderVerify
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FooterRecognizer
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewVerifyingIdentityStudentScreen(){
@@ -71,6 +79,7 @@ fun PreviewVerifyingIdentityStudentScreen(){
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VerifyingIdentityStudentScreen(navController: NavHostController) {
@@ -80,6 +89,8 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/predefinidos/img_verifyingposition.png"))
     }
+
+    val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
 
     Column (
         modifier = Modifier
@@ -98,7 +109,7 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizing(navController,error,selectedImageUri)
+            ContentRecognizing(navController,error,selectedImageUri, verifyingIdentityStudentViewModel)
         }
         Column(
             modifier = Modifier
@@ -110,8 +121,14 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostController, error: Boolean) {
+fun RecognizingFace(
+    porcentaje: MutableState<String>,
+    navController: NavHostController,
+    error: Boolean,
+    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel
+) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -122,7 +139,7 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
         LifecycleCameraController(context)
     }
     val lifecycle = LocalLifecycleOwner.current
-
+    val executor = ContextCompat.getMainExecutor(context)
     // Crea un estado para el progreso de la animación
     val animationProgress = remember { Animatable(0f) }
 
@@ -155,6 +172,22 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
     LaunchedEffect(Unit) {
         delay(2000)
         updatePercentageText()
+        var state = false
+
+        while (porcentaje.value != "100" || state == false) {
+            launch {
+                state = verifyingIdentityStudentViewModel.takePictureToAPI(
+                    cameraController,
+                    executor,
+                    "photo_prueba",
+                    id_curso = 5,
+                    id_user =  2
+                )
+            }
+            // Introduce a delay here if needed
+            delay(100) // for example, wait for 100 milliseconds between each iteration
+        }
+
     }
 
     if (porcentaje.value == "100") {
@@ -176,7 +209,7 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera(cameraController, lifecycle)
+        Camera(cameraController, lifecycle /*, context*/)
     }
 
     val composition by rememberLottieComposition(
@@ -282,8 +315,14 @@ fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHos
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ContentRecognizing(navController: NavHostController, error: Boolean, img:Uri?) {
+fun ContentRecognizing(
+    navController: NavHostController,
+    error: Boolean,
+    img: Uri?,
+    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel
+) {
     var porcentaje = remember {
         mutableStateOf("")
     }
@@ -323,7 +362,7 @@ fun ContentRecognizing(navController: NavHostController, error: Boolean, img:Uri
             contentAlignment = Alignment.Center
         ){
             if(porcentaje.value != "100"){
-                RecognizingFace(porcentaje,navController,error)
+                RecognizingFace(porcentaje,navController,error, verifyingIdentityStudentViewModel)
             }
             else{
                 RecognizingPosition(porcentaje2,navController,error,img)

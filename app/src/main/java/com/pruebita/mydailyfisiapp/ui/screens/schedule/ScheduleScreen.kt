@@ -72,7 +72,7 @@ fun PreviewScheduleScreen(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleScreen(navController: NavHostController){
-    var today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     var currentDay by remember{
         mutableStateOf<LocalDate>(today)
     }

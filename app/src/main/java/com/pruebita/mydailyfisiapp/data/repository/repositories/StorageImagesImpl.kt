@@ -24,10 +24,14 @@ class StorageImagesImpl{
             println("No reconoce el Uri")
         }
         return imageUrl
-
     }
 
-    fun ImageToStorageFirebase(imageUri: Uri, nameImage:String,  nameSubFolder: String, namePrincipalFolder: String){
+    fun ImageToStorageFirebase(
+        imageUri: Uri,
+        nameImage:String,
+        nameSubFolder: String = "",
+        namePrincipalFolder: String = ""
+    ){
         val path = "$namePrincipalFolder/$nameSubFolder/$nameImage"
         val imagesRef: StorageReference = storageReference.child(path)
         imagesRef.putFile(imageUri)

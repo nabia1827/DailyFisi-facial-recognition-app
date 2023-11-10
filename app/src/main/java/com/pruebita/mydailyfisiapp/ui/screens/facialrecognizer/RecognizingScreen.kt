@@ -1,5 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -67,6 +69,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.math.roundToInt
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewRecognizingScreen() {
@@ -75,6 +78,7 @@ fun PreviewRecognizingScreen() {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RecognizingScreen(
@@ -116,6 +120,7 @@ fun RecognizingScreen(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Recognizing(
     porcentaje: MutableState<String>,
@@ -170,19 +175,25 @@ fun Recognizing(
     // Mostrar la cámara al inicio
     LaunchedEffect(Unit) {
         delay(4000)
-        val deferredTasks = (0 until 50).map { it ->
-            async {
+        updatePercentageText()
+        var i = 0
+        while (porcentaje.value != "100") {
+            launch {
                 RecognizingViewModel.takePicture(
                     cameraController,
                     executor,
-                    "photo_$it",
-                    "user_${currentUser.idUser}",
+                    "photo_$i",
+                    "user_${2}",
                     "facial_identity"
                 )
+                i += 1
             }
+            // Introduce a delay here if needed
+            delay(100) // for example, wait for 100 milliseconds between each iteration
         }
-        deferredTasks.awaitAll()
-        updatePercentageText()
+
+        //deferredTasks.awaitAll()
+
     }
 
     if (porcentaje.value == "100") {
@@ -196,6 +207,7 @@ fun Recognizing(
         LaunchedEffect(Unit) {
             val route = RecognizingViewModel.getMainRoute()
             delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
+            RecognizingViewModel.sentImages(2)
             navController.navigate("$route/$isGoogleAccount") // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
     }
@@ -228,6 +240,7 @@ fun Recognizing(
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ContentRecognizing(
     navController: NavHostController,

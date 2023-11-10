@@ -9,9 +9,9 @@ class UserRepositoryImpl: UserRepository {
         return User(
             idUser = 1,
             idRol = 1,
-            names = "Lucia",
-            firstLastName = "Rivera",
-            secondLastName = "Benites",
+            names = "Kevin Miguel",
+            firstLastName = "Ortiz",
+            secondLastName = "Abanto",
             user = "lucia.rivera",
             password = password,
             email = email,
