@@ -11,40 +11,41 @@ class CourseRepositoryImpl: CourseRepository {
     override fun getTodayCourses(idUser: Int): MutableList<Course> {
         val timeZone = TimeZone.getTimeZone("America/Lima")
         // API has to return today courses later than actual hour
-        val initMin = 59
-        val initHour = 23
+        val initMin = 37
+        val initHour = 0
+        val day = 11
 
         val calculoTeoStart = Calendar.getInstance(timeZone)
-        calculoTeoStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin, 0)
+        calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
         val calculoTeoEnd = Calendar.getInstance(timeZone)
-        calculoTeoEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+1, 0)
+        calculoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
 
         val calculoLabStart = Calendar.getInstance(timeZone)
-        calculoLabStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+1, 0)
+        calculoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
         val calculoLabEnd = Calendar.getInstance(timeZone)
-        calculoLabEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+3, 0)
+        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
 
 
         val algoTeoStart = Calendar.getInstance(timeZone)
-        algoTeoStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+3, 0)
+        algoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
         val algoTeoEnd = Calendar.getInstance(timeZone)
-        algoTeoEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+4, 0)
+        algoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+4, 0)
 
         val algoLabStart = Calendar.getInstance(timeZone)
-        algoLabStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin +4, 0)
+        algoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin +4, 0)
         val algoLabEnd = Calendar.getInstance(timeZone)
-        algoLabEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin +6, 0)
+        algoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin +6, 0)
 
 
         val marketingTeoStart = Calendar.getInstance(timeZone)
-        marketingTeoStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+6, 0)
+        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+6, 0)
         val marketingTeoEnd = Calendar.getInstance(timeZone)
-        marketingTeoEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+7, 0)
+        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
 
         val marketingLabStart = Calendar.getInstance(timeZone)
-        marketingLabStart.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+7, 0)
+        marketingLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
         val marketingLabEnd = Calendar.getInstance(timeZone)
-        marketingLabEnd.set(2023, Calendar.NOVEMBER, 9, initHour, initMin+9, 0)
+        marketingLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+9, 0)
 
 
 

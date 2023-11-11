@@ -1,6 +1,8 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,18 +28,25 @@ class TodayAttendanceStudentViewModel
     private val repoAssists: AttendanceRepositoryImpl = AttendanceRepositoryImpl()
     private val userManager: UserManager = UserManager(context)
 
-
-    private val _dateManager = MutableLiveData<DateManager>()
+    //val todayAssists2 = mutableStateOf<MutableList<Attendance>>(mutableListOf()) // Cambiado a MutableState
+    private val _dateManager = MutableLiveData<DateManager>(DateManager())
     val dateManager: LiveData<DateManager> = _dateManager
 
     private val _todayAssists = MutableLiveData<MutableList<Attendance>>()
-    val todayAssists: LiveData<MutableList<Attendance>> = _todayAssists
+    val todayAssists: LiveData<MutableList<Attendance>> = _todayAssists //Default: all 5
+
 
     private val _currentClassEndTime = MutableLiveData<Calendar>(null)
     val currentClassEndTime: LiveData<Calendar> = _currentClassEndTime
 
     private val _nextClassStartTime = MutableLiveData<Calendar>(null)
     val nextClassStartTime: LiveData<Calendar> = _nextClassStartTime
+
+    private val _isFinished = MutableLiveData<Boolean>(true)
+    val isFinished: LiveData<Boolean> = _isFinished
+
+    private val _cont = MutableLiveData<Int>(0)
+    val cont: LiveData<Int> = _cont
 
     private var currentIndex = -1
 
@@ -58,15 +67,66 @@ class TodayAttendanceStudentViewModel
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                val calendar = Calendar.getInstance(timeZone)
-                val nextTime =_nextClassStartTime.value
-                if(nextTime != null){
-                    val remaining = nextTime.timeInMillis - calendar.timeInMillis
-                    if(remaining <= 0){
-                        moveToNextAssist()
+
+
+                if(_isFinished.value != true){
+                    val now = Calendar.getInstance(timeZone)
+                    // Attendance is available
+                    val todayAss = _todayAssists.value?.toMutableList()
+                    if (todayAss != null && currentIndex!=-1){
+                        if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse)){
+                            todayAss[currentIndex].state = 3
+                            _todayAssists.postValue(todayAss)
+                        }
                     }
 
+                    // Move on or not?
+                    val endTime =_currentClassEndTime.value
+                    if(endTime != null){
+                        val remaining1 = endTime.timeInMillis - now.timeInMillis
+                        if(remaining1 <= 0){
+
+                            val todayAss = _todayAssists.value?.toMutableList()
+                            if(currentIndex != -1){
+                                if(todayAss != null && todayAss[currentIndex].state != 1){
+                                    todayAss[currentIndex].state = 2 //Broadcast real time
+                                    _todayAssists.postValue(todayAss)
+                                }
+                            }
+
+                            val nextTime =_nextClassStartTime.value
+                            if(nextTime != null){
+                                val remaining2 = nextTime.timeInMillis - now.timeInMillis
+                                if(remaining2 <= 0){
+                                    moveToNextAssist()
+                                }
+                            }else if (todayAss != null) {
+                                if(
+                                    currentIndex == todayAss.size -1
+                                ){
+                                    moveToNextAssist()
+                                }
+                            }
+
+                        }
+
+                    }
+                    //If it's first
+                    val nextTime =_nextClassStartTime.value
+                    if(nextTime != null && currentIndex == -1){
+                        val remaining2 = nextTime.timeInMillis - now.timeInMillis
+                        if(remaining2 <= 0){
+                            moveToNextAssist()
+                        }
+                    }
                 }
+                val v = _cont.value
+                if(v!=null){
+                    _cont.postValue(v + 1)
+                }
+
+
+
 
 
 
@@ -75,37 +135,80 @@ class TodayAttendanceStudentViewModel
     }
 
     fun updateAssistsData(){
-        _todayAssists.value = repoAssists.getTodayAssists(userManager.getIdUser())
-        val todayAss = _todayAssists.value
+        _todayAssists.postValue(repoAssists.getTodayAssists(userManager.getIdUser()))
+        val todayAss = repoAssists.getTodayAssists(userManager.getIdUser()).toMutableList()
         if(todayAss != null){
-
-            _nextClassStartTime.value = todayAss[0].startTime
+            println("Entrooo: ${todayAss[0].startTime}")
+            _isFinished.postValue(false)
+            _nextClassStartTime.postValue(todayAss[0].startTime)
 
             val nextTime =_nextClassStartTime.value
 
             if(nextTime != null){
                 val remaining = nextTime.timeInMillis - Calendar.getInstance().timeInMillis
-                if(remaining <= 0){
-                    currentIndex += 1
+                if(remaining <= 0 && _isFinished.value !=true){
+                    currentIndex = 0
 
                     //In next reps refresh past states
-                    todayAss[currentIndex].state = 2
-                    _currentClassEndTime.value = todayAss[currentIndex].endTime
-                    _nextClassStartTime.value = todayAss[currentIndex + 1].startTime
-                    _todayAssists.value = todayAss
+                    todayAss[currentIndex].state = 4
+                    _currentClassEndTime.postValue(todayAss[currentIndex].endTime)
+                    if(currentIndex + 1 < todayAss.size){
+                        _nextClassStartTime.postValue(todayAss[currentIndex + 1].startTime)
+                    }
+
+                    _todayAssists.postValue(todayAss)
 
                 }
+
 
             }
         }
     }
 
     fun moveToNextAssist(){
-        val todayAss = _todayAssists.value
+        val todayAss = _todayAssists.value?.toMutableList()
         if(todayAss != null && (currentIndex + 1) < todayAss.size){
+            if(currentIndex != -1){
+                if(todayAss[currentIndex].state == 3 || todayAss[currentIndex].state == 4){
+                    todayAss[currentIndex].state = 2 //Broadcast real time
+                }
+            }
             currentIndex += 1
+            todayAss[currentIndex].state = 4
+            _currentClassEndTime.postValue(todayAss[currentIndex].endTime)
+            if(currentIndex + 1 < todayAss.size){
+                _nextClassStartTime.postValue(todayAss[currentIndex + 1].startTime)
+            }else{
+                _nextClassStartTime.postValue(null)
+            }
+            _todayAssists.postValue(todayAss)
+        }else{
+            _isFinished.postValue(true)
+            _currentClassEndTime.postValue(null)
+            _nextClassStartTime.postValue(null)
+            currentIndex = -1
         }
     }
+
+    fun getTimeRange(start:Calendar, end:Calendar):String{
+        val mng = _dateManager.value
+        return if(mng != null)
+            "${mng.getHourString(start)} - ${mng.getHourString(end)}"
+        else
+            ""
+    }
+
+    fun takeAttendance(){
+        val todayAss = _todayAssists.value?.toMutableList()
+        if(todayAss != null && currentIndex != -1){
+            todayAss[currentIndex].state = 1
+            _todayAssists.postValue(todayAss)
+        }
+
+
+    }
+
+
 
 
 }

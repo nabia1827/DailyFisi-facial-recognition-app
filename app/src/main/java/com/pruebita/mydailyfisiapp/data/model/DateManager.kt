@@ -1,9 +1,13 @@
 package com.pruebita.mydailyfisiapp.data.model
 
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 class DateManager {
-    val currentTime = Calendar.getInstance()
+    private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
+    private val currentTime: Calendar = Calendar.getInstance(timeZone)
     private val dayOfWeek = arrayOf("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
     private val monthName = arrayOf(
         "Enero",
@@ -36,11 +40,17 @@ class DateManager {
 
     fun getCurrentDayOfWeek():String{
         val index = currentTime.get(Calendar.DAY_OF_WEEK)
-        return dayOfWeek[index]
+        return dayOfWeek[index - 1]
     }
 
     fun getNowInMillis():Long{
         return currentTime.timeInMillis
+    }
+
+    fun getHourString(hour: Calendar): String {
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        dateFormat.timeZone = timeZone
+        return dateFormat.format(hour.time)
     }
 
 }

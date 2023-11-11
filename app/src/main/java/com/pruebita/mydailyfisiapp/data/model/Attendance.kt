@@ -10,6 +10,5 @@ data class Attendance(
     val courseRoom:String ="",
     val startTime: Calendar,
     val endTime: Calendar,
-    var isPresent: Boolean? = false,
     var state:Int = 3, // (1) Past (2)Now (3) Later
 )

@@ -27,11 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.Attendance
 import com.pruebita.mydailyfisiapp.data.model.DateManager
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
@@ -55,17 +52,20 @@ import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 @Composable
 fun PreviewTodayAttendanceStudentScreen() {
     val navController = rememberNavController()
-    TodayAttendanceStudentScreen(navController)
+    val viewModel: TodayAttendanceStudentViewModel = hiltViewModel()
+    TodayAttendanceStudentScreen(navController,viewModel)
 }
 
 
 @Composable
-fun TodayAttendanceStudentScreen(navController: NavHostController) {
-    val viewModel: TodayAttendanceStudentViewModel = hiltViewModel()
+fun TodayAttendanceStudentScreen(navController: NavHostController,viewModel: TodayAttendanceStudentViewModel ) {
+
     val dateManager: DateManager by viewModel.dateManager.observeAsState(initial = DateManager())
+    val listTodayAssists: MutableList<Attendance> by viewModel.todayAssists.observeAsState(initial = mutableListOf())
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
+    val cont: Int by viewModel.cont.observeAsState(initial = 0)
 
     LazyColumn(
         modifier = Modifier
@@ -119,24 +119,38 @@ fun TodayAttendanceStudentScreen(navController: NavHostController) {
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = "Inicio",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF495ECA),
+                    if(listTodayAssists.size>0){
+                        Text(
+                            text = "$cont",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF495ECA),
 
-                            )
-                    )
+                                )
+                        )
+                    }else{
+                        Text(
+                            text = "Inicio",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF495ECA),
+
+                                )
+                        )
+                    }
                 }
             }
+            for (i in 0 until listTodayAssists.size) {
+                RowAsignature(
+                    listTodayAssists[i],
+                    i ==(listTodayAssists.size-1),
+                    navController, viewModel.getTimeRange(listTodayAssists[i].startTime,listTodayAssists[i].endTime))
+            }
 
-            RowAsignature(1, false, navController)
-            RowAsignature(1, false, navController)
-            RowAsignature(1, false, navController)
-            RowAsignature(2, false, navController)
-            RowAsignature(3, true, navController)
         }
 
     }
@@ -144,17 +158,25 @@ fun TodayAttendanceStudentScreen(navController: NavHostController) {
 }
 
 @Composable
-fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostController) {
+fun RowAsignature(
+    attendance: Attendance,
+    isEnd: Boolean,
+    navController: NavHostController,
+    timeRange: String
+) {
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF495ECA), Color(0xFF495ECA))
     )
     val brushOpen = Brush.verticalGradient(
         colors = listOf(Color(0xFF495ECA), Color(0xFF29D697))
     )
+    val brushCurrent = Brush.verticalGradient(
+        colors = listOf(Color(0xFF495ECA), Color(0xFFC05AFF))
+    )
     val brushDisabled = Brush.verticalGradient(
         colors = listOf(Color(0xFFBBB8C0), Color(0xFFBBB8C0))
     )
-    var type by rememberSaveable { mutableIntStateOf(typeCard) }
+
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -164,32 +186,56 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostControlle
                 .weight(0.15f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (type == 1) {
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brush)
-                ) {
-                    Text(text = "")
+            when (attendance.state) {
+                1 -> {//Done, present
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brush)
+                    ) {
+                        Text(text = "")
+                    }
                 }
-            } else if (type == 2) {
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brushOpen)
-                ) {
-                    Text(text = "")
+                2 -> {// Done, not present
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brush)
+                    ) {
+                        Text(text = "")
+                    }
                 }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(4.dp)
-                        .background(brushDisabled)
-                ) {
-                    Text(text = "")
+                3 -> {//Open to attendance
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brushOpen)
+                    ) {
+                        Text(text = "")
+                    }
+                }
+                4 -> {//Current
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brushCurrent)
+                    ) {
+                        Text(text = "")
+                    }
+                }
+                else -> {//Disabled
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(4.dp)
+                            .background(brushDisabled)
+                    ) {
+                        Text(text = "")
+                    }
                 }
             }
 
@@ -199,9 +245,7 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostControlle
             modifier = Modifier.weight(0.85f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardAsignature({ type }, { newValue: Int ->
-                type = newValue
-            }, navController)
+            CardAsignature(attendance,timeRange, navController)
         }
 
     }
@@ -220,12 +264,13 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostControlle
                         .height(15.dp)
                         .width(15.dp)
                         .background(
-                            if (type == 1)
-                                Color(0xFF495ECA)
-                            else if (type == 2)
-                                Color(0xFF29D697)
-                            else
-                                Color(0xFFBBB8C0), CircleShape
+                            when (attendance.state) {
+                                1 -> Color(0xFF495ECA)
+                                2 -> Color(0xFF495ECA)
+                                3 -> Color(0xFF29D697)
+                                4 -> Color(0xFFC05AFF)
+                                else -> Color(0xFFBBB8C0)
+                            }, CircleShape
                         )
                 ) {
 
@@ -244,9 +289,11 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostControlle
                         fontSize = 16.sp,
                         fontFamily = poppins,
                         fontWeight = FontWeight.SemiBold,
-                        color = when (type) {
+                        color = when (attendance.state) {
                             1 -> Color(0xFF495ECA)
-                            2 -> Color(0xFF29D697)
+                            2 -> Color(0xFF495ECA)
+                            3 -> Color(0xFF29D697)
+                            4 -> Color(0xFFC05AFF)
                             else -> Color(0xFFBBB8C0)
                         },
                     )
@@ -259,15 +306,21 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean, navController: NavHostControlle
 
 @Composable
 fun CardAsignature(
-    getTypeCard: () -> Int,
-    setTypeCard: (Int) -> Unit,
+    attendance: Attendance,
+    timeRange: String,
     navController: NavHostController
 ) {
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
+    val brushAbsent = Brush.verticalGradient(
+        colors = listOf(Color(0xFFED3B71), Color(0xFFF25C59))
+    )
     val brushOpen = Brush.verticalGradient(
         colors = listOf(Color(0xFF29D697), Color(0xFF29D697))
+    )
+    val brushCurrent = Brush.verticalGradient(
+        colors = listOf(Color(0xFFC05AFF), Color(0xFFC05AFF))
     )
     val brushDisabled = Brush.verticalGradient(
         colors = listOf(Color(0xFFBBB8C0), Color(0xFFBBB8C0))
@@ -302,7 +355,15 @@ fun CardAsignature(
                     .fillMaxHeight()
                     .width(15.dp)
                     .background(
-                        brush = if (getTypeCard() == 1) brush else if (getTypeCard() == 2) brushOpen else brushDisabled,
+                        brush =
+                        when (attendance.state)
+                        {
+                            1 -> brush
+                            2 -> brushAbsent
+                            3 -> brushOpen
+                            4 -> brushCurrent
+                            else -> brushDisabled
+                        },
                     ),
             ) {
             }
@@ -317,7 +378,7 @@ fun CardAsignature(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
-                        text = "Calculo II :",
+                        text = "${attendance.courseName} :",
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontFamily = poppins,
@@ -327,7 +388,7 @@ fun CardAsignature(
                             )
                     )
                     Text(
-                        text = " Parte Teórica ",
+                        text = " Parte ${attendance.coursePart} ",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontFamily = poppins,
@@ -354,7 +415,7 @@ fun CardAsignature(
                             )
                         Spacer(modifier = Modifier.padding(4.dp))
                         Text(
-                            text = "12:00 - 13:30",
+                            text = timeRange,
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 fontFamily = poppins,
@@ -369,9 +430,8 @@ fun CardAsignature(
                     ) {
                         ElevatedButton(
                             onClick = {
-                                if (getTypeCard() == 2) {
+                                if (attendance.state== 3) {
                                     navController.navigate(InternalScreens.VerifyingIdentityStudentScreen.route)
-                                    setTypeCard(1)
                                 }
 
                             },
@@ -383,24 +443,38 @@ fun CardAsignature(
                                 containerColor = Color.Transparent,
                                 contentColor = Color(0xFFFFFFFF),
                                 disabledContainerColor = Color(0xFFB3B6C4),
-                                disabledContentColor = if (getTypeCard() != 3) Color.White else Color(
+                                disabledContentColor = if (attendance.state != 5) Color.White else Color(
                                     0xFF404650
                                 )
 
                             ), contentPadding = PaddingValues(),
-                            enabled = getTypeCard() == 2
+                            enabled = attendance.state == 3
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(
-                                        brush = if (getTypeCard() == 1) brush else if (getTypeCard() == 2) brushOpen else brushDisabled,
+                                        brush =
+                                        when (attendance.state) {
+                                            1 -> brush
+                                            2 -> brushAbsent
+                                            3 -> brushOpen
+                                            4 -> brushCurrent
+                                            else -> brushDisabled
+                                        },
                                         shape = RoundedCornerShape(22.dp)
                                     ),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text = if (getTypeCard() == 1) "Marcado" else if (getTypeCard() == 2) "Marcar" else "Marcar",
+                                    text =
+                                    when (attendance.state) {
+                                        1 -> "Marcado"
+                                        2 -> "No Marcado"
+                                        3 -> "Marcar"
+                                        4 -> "Iniciado"
+                                        else -> "Marcar"
+                                    },
                                     fontSize = 12.sp,
                                     fontFamily = poppins
                                 )

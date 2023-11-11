@@ -55,6 +55,7 @@ fun AppNavigation(
     applicationContext: Context?
 ) {
     val clockViewModel: ClockViewModel = hiltViewModel()
+    val todayAttendanceStudentViewModel: TodayAttendanceStudentViewModel = hiltViewModel()
     //val todayAttendanceStudentViewModel: TodayAttendanceStudentViewModel = hiltViewModel()
 
     NavHost(
@@ -312,7 +313,7 @@ fun AppNavigation(
         // Sub screens
         composable(route = InternalScreens.TodayAttendanceStudentScreen.route) {
 
-            TodayAttendanceStudentScreen(navController)
+            TodayAttendanceStudentScreen(navController, todayAttendanceStudentViewModel)
         }
 
         composable(route = InternalScreens.AttendanceReportStudentScreen.route) {
