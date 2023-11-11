@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Prueba(){
+fun Prueba() {
     val context = LocalContext.current
     val cameraController = remember {
         LifecycleCameraController(context)
@@ -24,4 +25,5 @@ fun Prueba(){
     Column (modifier = Modifier.fillMaxSize()){
         Camera(cameraController = cameraController, lifecycle = lifecycle/*, context*/)
     }
+
 }

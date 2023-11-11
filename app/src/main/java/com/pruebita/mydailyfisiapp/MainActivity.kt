@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.GoogleAuthUiClient
-import com.pruebita.mydailyfisiapp.ui.screens.SuperScreen
 import com.google.android.gms.auth.api.identity.*
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.Prueba
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme
@@ -45,9 +43,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     var currentUser = User()
-
-                    SuperScreen(navController = navController,lifecycleScope, googleAuthUiClient, applicationContext)
-                    //Prueba()
+                    //SuperScreen(navController = navController,lifecycleScope, googleAuthUiClient, applicationContext)
+                    Prueba()
                     //ScheduleScreen()
                     //ZoomableImageWithButtonsAndTouch()
                     //HorarioScreen()

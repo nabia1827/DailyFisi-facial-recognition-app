@@ -20,6 +20,7 @@ import androidx.camera.video.impl.VideoCaptureConfig
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.video.AudioConfig
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -66,6 +67,7 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
         nameMainFolder: String
     ){
         val file = File.createTempFile(nameImage,".jpg")
+
         val outputDirectory = ImageCapture.OutputFileOptions.Builder(file).build()
         camaraController.takePicture(
             outputDirectory,
@@ -80,10 +82,13 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
                 }
             }
         )
+
     }
 
-    fun sentImages(id_user: Int){
+    fun sentImages(id_user: Int): Boolean? {
+        val estadoisFace = PythonAPI.isface.value
         PythonAPI.sendPostImage(id_user = id_user.toString())
+        return estadoisFace
     }
 
     /*@androidx.annotation.OptIn(androidx.camera.view.video.ExperimentalVideo::class)

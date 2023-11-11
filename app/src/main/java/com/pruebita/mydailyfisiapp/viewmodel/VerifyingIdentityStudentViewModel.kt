@@ -32,28 +32,30 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
         nameImage: String,
         id_user: Int = 2,
         id_curso: Int = 5
-    ): Boolean {
+    ): Boolean? {
         val file = File.createTempFile(nameImage,".jpg")
+
+
         val outputDirectory = ImageCapture.OutputFileOptions.Builder(file).build()
-        var estadoRecognize = false
+        val estadoRecognize = PythonAPI.isRecognized.value
+
         val fechaActual = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val fechaFormateada = fechaActual.toString()
         val fechaModificada = fechaFormateada.replace('-', '_')
-
         camaraController.takePicture(
             outputDirectory,
             executor,
             object: ImageCapture.OnImageSavedCallback{
-                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let {
                         val id_image = "${id_user}_${fechaModificada}_${id_curso}"
+
                         StorageImage.ImageToStorageFirebase(it, nameImage=id_image, namePrincipalFolder = "temp")
-                        estadoRecognize = PythonAPI.getStateValidation(id_user,id_image)
+                        PythonAPI.getStateValidation(id_user,id_image)
                     }
                 }
                 override fun onError(exception: ImageCaptureException) {
-                    println("error dsfsfsdfadsfasd")
+                    println("Error en el envio de imformacion ${exception.imageCaptureError}")
                 }
             }
         )

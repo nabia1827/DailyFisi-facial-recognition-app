@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,10 +64,9 @@ import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.HeaderVerifying
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FooterRecognizer
+import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.InicieRegistro
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -83,9 +84,15 @@ fun PreviewVerifyingIdentityStudentScreen(){
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VerifyingIdentityStudentScreen(navController: NavHostController) {
-    var error by remember {
+    var state = remember {
         mutableStateOf<Boolean>(false)
     }
+
+    var switch = remember {
+        mutableStateOf<Boolean>(true)
+    }
+
+
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/predefinidos/img_verifyingposition.png"))
     }
@@ -103,13 +110,13 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.3f)
         ){
-            HeaderVerifying(navController)
+            HeaderVerifying(navController, switch)
         }
         Column(
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizing(navController,error,selectedImageUri, verifyingIdentityStudentViewModel)
+            ContentRecognizing(navController,state,selectedImageUri, verifyingIdentityStudentViewModel,switch)
         }
         Column(
             modifier = Modifier
@@ -125,15 +132,16 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
 @Composable
 fun RecognizingFace(
     porcentaje: MutableState<String>,
-    navController: NavHostController,
-    error: Boolean,
-    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel
+    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
+    state: MutableState<Boolean>
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
         mutableStateOf(0.0)
     }
+
+
     val context = LocalContext.current
     val cameraController = remember {
         LifecycleCameraController(context)
@@ -161,46 +169,34 @@ fun RecognizingFace(
                 }
 
                 nuevo.value += 0.25
-                if(error){
-                    //navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
-                }
+
             }
         }
+
+
     }
 
     // Mostrar la cámara al inicio
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(4000)
         updatePercentageText()
-        var state = false
 
-        while (porcentaje.value != "100" || state == false) {
+        while (porcentaje.value != "100" && !state.value) {
             launch {
-                state = verifyingIdentityStudentViewModel.takePictureToAPI(
+                state.value = verifyingIdentityStudentViewModel.takePictureToAPI(
                     cameraController,
                     executor,
                     "photo_prueba",
-                    id_curso = 5,
-                    id_user =  2
-                )
+                    2,
+                    5
+                ) == true
+                println("Estado:"+ state.value)
             }
             // Introduce a delay here if needed
             delay(100) // for example, wait for 100 milliseconds between each iteration
         }
+        println("procentaje incrementado: " + nuevo.value)
 
-    }
-
-    if (porcentaje.value == "100") {
-        /*
-        Canvas(modifier = Modifier
-            .height(180.dp)) {
-            drawCircle(Color(0xFFC8DBF8), radius = 140.dp.toPx())
-        }*/
-
-        LaunchedEffect(Unit) {
-            delay(500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
-            //navController.navigate(AppScreens.MainScreen.route) // Reemplaza "nuevo_screen" con la ruta de tu destino
-        }
     }
 
     Column(
@@ -227,7 +223,7 @@ fun RecognizingFace(
     porcentaje.value = ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
 }
 @Composable
-fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHostController, error: Boolean, selectedImageUri:Uri?) {
+fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHostController, error: MutableState<Boolean>, selectedImageUri:Uri?) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -255,9 +251,6 @@ fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHos
                 }
 
                 nuevo.value += 0.50
-                if(error){
-                    //navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/true")
-                }
             }
         }
     }
@@ -319,9 +312,10 @@ fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHos
 @Composable
 fun ContentRecognizing(
     navController: NavHostController,
-    error: Boolean,
+    state: MutableState<Boolean>,
     img: Uri?,
-    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel
+    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
+    switch: MutableState<Boolean>
 ) {
     var porcentaje = remember {
         mutableStateOf("")
@@ -329,9 +323,11 @@ fun ContentRecognizing(
     var porcentaje2 = remember {
         mutableStateOf("")
     }
-    var switch = remember {
-        mutableStateOf(false)
-    }
+
+
+    var brusherror = Brush.horizontalGradient(listOf(Color(0xFFEC3773), Color(0xFFF25E56)))
+    var colorfondo = Color(0xFFC8DBF8)
+    var colortexto = Color(0xFF495ECA)
 
     Column(
         modifier = Modifier
@@ -339,21 +335,6 @@ fun ContentRecognizing(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Box(
-            modifier = Modifier
-                .weight(0.2f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Miguel Perez",
-                textAlign = TextAlign.Center,
-                fontSize = 34.sp,
-                fontFamily = poppins,
-                color = Color(0xFF495ECA),
-                fontWeight = FontWeight.SemiBold
-            )
-        }
 
         Box(
             modifier = Modifier
@@ -362,10 +343,49 @@ fun ContentRecognizing(
             contentAlignment = Alignment.Center
         ){
             if(porcentaje.value != "100"){
-                RecognizingFace(porcentaje,navController,error, verifyingIdentityStudentViewModel)
+                RecognizingFace(
+                    porcentaje,
+                    verifyingIdentityStudentViewModel,
+                    state
+                )
             }
             else{
-                RecognizingPosition(porcentaje2,navController,error,img)
+                if (state.value == true){
+                    RecognizingPosition(porcentaje2,navController,state,img)
+                }
+                else{
+                    switch.value = false
+                    colorfondo = Color(0xFFF8CAD9)
+                    colortexto = Color(0xFFED3D70)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Canvas(modifier = Modifier
+                            .height(180.dp)) {
+                            drawCircle(colorfondo , radius = 140.dp.toPx())
+                        }
+
+                        Canvas(
+                            modifier = Modifier.size(200.dp),
+                            onDraw = {
+                                drawCircle(
+                                    brusherror,
+                                    radius = 125.dp.toPx()
+                                )
+                            }
+                        )
+                        Text(
+                            text = "Identidad\n\nno válida",
+                            textAlign = TextAlign.Center,
+                            fontSize = 34.sp,
+                            fontFamily = poppins,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
             }
         }
         Column(
@@ -376,9 +396,69 @@ fun ContentRecognizing(
             horizontalAlignment = Alignment.CenterHorizontally,
         )
         {
+            val curso = "Calculo II"
+            val lugar = "Lab 04 -NP"
+
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(75.dp)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxHeight()
+                        .background(
+                            colorfondo,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+
+                ){
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Curso: ")
+                            }
+                            append(curso)
+                        },
+                        color = colortexto
+                    )
+                }
+                
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxHeight()
+                        .background(
+                            colorfondo,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Lugar: ")
+                            }
+                            append(lugar)
+                        },
+                        color = colortexto
+                    )
+
+                }
+                Spacer(modifier = Modifier.padding(8.dp))
+            }
             if(porcentaje.value != "100"){
                 Text(
-                    text = "Comprobando identidad ...",
+                    text = "Comprobando dentidad ...",
                     textAlign = TextAlign.Center,
                     fontSize = 22.sp,
                     fontFamily = poppins,
@@ -401,26 +481,39 @@ fun ContentRecognizing(
 
             }
             else if(porcentaje2.value != "100") {
-                Text(
-                    text = "Comprobando ubicación ...",
-                    textAlign = TextAlign.Center,
-                    fontSize = 22.sp,
-                    fontFamily = poppins,
-                    color = Color(0xFF495ECA),
-                    fontWeight = FontWeight.Normal
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("${porcentaje2.value}%")
-                        }
-                    },
-                    textAlign = TextAlign.Center,
-                    fontSize = 34.sp,
-                    fontFamily = poppins,
-                    color = Color(0xFF495ECA),
-                    fontWeight = FontWeight.SemiBold
-                )
+                if (state.value == true){
+                    Text(
+                        text = "Comprobando ubicación ...",
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        fontFamily = poppins,
+                        color = Color(0xFF495ECA),
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("${porcentaje2.value}%")
+                            }
+                        },
+                        textAlign = TextAlign.Center,
+                        fontSize = 34.sp,
+                        fontFamily = poppins,
+                        color = Color(0xFF495ECA),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                else{
+                    Text(
+                        text = "Intentelo de nuevo",
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        fontFamily = poppins,
+                        color = Color(0xFF495ECA),
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+
 
             }
             else{

@@ -207,7 +207,8 @@ fun Recognizing(
         LaunchedEffect(Unit) {
             val route = RecognizingViewModel.getMainRoute()
             delay(1500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
-            RecognizingViewModel.sentImages(2)
+            RecognizingViewModel.sentImages(3)
+
             navController.navigate("$route/$isGoogleAccount") // Reemplaza "nuevo_screen" con la ruta de tu destino
         }
     }

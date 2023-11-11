@@ -63,8 +63,8 @@ fun Camera(
             }
         ) {
             Text(text = "Holitass")
-        }*/
-
+        }
+*/
     }) {
         CamaraComposable(cameraController, lifecycle, modifier = Modifier.padding(it))
     }
