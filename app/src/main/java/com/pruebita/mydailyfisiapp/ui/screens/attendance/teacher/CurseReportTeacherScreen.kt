@@ -59,7 +59,7 @@ fun CurseReportTeacherScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier.height(120.dp)
             ) {
-                HeaderCurseReport(navController)
+                HeaderCurseReport(navController,"Algoritmica", 3)
             }
         }
         item {
@@ -208,7 +208,7 @@ fun TableHeader() {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderCurseReport(navController: NavHostController) {
+fun HeaderCurseReport(navController: NavHostController, courseName:String, section:Int) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -245,7 +245,7 @@ fun HeaderCurseReport(navController: NavHostController) {
             modifier = Modifier.weight(0.8f)
         ) {
             Text(
-                text = "Algoritmica",
+                text = courseName,
                 style = TextStyle(
                     brush = brush,
                     fontSize = 34.sp,
@@ -256,7 +256,7 @@ fun HeaderCurseReport(navController: NavHostController) {
 
             )
             Text(
-                text = "Seccion 3 - Teoría",
+                text = "Seccion $section",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontFamily = poppins,

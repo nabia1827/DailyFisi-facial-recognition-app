@@ -57,7 +57,7 @@ fun AttendanceLogin() {
                 painter = painterResource(id = R.drawable.asistencias_image),
                 contentDescription = null,
 
-                )
+            )
         }
 
         Spacer(modifier = Modifier.padding(10.dp))

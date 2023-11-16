@@ -120,6 +120,7 @@ fun RecognizingFace(porcentaje: MutableState<String>, navController: NavHostCont
     val context = LocalContext.current
     val cameraController = remember {
         LifecycleCameraController(context)
+
     }
     val lifecycle = LocalLifecycleOwner.current
 

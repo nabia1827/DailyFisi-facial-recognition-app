@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pruebita.mydailyfisiapp.data.model.Course
 import com.pruebita.mydailyfisiapp.data.model.Event
 import com.pruebita.mydailyfisiapp.data.model.User
 import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.EventRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.RolRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
@@ -21,6 +23,7 @@ class HomeViewModel @Inject constructor(private val context: Context): ViewModel
     private val repo: UserRepositoryImpl = UserRepositoryImpl()
     private val repoRol: RolRepositoryImpl = RolRepositoryImpl()
     private val repoEvent: EventRepositoryImpl = EventRepositoryImpl()
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
 
     private val _currentUser = MutableLiveData<User>(userManager.getUser() ?: User())
     val currentUser: LiveData<User> = _currentUser
@@ -30,6 +33,9 @@ class HomeViewModel @Inject constructor(private val context: Context): ViewModel
 
     private val _todayEvents = MutableLiveData<MutableList<Event>>(repoEvent.listAllTodayEvents())
     val todayEvents: LiveData<MutableList<Event>> = _todayEvents
+
+    private val _todayCourse = MutableLiveData<MutableList<Course>>(repoCourse.getTodayCourses(1))
+    val todayCourse: LiveData<MutableList<Course>> = _todayCourse
 
     fun refreshCurrentUser() {
         _currentUser.value = userManager.getUser() ?: User()

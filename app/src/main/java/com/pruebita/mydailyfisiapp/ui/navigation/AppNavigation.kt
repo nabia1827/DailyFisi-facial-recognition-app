@@ -39,7 +39,11 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SettingsScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -51,6 +55,10 @@ fun AppNavigation(
     googleAuthUiClient: GoogleAuthUiClient?,
     applicationContext: Context?
 ) {
+    val clockViewModel: ClockViewModel = hiltViewModel()
+    val todayAttendanceStudentViewModel: TodayAttendanceStudentViewModel = hiltViewModel()
+    val attendanceReportStudentViewModel: AttendanceReportStudentViewModel = hiltViewModel()
+    val curseReportStudentViewModel: CurseReportStudentViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = start
@@ -281,13 +289,13 @@ fun AppNavigation(
             * */
 
         composable(route = ItemMenu.HomeScreen.routeStudent) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         composable(route = ItemMenu.HomeScreen.routeDele) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         composable(route = ItemMenu.HomeScreen.routeTeacher) {
-            HomeScreen()
+            HomeScreen(clockViewModel)
         }
         /*
         *  SUBMODULE OF ATTENDANCE
@@ -305,11 +313,12 @@ fun AppNavigation(
 
         // Sub screens
         composable(route = InternalScreens.TodayAttendanceStudentScreen.route) {
-            TodayAttendanceStudentScreen(navController)
+
+            TodayAttendanceStudentScreen(navController, todayAttendanceStudentViewModel)
         }
 
         composable(route = InternalScreens.AttendanceReportStudentScreen.route) {
-            AttedanceReportStudentScreen(navController)
+            AttendanceReportStudentScreen(navController, attendanceReportStudentViewModel)
         }
 
         composable(route = InternalScreens.VerifyingIdentityStudentScreen.route) {
@@ -326,8 +335,16 @@ fun AppNavigation(
         composable(route = InternalScreens.CurseReportTeacherScreen.route) {
             CurseReportTeacherScreen(navController)
         }
-        composable(route = InternalScreens.CurseReportStudentScreen.route) {
-            CurseReportStudentScreen(navController)
+        composable(
+            route = InternalScreens.CurseReportStudentScreen.route +"/{idCourse}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: 0
+            curseReportStudentViewModel.updateShowedCourse(idCourse)
+            CurseReportStudentScreen(navController,curseReportStudentViewModel)
         }
 
         composable(route = InternalScreens.TodayAttendanceTeacherScreen.route) {
