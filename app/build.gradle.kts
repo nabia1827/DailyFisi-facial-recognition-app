@@ -70,6 +70,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-crashlytics-buildtools:2.9.9")
+    implementation("com.google.android.gms:play-services-mlkit-face-detection:17.1.0")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
@@ -95,9 +96,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //Camera
-    implementation ("androidx.camera:camera-camera2:1.3.0-alpha03")
-    implementation ("androidx.camera:camera-lifecycle:1.3.0-alpha03")
-    implementation ("androidx.camera:camera-view:1.3.0-alpha03")
+    implementation ("androidx.camera:camera-camera2:1.2.2")
+    implementation ("androidx.camera:camera-core:1.2.2")
+    implementation ("androidx.camera:camera-lifecycle:1.2.2")
+    implementation ("androidx.camera:camera-view:1.2.2")
     implementation ("com.google.accompanist:accompanist-permissions:0.29.1-alpha")
 
     implementation ("androidx.compose.animation:animation-core:1.4.0-beta01")
@@ -121,6 +123,9 @@ dependencies {
 
     implementation ("commons-codec:commons-codec:1.15")
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+
+
+    implementation ("com.google.mlkit:face-detection:16.1.5")
 
 
 }

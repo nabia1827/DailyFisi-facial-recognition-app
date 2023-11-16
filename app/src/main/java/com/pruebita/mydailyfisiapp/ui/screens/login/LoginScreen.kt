@@ -55,12 +55,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.data.model.SignInState
+import com.pruebita.mydailyfisiapp.data.model.domain.SignInState
 import com.pruebita.mydailyfisiapp.ui.components.login.ForgotPasswordDialog
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderLogin
 import com.pruebita.mydailyfisiapp.ui.components.login.SendCodeDialog

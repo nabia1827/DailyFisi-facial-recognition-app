@@ -25,7 +25,7 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
 
     private val PythonAPI: PythonAPIImpl = PythonAPIImpl()
     private val StorageImage: StorageImagesImpl = StorageImagesImpl()
-    @RequiresApi(Build.VERSION_CODES.O)
+    /*@RequiresApi(Build.VERSION_CODES.O)
     fun takePictureToAPI(
         camaraController: LifecycleCameraController,
         executor: Executor,
@@ -55,10 +55,10 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
                     }
                 }
                 override fun onError(exception: ImageCaptureException) {
-                    println("Error en el envio de imformacion ${exception.imageCaptureError}")
+                    println("Error en el envio de imformacion ${exception.message}")
                 }
             }
         )
         return estadoRecognize
-    }
+    }*/
 }

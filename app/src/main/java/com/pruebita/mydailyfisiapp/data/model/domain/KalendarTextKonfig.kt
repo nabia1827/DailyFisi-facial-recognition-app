@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar
+package com.pruebita.mydailyfisiapp.data.model.domain
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color

@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.data.model
+package com.pruebita.mydailyfisiapp.data.model.domain
 
 data class User(
     val idUser: Int = 0,

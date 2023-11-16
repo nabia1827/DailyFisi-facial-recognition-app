@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.data.model.Event
-import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.domain.Event
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.HomeViewModel

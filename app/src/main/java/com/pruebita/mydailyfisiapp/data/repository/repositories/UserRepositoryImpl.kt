@@ -1,7 +1,7 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
 
 class UserRepositoryImpl: UserRepository {

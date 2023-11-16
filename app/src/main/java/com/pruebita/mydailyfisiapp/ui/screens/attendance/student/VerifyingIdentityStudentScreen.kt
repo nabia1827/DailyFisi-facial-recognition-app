@@ -64,7 +64,6 @@ import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.HeaderVerifying
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FooterRecognizer
-import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.InicieRegistro
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
 import kotlinx.coroutines.delay
@@ -85,8 +84,10 @@ fun PreviewVerifyingIdentityStudentScreen(){
 @Composable
 fun VerifyingIdentityStudentScreen(navController: NavHostController) {
     var state = remember {
-        mutableStateOf<Boolean>(false)
+        mutableStateOf<Int>(0)
     }
+
+
 
     var switch = remember {
         mutableStateOf<Boolean>(true)
@@ -133,7 +134,7 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
 fun RecognizingFace(
     porcentaje: MutableState<String>,
     verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
-    state: MutableState<Boolean>
+    state: MutableState<Int>
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
@@ -181,20 +182,20 @@ fun RecognizingFace(
         delay(4000)
         updatePercentageText()
 
-        while (porcentaje.value != "100" && !state.value) {
+        /*while (porcentaje.value != "100" && !state.value) {
             launch {
                 state.value = verifyingIdentityStudentViewModel.takePictureToAPI(
                     cameraController,
                     executor,
                     "photo_prueba",
-                    2,
+                    3,
                     5
                 ) == true
                 println("Estado:"+ state.value)
             }
             // Introduce a delay here if needed
             delay(100) // for example, wait for 100 milliseconds between each iteration
-        }
+        }*/
         println("procentaje incrementado: " + nuevo.value)
 
     }
@@ -205,7 +206,11 @@ fun RecognizingFace(
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera(cameraController, lifecycle /*, context*/)
+        Camera(
+            lifecycle = lifecycle,
+            countFace = state,
+            isDetecting = true
+        )
     }
 
     val composition by rememberLottieComposition(
@@ -223,7 +228,7 @@ fun RecognizingFace(
     porcentaje.value = ((nuevo.value + (animationProgress.value / 4.0)) * 100).roundToInt().toString()
 }
 @Composable
-fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHostController, error: MutableState<Boolean>, selectedImageUri:Uri?) {
+fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHostController, error: MutableState<Int>, selectedImageUri:Uri?) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
     var nuevo = remember {
@@ -312,7 +317,7 @@ fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHos
 @Composable
 fun ContentRecognizing(
     navController: NavHostController,
-    state: MutableState<Boolean>,
+    state: MutableState<Int>,
     img: Uri?,
     verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
     switch: MutableState<Boolean>
@@ -350,7 +355,7 @@ fun ContentRecognizing(
                 )
             }
             else{
-                if (state.value == true){
+                if (state.value == 1){
                     RecognizingPosition(porcentaje2,navController,state,img)
                 }
                 else{
@@ -481,7 +486,7 @@ fun ContentRecognizing(
 
             }
             else if(porcentaje2.value != "100") {
-                if (state.value == true){
+                if (state.value == 1){
                     Text(
                         text = "Comprobando ubicación ...",
                         textAlign = TextAlign.Center,

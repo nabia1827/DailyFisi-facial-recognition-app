@@ -1,7 +1,8 @@
-package com.pruebita.mydailyfisiapp.data.model
+package com.pruebita.mydailyfisiapp.data.model.helpers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 
 class UserManager(private val context: Context) {
     private val sharedPreferences: SharedPreferences =
@@ -66,5 +67,9 @@ class UserManager(private val context: Context) {
 
     fun getIdRol(): Int {
         return sharedPreferences.getInt("idRol", 0)
+    }
+
+    fun getIdUser(): Int {
+        return sharedPreferences.getInt("idUser", 0)
     }
 }

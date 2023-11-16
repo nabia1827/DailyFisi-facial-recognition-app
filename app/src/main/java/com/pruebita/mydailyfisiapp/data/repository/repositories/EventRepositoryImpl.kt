@@ -1,6 +1,6 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
-import com.pruebita.mydailyfisiapp.data.model.Event
+import com.pruebita.mydailyfisiapp.data.model.domain.Event
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.EventRepository
 import java.util.Calendar
 
@@ -81,6 +81,7 @@ class EventRepositoryImpl: EventRepository {
                 publisherImage = "https://img2.storyblok.com/f/83829/1200x628/96185170bd/esperance-vie-akita-inu.jpg",
                 category = "Estudios",
                 publishingDate = Calendar.getInstance(),
-            ))
+            )
+        )
     }
 }

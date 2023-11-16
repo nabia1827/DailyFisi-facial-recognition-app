@@ -1,44 +1,20 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
-import android.media.MediaRecorder
-import android.os.Looper
-import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.FileOutputOptions
-import androidx.camera.video.Recording
-import androidx.camera.video.VideoCapture
-import androidx.camera.video.VideoRecordEvent
-import androidx.camera.video.impl.VideoCaptureConfig
-import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
-import androidx.camera.view.video.AudioConfig
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
-import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.PythonAPIImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.concurrent.Executor
-import java.util.logging.Handler
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,6 +25,7 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
 
     private val _currentUser = MutableLiveData(userManager.getUser() ?: User())
     val currentUser: LiveData<User> = _currentUser
+
     fun getMainRoute():String{
         var route = when (userManager.getIdRol()) {
             1 -> { AppScreens.MainStudentScreen.route }
@@ -59,7 +36,7 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
     }
 
 
-    fun takePicture(
+    /*fun takePicture(
         camaraController: LifecycleCameraController,
         executor: Executor,
         nameImage: String,
@@ -75,7 +52,7 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
             object: ImageCapture.OnImageSavedCallback{
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     println(outputFileResults.savedUri)
-                    outputFileResults.savedUri?.let {StorageImage.ImageToStorageFirebase(it,nameImage,nameSubFolder,nameMainFolder) }
+                    //outputFileResults.savedUri?.let {StorageImage.ImageToStorageFirebase(it,nameImage,nameSubFolder,nameMainFolder) }
                 }
                 override fun onError(exception: ImageCaptureException) {
                     println("error capturando${exception.localizedMessage}")
@@ -83,11 +60,11 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
             }
         )
 
-    }
+    }*/
 
     fun sentImages(id_user: Int): Boolean? {
         val estadoisFace = PythonAPI.isface.value
-        PythonAPI.sendPostImage(id_user = id_user.toString())
+        PythonAPI.sendPostImage(id_user)
         return estadoisFace
     }
 

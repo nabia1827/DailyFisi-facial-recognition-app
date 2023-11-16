@@ -1,6 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar
 
 import androidx.compose.runtime.MutableState
+import com.pruebita.mydailyfisiapp.data.model.domain.KalendarSelectedDayRange
 import kotlinx.datetime.LocalDate
 
 internal fun onDayClicked(

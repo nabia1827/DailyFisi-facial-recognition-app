@@ -2,7 +2,7 @@ package com.pruebita.mydailyfisiapp.data.repository.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.pruebita.mydailyfisiapp.data.model.RecognizeResponse
+import com.pruebita.mydailyfisiapp.data.model.domain.RecognizeResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -23,11 +23,11 @@ class PythonAPIImpl {
     private val _isface = MutableLiveData<Boolean>(false)
     val isface: LiveData<Boolean> = _isface
 
-    fun sendPostImage(id_user: String) {
-        /*
+    fun sendPostImage(id_user: Int) {
+
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("id_user", id_user)
+            .addFormDataPart("id_user", id_user.toString())
             .build()
 
         val request = Request.Builder()
@@ -45,9 +45,9 @@ class PythonAPIImpl {
                     println("API PYTHON CON EXITO")
                 }
             }
-        })*/
+        })
 
-        val client = OkHttpClient()
+        /*val client = OkHttpClient()
         val url = "http://192.168.1.4:5000/upload_images?id_user=$id_user"
         val request = Request.Builder()
             .url(url)
@@ -69,11 +69,11 @@ class PythonAPIImpl {
                     }
                     if (apiResponse != null) {
                         _isface.postValue(apiResponse.estado)
-                        println("API PYTHON CON EXITO: ${apiResponse.estado}")
+                        println("API PYTHON CON EXITO RECOG: ${apiResponse.estado}")
                     }
                 }
             }
-        })
+        })*/
 
 
     }

@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,9 +20,10 @@ fun Prueba() {
     val cameraController = remember {
         LifecycleCameraController(context)
     }
+
     val lifecycle = LocalLifecycleOwner.current
     Column (modifier = Modifier.fillMaxSize()){
-        Camera(cameraController = cameraController, lifecycle = lifecycle/*, context*/)
+        //Camera(cameraController = cameraController, lifecycle = lifecycle, countFace = countFace)
     }
 
 }
