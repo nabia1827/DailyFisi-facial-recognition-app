@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.RolRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl

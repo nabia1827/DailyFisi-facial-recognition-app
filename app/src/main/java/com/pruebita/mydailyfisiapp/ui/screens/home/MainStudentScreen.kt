@@ -74,7 +74,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens

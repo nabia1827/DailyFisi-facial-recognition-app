@@ -2,21 +2,18 @@ package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
 import android.util.Patterns
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pruebita.mydailyfisiapp.data.model.SignInResult
-import com.pruebita.mydailyfisiapp.data.model.SignInState
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
-import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.model.domain.SignInResult
+import com.pruebita.mydailyfisiapp.data.model.domain.SignInState
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -72,7 +69,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
         } else {
             _txtValidationPassCorrect.value = _passwordErrors[1]
-            return false
+            return true
         }
 
 
@@ -89,7 +86,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         } else {
             _txtValidationUserCorrect.value = _userErrors[1]
         }
-        return false
+        return true
     }
 
     fun onLoginSelected(): Boolean {

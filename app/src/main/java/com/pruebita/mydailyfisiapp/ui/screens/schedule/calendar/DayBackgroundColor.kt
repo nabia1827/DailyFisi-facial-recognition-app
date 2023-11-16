@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.pruebita.mydailyfisiapp.data.model.domain.KalendarSelectedDayRange
 import kotlinx.datetime.LocalDate
 
 private const val FULL_ALPHA = 1f

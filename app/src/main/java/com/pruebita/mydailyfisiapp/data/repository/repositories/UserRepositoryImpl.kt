@@ -1,7 +1,7 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
 
 class UserRepositoryImpl: UserRepository {
@@ -9,9 +9,9 @@ class UserRepositoryImpl: UserRepository {
         return User(
             idUser = 1989,
             idRol = 1,
-            names = "Lucia",
-            firstLastName = "Rivera",
-            secondLastName = "Benites",
+            names = "Kevin Miguel",
+            firstLastName = "Ortiz",
+            secondLastName = "Abanto",
             user = "lucia.rivera",
             password = password,
             email = email,

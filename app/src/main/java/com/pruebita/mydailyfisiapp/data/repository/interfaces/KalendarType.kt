@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar
+package com.pruebita.mydailyfisiapp.data.repository.interfaces
 sealed interface KalendarType {
     /**
      * Firey calendar type.

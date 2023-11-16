@@ -2,9 +2,6 @@ package com.pruebita.mydailyfisiapp.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserManager
-import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 
 class SettingsViewModel {
     private val _password = MutableLiveData<String>()

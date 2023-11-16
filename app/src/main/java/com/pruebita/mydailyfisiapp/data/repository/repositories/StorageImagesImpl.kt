@@ -2,8 +2,10 @@ package com.pruebita.mydailyfisiapp.data.repository.repositories
 
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import java.io.ByteArrayInputStream
 
 class StorageImagesImpl{
     private val storage = FirebaseStorage.getInstance()
@@ -24,12 +26,30 @@ class StorageImagesImpl{
             println("No reconoce el Uri")
         }
         return imageUrl
-
     }
 
-    fun ImageToStorageFirebase(imageUri: Uri, nameImage:String,  nameSubFolder: String, namePrincipalFolder: String){
+    fun ImageToStorageFirebase(
+        imageUri: Uri,
+        nameImage:String,
+        nameSubFolder: String = "",
+        namePrincipalFolder: String = ""
+    ){
         val path = "$namePrincipalFolder/$nameSubFolder/$nameImage"
         val imagesRef: StorageReference = storageReference.child(path)
         imagesRef.putFile(imageUri)
     }
+
+
+    fun ImageToStorageFirebase(
+        byte: ByteArray,
+        nameImage:String,
+    ){
+        val path = "temp/$nameImage"
+        val imagesRef: StorageReference = storageReference.child(path)
+        val metadata = StorageMetadata.Builder()
+            .setContentType("image/png")
+            .build()
+        imagesRef.putBytes(byte, metadata)
+    }
+
 }

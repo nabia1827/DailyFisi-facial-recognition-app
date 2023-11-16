@@ -49,7 +49,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
-import com.pruebita.mydailyfisiapp.ui.screens.schedule.calendar.KalendarType
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.KalendarType
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardCurso
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardHora
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardRecordatorio
@@ -72,7 +72,7 @@ fun PreviewScheduleScreen(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleScreen(navController: NavHostController){
-    var today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     var currentDay by remember{
         mutableStateOf<LocalDate>(today)
     }
@@ -82,7 +82,7 @@ fun ScheduleScreen(navController: NavHostController){
     var label = remember{
         mutableStateOf<String>("Mes")
     }
-    var kalendarType:KalendarType = KalendarType.Firey
+    var kalendarType: KalendarType = KalendarType.Firey
     var showMyDialog = remember{
         mutableStateOf<Boolean>(false)
     }

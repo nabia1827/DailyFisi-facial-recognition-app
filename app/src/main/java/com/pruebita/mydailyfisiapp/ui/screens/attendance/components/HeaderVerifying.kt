@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,22 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 @Composable
 fun HeaderVerifyingPreview(){
     val navController = rememberNavController()
-    HeaderVerifying(navController)
+    HeaderVerifying(navController, null)
 }
 
 @Composable
-fun HeaderVerifying(navController: NavHostController) {
+fun HeaderVerifying(navController: NavHostController, state: MutableState<Boolean>?) {
+    var textHeader = ""
+
+    if (state != null) {
+        if(state.value){
+            textHeader = "Registrando mi\n" + "asistencia..."
+        }
+        else{
+            textHeader = "Asistencia no\n Registrada"
+        }
+    }
+
     Box(
         modifier = Modifier,
         contentAlignment = Alignment.Center
@@ -61,7 +73,7 @@ fun HeaderVerifying(navController: NavHostController) {
 
             ){
             Text(
-                text = "Registrando mi\nasistencia...",
+                text = textHeader,
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
                 fontFamily = poppins,

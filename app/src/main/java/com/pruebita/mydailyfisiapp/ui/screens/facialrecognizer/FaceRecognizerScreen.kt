@@ -242,8 +242,6 @@ fun InicieRegistro(error: Boolean) {
         drawCircle(color , radius = 140.dp.toPx())
     }
 
-
-
     Canvas(
         modifier = Modifier.size(200.dp),
         onDraw = {

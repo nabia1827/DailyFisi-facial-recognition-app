@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.ui.components.login.HeaderMenu
 import com.pruebita.mydailyfisiapp.ui.navigation.AppNavigation
 import com.pruebita.mydailyfisiapp.ui.navigation.DrawerItem
