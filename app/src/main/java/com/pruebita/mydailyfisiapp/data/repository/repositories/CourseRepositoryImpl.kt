@@ -11,9 +11,9 @@ class CourseRepositoryImpl: CourseRepository {
     override fun getTodayCourses(idUser: Int): MutableList<Course> {
         val timeZone = TimeZone.getTimeZone("America/Lima")
         // API has to return today courses later than actual hour
-        val initMin = 37
-        val initHour = 0
-        val day = 11
+        val initMin = 25
+        val initHour = 12
+        val day = 13
 
         val calculoTeoStart = Calendar.getInstance(timeZone)
         calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
@@ -175,5 +175,9 @@ class CourseRepositoryImpl: CourseRepository {
             Course(courseName = "Algebra", section = 2)
 
         )
+    }
+
+    override fun getCourseShortInfo(idCourse: Int): Course {
+        return Course()
     }
 }

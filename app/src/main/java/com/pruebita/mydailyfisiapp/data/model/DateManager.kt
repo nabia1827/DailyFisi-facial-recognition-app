@@ -53,4 +53,16 @@ class DateManager {
         return dateFormat.format(hour.time)
     }
 
+    fun getShortDateString(date: Calendar?): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        dateFormat.timeZone = timeZone
+        if(date !=null){
+            return dateFormat.format(date.time)
+        }
+        else{
+            return "-/-/-"
+        }
+
+    }
+
 }

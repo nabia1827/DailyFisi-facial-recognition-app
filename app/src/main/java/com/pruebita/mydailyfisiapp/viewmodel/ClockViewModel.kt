@@ -170,10 +170,9 @@ class ClockViewModel @Inject constructor(private val context: Context): ViewMode
                 val remaining2 = classEndTime.timeInMillis - actualTime.timeInMillis
                 val tenMinutes: Long = 1 * 60 * 1000 // 10 minutos en milisegundos
 
-                if(remaining2 <= tenMinutes){
+                if(remaining2 <= tenMinutes){ //Change to 10 minutes
                     _timeRemaining.postValue("")
                     moveToNextCurse()
-                    println("Menos de 10 minutos")
                 }else{
                     _timeRemaining.postValue("En curso")
                 }

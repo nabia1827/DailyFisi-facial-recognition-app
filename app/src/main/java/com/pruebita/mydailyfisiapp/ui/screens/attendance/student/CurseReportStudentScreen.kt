@@ -13,12 +13,13 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -27,24 +28,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher.CurseReportTeacherScreen
+import com.pruebita.mydailyfisiapp.data.model.DailyCourseAssist
+import com.pruebita.mydailyfisiapp.data.model.DateManager
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher.HeaderCurseReport
-import com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher.StudentRow
-import com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher.TableHeader
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCurseReportStudentScreen(){
+fun PreviewCurseReportStudentScreen() {
 
     val navController = rememberNavController()
-    CurseReportStudentScreen(navController)
+    val viewModel: CurseReportStudentViewModel = hiltViewModel()
+    CurseReportStudentScreen(navController, viewModel)
 }
+
 @Composable
-fun CurseReportStudentScreen(navController: NavHostController) {
+fun CurseReportStudentScreen(
+    navController: NavHostController,
+    viewModel: CurseReportStudentViewModel
+) {
+
+    val dateManager: DateManager by viewModel.dateManager.observeAsState(initial = DateManager())
+    val courseName: String by viewModel.courseName.observeAsState(initial = "")
+    val section: Int by viewModel.section.observeAsState(initial = 0)
+    val totalClasses: Int by viewModel.totalClasses.observeAsState(initial = 0)
+    val totalAssistsClasses: Int by viewModel.totalAssistsClasses.observeAsState(initial = 0)
+    val listAssists: MutableList<DailyCourseAssist> by viewModel.listAssists.observeAsState(initial = mutableListOf())
+    val currentAssist: DailyCourseAssist? by viewModel.currentAssist.observeAsState(initial = null)
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -53,52 +69,57 @@ fun CurseReportStudentScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
 
-    ){
+    ) {
         item {
             Column(
                 modifier = Modifier.height(120.dp)
             ) {
-                HeaderCurseReport(navController)
+                HeaderCurseReport(navController, courseName, section)
             }
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Total de asistencias: 8/16",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontFamily = poppins,
-                        fontWeight = FontWeight(400),
-                        color = Color(0xFF000000),
+            if(totalClasses != 0){
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Total de asistencias: $totalAssistsClasses/$totalClasses",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight(400),
+                            color = Color(0xFF000000),
 
-                        textAlign = TextAlign.Center,
+                            textAlign = TextAlign.Center,
+                        )
                     )
-                )
+                }
+                TableWeeksHeader()
+                for (i in 0 until listAssists.size) {
+                    WeekRow(listAssists[i],i+1,dateManager)
+                }
+                currentAssist?.let {
+                    WeekRow(it,listAssists.size + 1,dateManager)
+                    val sizeNextAssist = 16 - listAssists.size
+                    for (i in 0 until sizeNextAssist) {
+                        WeekRow(
+                            DailyCourseAssist(
+                                date = null,
+                                theoryAssist = null,
+                                labAssist = null
+                            ),listAssists.size + 2 + i,
+                            dateManager
+                        )
+                    }
+                }
             }
-        }
-        item {
-            TableWeeksHeader()
-
-        }
-        item {
-            WeekRow()
-            WeekRow()
-            WeekRow()
-            WeekRow()
-            WeekRow()
-            WeekRow()
-            WeekRow()
-            WeekRow()
         }
 
     }
-
 }
 
 @Composable
-fun WeekRow() {
+fun WeekRow(assist: DailyCourseAssist, numWeek:Int, dateManager: DateManager) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,9 +131,18 @@ fun WeekRow() {
             modifier = Modifier.weight(0.5f)
         ) {
             Text(
-                text = "Semana 1",
+                text = "Semana $numWeek",
                 style = TextStyle(
                     fontSize = 16.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1B2128),
+                )
+            )
+            Text(
+                text = dateManager.getShortDateString(assist.date),
+                style = TextStyle(
+                    fontSize = 14.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.Normal,
                     color = Color(0xFF1B2128),

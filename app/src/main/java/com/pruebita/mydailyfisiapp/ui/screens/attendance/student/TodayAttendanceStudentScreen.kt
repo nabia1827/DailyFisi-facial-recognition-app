@@ -126,7 +126,7 @@ fun TodayAttendanceStudentScreen(navController: NavHostController,viewModel: Tod
                                 fontSize = 16.sp,
                                 fontFamily = poppins,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF495ECA),
+                                color = Color.White,
 
                                 )
                         )

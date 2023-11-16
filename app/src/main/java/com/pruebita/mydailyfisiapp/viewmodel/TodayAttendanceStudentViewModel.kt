@@ -35,7 +35,6 @@ class TodayAttendanceStudentViewModel
     private val _todayAssists = MutableLiveData<MutableList<Attendance>>()
     val todayAssists: LiveData<MutableList<Attendance>> = _todayAssists //Default: all 5
 
-
     private val _currentClassEndTime = MutableLiveData<Calendar>(null)
     val currentClassEndTime: LiveData<Calendar> = _currentClassEndTime
 
@@ -74,7 +73,7 @@ class TodayAttendanceStudentViewModel
                     // Attendance is available
                     val todayAss = _todayAssists.value?.toMutableList()
                     if (todayAss != null && currentIndex!=-1){
-                        if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse)){
+                        if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse) && todayAss[currentIndex].state == 4){
                             todayAss[currentIndex].state = 3
                             _todayAssists.postValue(todayAss)
                         }
@@ -121,15 +120,12 @@ class TodayAttendanceStudentViewModel
                     }
                 }
                 val v = _cont.value
-                if(v!=null){
+                if(v!=null && v<=500){
                     _cont.postValue(v + 1)
                 }
-
-
-
-
-
-
+                else{
+                    _cont.postValue(0)
+                }
             }
         }, 0, 1000) // Actualizar cada segundo
     }
