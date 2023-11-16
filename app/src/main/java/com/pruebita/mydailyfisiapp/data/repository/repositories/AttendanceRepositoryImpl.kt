@@ -1,9 +1,9 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
-import com.pruebita.mydailyfisiapp.data.model.Attendance
-import com.pruebita.mydailyfisiapp.data.model.CourseReport
-import com.pruebita.mydailyfisiapp.data.model.DailyCourseAssist
-import com.pruebita.mydailyfisiapp.data.model.UpdatedReport
+import com.pruebita.mydailyfisiapp.data.model.domain.Attendance
+import com.pruebita.mydailyfisiapp.data.model.domain.CourseReport
+import com.pruebita.mydailyfisiapp.data.model.domain.DailyCourseAssist
+import com.pruebita.mydailyfisiapp.data.model.domain.UpdatedReport
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.AttendanceRepository
 import java.util.Calendar
 import java.util.TimeZone

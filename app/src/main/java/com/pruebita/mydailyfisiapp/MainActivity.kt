@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.pruebita.mydailyfisiapp.data.model.User
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.repository.repositories.GoogleAuthUiClient
 import com.pruebita.mydailyfisiapp.ui.screens.SuperScreen
 import com.pruebita.mydailyfisiapp.ui.theme.MyDailyFisiAppTheme

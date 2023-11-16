@@ -1,4 +1,4 @@
-package com.pruebita.mydailyfisiapp.data.model
+package com.pruebita.mydailyfisiapp.data.model.helpers
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

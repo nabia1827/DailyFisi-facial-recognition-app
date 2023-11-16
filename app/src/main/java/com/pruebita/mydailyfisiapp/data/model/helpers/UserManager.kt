@@ -1,7 +1,8 @@
-package com.pruebita.mydailyfisiapp.data.model
+package com.pruebita.mydailyfisiapp.data.model.helpers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 
 class UserManager(private val context: Context) {
     private val sharedPreferences: SharedPreferences =

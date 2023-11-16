@@ -1,9 +1,9 @@
 package com.pruebita.mydailyfisiapp.data.repository.interfaces
 
-import com.pruebita.mydailyfisiapp.data.model.Attendance
-import com.pruebita.mydailyfisiapp.data.model.CourseReport
-import com.pruebita.mydailyfisiapp.data.model.DailyCourseAssist
-import com.pruebita.mydailyfisiapp.data.model.UpdatedReport
+import com.pruebita.mydailyfisiapp.data.model.domain.Attendance
+import com.pruebita.mydailyfisiapp.data.model.domain.CourseReport
+import com.pruebita.mydailyfisiapp.data.model.domain.DailyCourseAssist
+import com.pruebita.mydailyfisiapp.data.model.domain.UpdatedReport
 
 interface AttendanceRepository {
     fun getTodayAssists(idUser: Int):MutableList<Attendance>
@@ -17,7 +17,7 @@ interface AttendanceRepository {
 
     fun getTotalFraction(idUser:Int):Pair<Int, Int>
 
-    fun getUpdatedCourseReport(idUser: Int, idCourse: Int):UpdatedReport?
+    fun getUpdatedCourseReport(idUser: Int, idCourse: Int): UpdatedReport?
 
     fun getUserCourseAttendance(idUser: Int,idCourse: Int):MutableList<DailyCourseAssist>
 

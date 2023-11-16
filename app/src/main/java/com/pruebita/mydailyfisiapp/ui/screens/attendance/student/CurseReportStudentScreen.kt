@@ -32,8 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.data.model.DailyCourseAssist
-import com.pruebita.mydailyfisiapp.data.model.DateManager
+import com.pruebita.mydailyfisiapp.data.model.domain.DailyCourseAssist
+import com.pruebita.mydailyfisiapp.data.model.helpers.DateManager
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.teacher.HeaderCurseReport
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel

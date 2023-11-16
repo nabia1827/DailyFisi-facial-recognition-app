@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pruebita.mydailyfisiapp.data.model.Attendance
-import com.pruebita.mydailyfisiapp.data.model.CourseReport
-import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.model.domain.CourseReport
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.AttendanceRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat

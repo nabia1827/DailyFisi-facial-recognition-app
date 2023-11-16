@@ -1,8 +1,8 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
-import com.pruebita.mydailyfisiapp.data.model.Course
-import com.pruebita.mydailyfisiapp.data.model.Room
-import com.pruebita.mydailyfisiapp.data.model.SubPart
+import com.pruebita.mydailyfisiapp.data.model.domain.Course
+import com.pruebita.mydailyfisiapp.data.model.domain.Room
+import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
 import java.util.Calendar
 import java.util.TimeZone

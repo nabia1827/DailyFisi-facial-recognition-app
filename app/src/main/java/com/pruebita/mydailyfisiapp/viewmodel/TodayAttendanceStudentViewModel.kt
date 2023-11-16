@@ -1,18 +1,13 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pruebita.mydailyfisiapp.data.model.Attendance
-import com.pruebita.mydailyfisiapp.data.model.DateManager
-import com.pruebita.mydailyfisiapp.data.model.Event
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserManager
+import com.pruebita.mydailyfisiapp.data.model.domain.Attendance
+import com.pruebita.mydailyfisiapp.data.model.helpers.DateManager
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.AttendanceRepositoryImpl
-import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar

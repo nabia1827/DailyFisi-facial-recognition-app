@@ -5,11 +5,12 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.model.domain.SignInResult
 import com.pruebita.mydailyfisiapp.data.model.domain.SignInState
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
-import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
@@ -69,7 +70,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
         } else {
             _txtValidationPassCorrect.value = _passwordErrors[1]
-            return true
+            return false
         }
 
 
@@ -86,7 +87,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         } else {
             _txtValidationUserCorrect.value = _userErrors[1]
         }
-        return true
+        return false
     }
 
     fun onLoginSelected(): Boolean {
