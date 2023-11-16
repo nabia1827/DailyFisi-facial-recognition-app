@@ -3,15 +3,14 @@ package com.pruebita.mydailyfisiapp.data.repository.repositories
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.provider.Settings.Global.getString
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.data.model.SignInResult
-import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.domain.SignInResult
+import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 import java.util.concurrent.CancellationException
@@ -36,7 +35,7 @@ class GoogleAuthUiClient(
         return result?.pendingIntent?.intentSender
     }
 
-    suspend fun  signInWithIntent(intent: Intent):SignInResult{
+    suspend fun  signInWithIntent(intent: Intent): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)

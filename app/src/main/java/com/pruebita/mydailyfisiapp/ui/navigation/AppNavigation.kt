@@ -268,7 +268,7 @@ fun AppNavigation(
             )
             {
                 val errorParam = it.arguments?.getBoolean("error") ?: false
-                val isGoogleAccount = it.arguments?.getBoolean("error") ?: false
+                val isGoogleAccount = it.arguments?.getBoolean("isGoogleAccount") ?: false
                 FaceRecognizerScreen(navController, errorParam, isGoogleAccount)
             }
 

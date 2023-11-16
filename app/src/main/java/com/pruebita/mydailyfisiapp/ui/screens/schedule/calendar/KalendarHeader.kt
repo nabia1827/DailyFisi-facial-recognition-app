@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.pruebita.mydailyfisiapp.data.model.domain.KalendarTextKonfig
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.Locale

@@ -1,7 +1,7 @@
 package com.pruebita.mydailyfisiapp.data.repository.interfaces
 
-import com.pruebita.mydailyfisiapp.data.model.User
-import com.pruebita.mydailyfisiapp.data.model.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
 
 interface UserRepository {
     fun getUser(user:String, password:String): User
