@@ -6,6 +6,7 @@ import com.pruebita.mydailyfisiapp.data.model.domain.Room
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
+import kotlinx.datetime.LocalDate
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -244,5 +245,35 @@ class CourseRepositoryImpl: CourseRepository {
     override fun isToday(idCourse: Int): Boolean {
         return true
     }
+
+    override fun getCourseCardInfo(idCourse: Int, isLabo: Int): Pair<String, String> {
+        val course = "Calculo aa"
+        val place = "Lab 04 - NP"
+        return Pair(course, place)
+    }
+
+    override fun getCourseInfoFromTime(specificDate: LocalDate): MutableList<Course> {
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        // API has to return today courses later than actual hour
+        val initMin = 51
+        val initHour = 10
+        val day = 17
+
+        val marketingTeoStart = Calendar.getInstance(timeZone)
+        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 4, 0)
+        val marketingTeoEnd = Calendar.getInstance(timeZone)
+        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 9, 0)
+
+
+        return mutableListOf(
+            Course(courseName = "Algoritmica ${specificDate.dayOfMonth}", section = 1,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Base de Datos", section = 2,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "IoT", section = 3,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Marketing", section = 4, endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Calculo", section = 1,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Algebra", section = 2,endDate = marketingTeoEnd, startDate = marketingTeoStart)
+        )
+    }
+
 
 }
