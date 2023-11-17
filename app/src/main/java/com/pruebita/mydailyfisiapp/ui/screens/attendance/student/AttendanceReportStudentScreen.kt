@@ -62,7 +62,7 @@ fun AttendanceReportStudentScreen(navController: NavHostController, viewModel: A
     val totalAssistClasses: Int by viewModel.totalAssistClasses.observeAsState(initial = 0)
     val totalClasses: Int by viewModel.totalClasses.observeAsState(initial = 0)
     val listReports: MutableList<CourseReport> by viewModel.courseReports.observeAsState(initial = mutableListOf())
-
+    val semester: String by viewModel.semester.observeAsState(initial = "")
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -93,7 +93,7 @@ fun AttendanceReportStudentScreen(navController: NavHostController, viewModel: A
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CustomComponent(indicatorValue = totalPercentage)
+                        CustomComponent(indicatorValue = totalPercentage, smallText = "SEMESTRE $semester")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -157,7 +157,7 @@ fun CursoAsistenciasCard(courseReport: CourseReport, navController: NavHostContr
                         spotColor = Color(0xC98B8BFF),
                         ambientColor = Color(0xC47697D3),
                         shape = RoundedCornerShape(15.dp)
-                    ).clickable { navController.navigate(InternalScreens.CurseReportStudentScreen.route) }
+                    ).clickable { navController.navigate(InternalScreens.CurseReportStudentScreen.route + "/${courseReport.idCourse}") }
                     .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFC8DBF8)),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically

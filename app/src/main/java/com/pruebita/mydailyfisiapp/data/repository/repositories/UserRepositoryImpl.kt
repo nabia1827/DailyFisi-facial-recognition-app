@@ -7,8 +7,9 @@ import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
 class UserRepositoryImpl: UserRepository {
     override fun getUser(email:String, password:String): User {
         return User(
-            idUser = 4,
-            idRol = 1,
+
+            idUser = 1989,
+            idRol = 3,
             names = "Kevin Miguel",
             firstLastName = "Ortiz",
             secondLastName = "Abanto",

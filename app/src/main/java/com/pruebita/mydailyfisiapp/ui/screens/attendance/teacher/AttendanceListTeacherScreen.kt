@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,11 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -26,10 +32,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,20 +46,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.pruebita.mydailyfisiapp.ui.screens.events.dele.EventsScreen
+import com.pruebita.mydailyfisiapp.data.model.domain.StudentAssistUnit
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceListTeacherViewModel
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewAttendanceListTeacherScreen(){
     val navController = rememberNavController()
-    AttendanceListTeacherScreen(navController)
+    val viewModel:AttendanceListTeacherViewModel = hiltViewModel()
+    AttendanceListTeacherScreen(navController,viewModel)
 }
 
-
 @Composable
-fun AttendanceListTeacherScreen(navController: NavHostController) {
+fun AttendanceListTeacherScreen(navController: NavHostController,viewModel:AttendanceListTeacherViewModel) {
+    val courseName: String by viewModel.courseName.observeAsState(initial = "")
+    val section: Int by viewModel.section.observeAsState(initial = 0)
+    val subPart: String by viewModel.subPart.observeAsState(initial = "")
+    val listStudents: MutableList<StudentAssistUnit> by viewModel.listStudents.observeAsState(initial = mutableListOf())
+    val listAssists: MutableList<Boolean> by viewModel.listAssists.observeAsState(initial = mutableListOf())
+    val cantAssisted: Int by viewModel.cantAssisted.observeAsState(initial = 0)
+    val timeRemaining: String by viewModel.timeRemaining.observeAsState(initial = "")
+    val isFinished: Boolean by viewModel.isFinished.observeAsState(initial = false)
 
     LazyColumn(
         modifier = Modifier
@@ -68,63 +83,94 @@ fun AttendanceListTeacherScreen(navController: NavHostController) {
     ){
         item {
             Column(
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier.height(160.dp)
             ) {
-                HeaderListScreen(navController)
+                HeaderListScreen(navController, courseName,section,subPart)
+                Spacer(modifier = Modifier.padding(7.dp))
+
+                Row {
+                    Column(
+                        modifier = Modifier.weight(0.7f).fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Tiempo restante: $timeRemaining",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                lineHeight = 36.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF495ECA),
+
+                                )
+                        )
+                        Text(
+                            text = "Asistentes: $cantAssisted",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                lineHeight = 36.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF495ECA),
+
+                                )
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(0.3f),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        FinishButton(isFinished) { viewModel.endAttendance() }
+                    }
+                }
+                Spacer(modifier = Modifier.padding(16.dp))
+
+            }
+            HeaderList()
+            for (i in 0 until listStudents.size){
+                StudentItem(listStudents[i],listAssists[i]) { state -> viewModel.setAttendance(i, state) }
             }
         }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(0.65f)
-                ) {
-                    Text(
-                        text = "Estudiante",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight(600),
-                            color = Color(0xFF534D59),
 
-                            )
-                    )
-                }
-                Column(
-                    modifier = Modifier.weight(0.35f)
-                ) {
-                    Text(
-                        text = "Estado",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight(600),
-                            color = Color(0xFF534D59),
+    }
+}
 
-                            )
-                    )
-                }
+@Composable
+fun FinishButton(isFinished: Boolean, endAttendance: () -> Unit) {
+    val brush = Brush.verticalGradient(
+        colors = listOf(Color(0xFFC8DBF8), Color(0xFFC8DBF8))
+    )
+    ElevatedButton(
+        onClick = {endAttendance()},
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+        ,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.Black,
+            disabledContainerColor = Color(0xFFB3B6C4),
+            disabledContentColor = if (!isFinished) Color.Black else Color(
+                0xFF404650
+            )
 
-
-            }
-            Divider()
-        }
-
-        item{
-            StudentItem()
-            StudentItem()
-            StudentItem()
-            StudentItem()
-            StudentItem()
-            StudentItem()
-            StudentItem()
-            StudentItem()
-
+        ), contentPadding = PaddingValues(),
+        enabled = !isFinished
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = brush,
+                    shape = RoundedCornerShape(22.dp)
+                ),
+            contentAlignment = Alignment.Center,
+        ){
+            Text(
+                text = "Finalizar",
+                fontSize = 12.sp,
+                fontFamily = poppins
+            )
         }
 
 
@@ -132,7 +178,50 @@ fun AttendanceListTeacherScreen(navController: NavHostController) {
 }
 
 @Composable
-fun StudentItem() {
+fun HeaderList() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(0.65f)
+        ) {
+            Text(
+                text = "Estudiante",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF534D59),
+
+                    )
+            )
+        }
+        Column(
+            modifier = Modifier.weight(0.35f)
+        ) {
+            Text(
+                text = "Estado",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF534D59),
+
+                    )
+            )
+        }
+
+
+    }
+    Divider()
+}
+
+@Composable
+fun StudentItem(student: StudentAssistUnit, assist:Boolean,setAttendance: (Boolean) -> Unit) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -141,7 +230,7 @@ fun StudentItem() {
     ListItem(
         headlineContent = {
             Text(
-                text = "Nuñez Zegarra,",
+                text = "${student.lastNames},",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = poppins,
@@ -154,7 +243,7 @@ fun StudentItem() {
         },
         supportingContent = {
             Text(
-                text = "Oscar Luis",
+                text = "${student.names}",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = poppins,
@@ -166,7 +255,7 @@ fun StudentItem() {
 
         },
         trailingContent = {
-            AttendanceChip()
+            AttendanceChip(assist, setAttendance)
         },
         leadingContent = {
             Box(
@@ -176,7 +265,7 @@ fun StudentItem() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "ON",
+                    text = "${student.nick}",
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontFamily = poppins,
@@ -193,13 +282,12 @@ fun StudentItem() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttendanceChip() {
-    var selected by rememberSaveable { mutableStateOf(false) }
+fun AttendanceChip(assist: Boolean, setAttendance: (Boolean) -> Unit) {
 
     FilterChip(
-        onClick = { selected = !selected },
+        onClick = { setAttendance(!assist)},
         label = {
-            if (selected)
+            if (assist)
             {
                 Text(
                     text = "Asistió",
@@ -220,9 +308,9 @@ fun AttendanceChip() {
                 )
             }
         },
-        selected = selected,
+        selected = assist,
         leadingIcon =
-        if (!selected) {
+        if (!assist) {
             {
                 Icon(
                     imageVector = Icons.Default.Close,
@@ -259,7 +347,7 @@ fun AttendanceChip() {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun HeaderListScreen(navController: NavHostController) {
+fun HeaderListScreen(navController: NavHostController, courseName:String, section:Int, subPart:String) {
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -296,7 +384,7 @@ fun HeaderListScreen(navController: NavHostController) {
             modifier = Modifier.weight(0.8f)
         ) {
             Text(
-                text = "Algoritmica",
+                text = "$courseName",
                 style = TextStyle(
                     brush = brush,
                     fontSize = 34.sp,
@@ -307,7 +395,7 @@ fun HeaderListScreen(navController: NavHostController) {
 
             )
             Text(
-                text = "Seccion 3 - Teoría",
+                text = "Seccion $section - $subPart",
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontFamily = poppins,

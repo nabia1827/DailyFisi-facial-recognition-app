@@ -378,12 +378,12 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
                         ElevatedButton(
                             onClick = {
                                 if(getTypeCard() == 2){
-                                    navController.navigate(InternalScreens.AttendanceListTeacherScreen.route)
+                                    navController.navigate(InternalScreens.AttendanceListTeacherScreen.route+"/1/1")
                                     setTypeCard(4)
 
                                 }
                                 else if(getTypeCard() == 4){
-                                    navController.navigate(InternalScreens.AttendanceListTeacherScreen.route)
+                                    navController.navigate(InternalScreens.AttendanceListTeacherScreen.route+"/1/1")
                                 }
                             },
                             modifier = Modifier

@@ -62,7 +62,6 @@ class TodayAttendanceStudentViewModel
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
 
-
                 if(_isFinished.value != true){
                     val now = Calendar.getInstance(timeZone)
                     // Attendance is available
@@ -128,6 +127,7 @@ class TodayAttendanceStudentViewModel
     fun updateAssistsData(){
         _todayAssists.postValue(repoAssists.getTodayAssists(userManager.getIdUser()))
         val todayAss = repoAssists.getTodayAssists(userManager.getIdUser()).toMutableList()
+
         if(todayAss != null){
             println("Entrooo: ${todayAss[0].startTime}")
             _isFinished.postValue(false)
