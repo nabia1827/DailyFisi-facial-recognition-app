@@ -1,9 +1,7 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.view.LifecycleCameraController
+import androidx.compose.animation.core.tween
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,12 +11,11 @@ import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.repository.repositories.PythonAPIImpl
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
-import java.util.concurrent.Executor
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecognizingViewModel @Inject constructor(private val context: Context) : ViewModel() {
+class FaceRecognizingViewModel @Inject constructor(private val context: Context) : ViewModel() {
     private val userManager: UserManager = UserManager(context)
     private val StorageImage: StorageImagesImpl = StorageImagesImpl()
     private val PythonAPI: PythonAPIImpl = PythonAPIImpl()
@@ -34,6 +31,8 @@ class RecognizingViewModel @Inject constructor(private val context: Context) : V
         }
         return route
     }
+
+
 
 
     /*fun takePicture(

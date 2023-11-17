@@ -6,6 +6,8 @@ import com.pruebita.mydailyfisiapp.data.model.domain.Room
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.atTime
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -21,34 +23,34 @@ class CourseRepositoryImpl: CourseRepository {
         val calculoTeoStart = Calendar.getInstance(timeZone)
         calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
         val calculoTeoEnd = Calendar.getInstance(timeZone)
-        calculoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
+        calculoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 1, 0)
 
         val calculoLabStart = Calendar.getInstance(timeZone)
-        calculoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
+        calculoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 1, 0)
         val calculoLabEnd = Calendar.getInstance(timeZone)
-        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
+        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 3, 0)
 
 
         val algoTeoStart = Calendar.getInstance(timeZone)
-        algoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
+        algoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 3, 0)
         val algoTeoEnd = Calendar.getInstance(timeZone)
-        algoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+4, 0)
+        algoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 4, 0)
 
         val algoLabStart = Calendar.getInstance(timeZone)
-        algoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin +4, 0)
+        algoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 4, 0)
         val algoLabEnd = Calendar.getInstance(timeZone)
-        algoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin +6, 0)
+        algoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 6, 0)
 
 
         val marketingTeoStart = Calendar.getInstance(timeZone)
-        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+6, 0)
+        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 6, 0)
         val marketingTeoEnd = Calendar.getInstance(timeZone)
-        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
+        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 7, 0)
 
         val marketingLabStart = Calendar.getInstance(timeZone)
-        marketingLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
+        marketingLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 7, 0)
         val marketingLabEnd = Calendar.getInstance(timeZone)
-        marketingLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+9, 0)
+        marketingLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 9, 0)
 
 
 
@@ -240,6 +242,37 @@ class CourseRepositoryImpl: CourseRepository {
             endDate = calculoLabEnd,
         )
     }
+
+
+    override fun getCourseCardInfo(idCourse: Int, isLabo: Int): Pair<String, String> {
+        val course = "Calculo aa"
+        val place = "Lab 04 - NP"
+        return Pair(course, place)
+    }
+
+    override fun getCourseInfoFromTime(specificDate:LocalDate): MutableList<Course> {
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        // API has to return today courses later than actual hour
+        val initMin = 51
+        val initHour = 10
+        val day = 17
+
+        val marketingTeoStart = Calendar.getInstance(timeZone)
+        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 4, 0)
+        val marketingTeoEnd = Calendar.getInstance(timeZone)
+        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin + 9, 0)
+
+
+        return mutableListOf(
+            Course(courseName = "Algoritmica ${specificDate.dayOfMonth}", section = 1,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Base de Datos", section = 2,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "IoT", section = 3,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Marketing", section = 4, endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Calculo", section = 1,endDate = marketingTeoEnd, startDate = marketingTeoStart),
+            Course(courseName = "Algebra", section = 2,endDate = marketingTeoEnd, startDate = marketingTeoStart)
+        )
+    }
+
 
     override fun isToday(idCourse: Int): Boolean {
         return true

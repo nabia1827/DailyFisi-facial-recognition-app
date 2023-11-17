@@ -11,9 +11,11 @@ import java.util.TimeZone
 import kotlin.math.abs
 
 class AttendanceRepositoryImpl:AttendanceRepository {
+
     private val initMin = 53
     private val initHour = 10
     val day = 17
+
     private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
     override fun getTodayAssists(idUser: Int): MutableList<Attendance> {
 
@@ -121,7 +123,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         val openTime = Calendar.getInstance(timeZone)
         openTime.set(2023, Calendar.NOVEMBER, 10, initHour, initMin+1, 0)
         val remaining = openTime.timeInMillis - now.timeInMillis
-        return false
+        return true
     }
 
     override fun getTotalPercentageAttendance(idUser: Int): Int {

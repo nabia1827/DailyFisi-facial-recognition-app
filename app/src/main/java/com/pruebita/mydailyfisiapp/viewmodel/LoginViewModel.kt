@@ -70,7 +70,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
         } else {
             _txtValidationPassCorrect.value = _passwordErrors[1]
-            return false
+            return true
         }
 
 
@@ -87,7 +87,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         } else {
             _txtValidationUserCorrect.value = _userErrors[1]
         }
-        return false
+        return true
     }
 
     fun onLoginSelected(): Boolean {

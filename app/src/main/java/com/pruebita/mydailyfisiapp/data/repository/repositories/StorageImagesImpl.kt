@@ -41,10 +41,11 @@ class StorageImagesImpl{
 
 
     fun ImageToStorageFirebase(
+        filpath: String,
         byte: ByteArray,
         nameImage:String,
     ){
-        val path = "temp/$nameImage"
+        val path = "$filpath/$nameImage"
         val imagesRef: StorageReference = storageReference.child(path)
         val metadata = StorageMetadata.Builder()
             .setContentType("image/png")
