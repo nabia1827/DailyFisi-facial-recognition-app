@@ -50,6 +50,10 @@ class CurseReportStudentViewModel
     private val _currentAssist = MutableLiveData<DailyCourseAssist>()
     val currentAssist: LiveData<DailyCourseAssist> = _currentAssist
 
+
+
+
+
     init {
 
         val timeZone = TimeZone.getTimeZone("America/Lima")
@@ -60,12 +64,12 @@ class CurseReportStudentViewModel
             override fun run() {
                 val idCourse =_idCourse.value
                 if (idCourse != null){
-                    val pair = repoAssist.getActualCourseAssists(userManager.getIdUser(),idCourse)
-                    var currentAssist = _currentAssist.value
-                    if(currentAssist != null){
-                        currentAssist.theoryAssist = pair.first
-                        currentAssist.labAssist = pair.second
-                        _currentAssist.postValue(currentAssist)
+                    val assists = repoAssist.getUserCourseAttendance(idCourse,userManager.getIdUser())
+                    if(assists != null && assists.isNotEmpty()){
+                        _listAssists.postValue(assists)
+                        _totalClasses.postValue(assists.size * 2) // Change for only theory part
+                        _totalAssistsClasses.postValue(assists.count { it.theoryAssist == true } + assists.count { it.labAssist == true })
+
                     }
                 }
 
@@ -73,7 +77,9 @@ class CurseReportStudentViewModel
         }, 0, 3000)
     }
 
+
     fun updateShowedCourse(idCourse:Int){
+
         _idCourse.value = idCourse
         val course = repoCourse.getCourseShortInfo(idCourse)
         _courseName.value = course.courseName
@@ -84,15 +90,7 @@ class CurseReportStudentViewModel
             _listAssists.value = assists
             _totalClasses.value = assists.size * 2 // Change for only theory part
             _totalAssistsClasses.value = assists.count { it.theoryAssist == true } + assists.count { it.labAssist == true }
-            if(assists.size<15){
-                _currentAssist.value = DailyCourseAssist(
-                    assists[assists.size-1].date?.let { getCurrentCourseDate(it) },
-                    theoryAssist = null,
-                    labAssist = null
-                )
-            }else{
-                _currentAssist.value = null
-            }
+
         }else{
             _listAssists.value = null
             _totalClasses.value = 0
@@ -100,11 +98,7 @@ class CurseReportStudentViewModel
             _currentAssist.value = null
         }
     }
-    private fun getCurrentCourseDate(lastDate: Calendar):Calendar{
-        val copy = lastDate.clone() as Calendar
-        copy.add(Calendar.WEEK_OF_YEAR,1)
-        return copy
-    }
+
 
 
 

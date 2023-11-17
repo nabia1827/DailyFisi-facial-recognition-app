@@ -141,7 +141,7 @@ fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp).clickable { navController.navigate(InternalScreens.CurseReportTeacherScreen.route) },
+            .height(130.dp).clickable { navController.navigate(InternalScreens.CurseReportTeacherScreen.route+"/1") },
         contentAlignment = Alignment.Center
     ) {
         Box(

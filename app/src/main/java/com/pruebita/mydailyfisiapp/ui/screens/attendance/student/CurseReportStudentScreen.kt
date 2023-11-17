@@ -59,7 +59,6 @@ fun CurseReportStudentScreen(
     val totalClasses: Int by viewModel.totalClasses.observeAsState(initial = 0)
     val totalAssistsClasses: Int by viewModel.totalAssistsClasses.observeAsState(initial = 0)
     val listAssists: MutableList<DailyCourseAssist> by viewModel.listAssists.observeAsState(initial = mutableListOf())
-    val currentAssist: DailyCourseAssist? by viewModel.currentAssist.observeAsState(initial = null)
 
     LazyColumn(
         modifier = Modifier
@@ -98,19 +97,16 @@ fun CurseReportStudentScreen(
                 for (i in 0 until listAssists.size) {
                     WeekRow(listAssists[i],i+1,dateManager)
                 }
-                currentAssist?.let {
-                    WeekRow(it,listAssists.size + 1,dateManager)
-                    val sizeNextAssist = 16 - listAssists.size
-                    for (i in 0 until sizeNextAssist) {
-                        WeekRow(
-                            DailyCourseAssist(
-                                date = null,
-                                theoryAssist = null,
-                                labAssist = null
-                            ),listAssists.size + 2 + i,
-                            dateManager
-                        )
-                    }
+                val sizeNextAssist = 16 - listAssists.size
+                for (i in 0 until sizeNextAssist) {
+                    WeekRow(
+                        DailyCourseAssist(
+                            date = null,
+                            theoryAssist = null,
+                            labAssist = null
+                        ),listAssists.size + 1 + i,
+                        dateManager
+                    )
                 }
             }
         }
@@ -150,24 +146,88 @@ fun WeekRow(assist: DailyCourseAssist, numWeek:Int, dateManager: DateManager) {
             )
 
         }
-        Column(
-            modifier = Modifier.weight(0.25f)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.calendar_check),
-                contentDescription = "my posts",
-                tint = Color(0xFF29D697),
-            )
+        //Here!!
+        when (assist.theoryAssist) {
+            true -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calendar_check),
+                        contentDescription = "my posts",
+                        tint = Color(0xFF29D697),
+                    )
+                }
+            }
+            false -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calendar_close),
+                        contentDescription = "my posts",
+                        tint = Color(0xFFF25E56),
+                    )
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Text(
+                        text = "--",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFF1B2128),
+                        )
+                    )
+                }
+            }
         }
-        Column(
-            modifier = Modifier.weight(0.25f)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.calendar_close),
-                contentDescription = "my posts",
-                tint = Color(0xFFF25E56),
-            )
+
+        when (assist.labAssist) {
+            true -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calendar_check),
+                        contentDescription = "my posts",
+                        tint = Color(0xFF29D697),
+                    )
+                }
+            }
+            false -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calendar_close),
+                        contentDescription = "my posts",
+                        tint = Color(0xFFF25E56),
+                    )
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier.weight(0.25f)
+                ) {
+                    Text(
+                        text = "--",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFF1B2128),
+                        )
+                    )
+                }
+            }
         }
+
+
     }
     Divider()
 }

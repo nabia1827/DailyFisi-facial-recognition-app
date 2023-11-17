@@ -1,19 +1,22 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
+import com.pruebita.mydailyfisiapp.data.model.domain.CourseSummary
 import com.pruebita.mydailyfisiapp.data.model.domain.Room
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
+import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
 import java.util.Calendar
 import java.util.TimeZone
 
 class CourseRepositoryImpl: CourseRepository {
+    private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
+    private val initMin = 53
+    private val initHour = 10
+    val day = 17
     override fun getTodayCourses(idUser: Int): MutableList<Course> {
-        val timeZone = TimeZone.getTimeZone("America/Lima")
+
         // API has to return today courses later than actual hour
-        val initMin = 25
-        val initHour = 12
-        val day = 13
 
         val calculoTeoStart = Calendar.getInstance(timeZone)
         calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
@@ -52,7 +55,7 @@ class CourseRepositoryImpl: CourseRepository {
         return mutableListOf(
             Course(
                 idCourse = 1,
-                courseName = "Algebra",
+                courseName = "Calculo",
                 startDate = Calendar.getInstance(),
                 endDate = Calendar.getInstance(),
                 term = "X",
@@ -178,6 +181,68 @@ class CourseRepositoryImpl: CourseRepository {
     }
 
     override fun getCourseShortInfo(idCourse: Int): Course {
-        return Course()
+        when (idCourse) {
+            1 -> {
+                return Course(
+                    idCourse = 1,
+                    courseName = "Calculo",
+                    teacherFullName = "Oswaldo Lopez Michellini",
+                    section = 1
+                )
+            }
+            2 -> {
+                return Course(
+                    idCourse = 2,
+                    courseName = "Algoritmica I",
+                    teacherFullName = "Oswaldo Lopez Michellini",
+                    section = 4
+                )
+            }
+            else -> {
+                return Course(
+                    idCourse = 3,
+                    courseName = "Marketing",
+                    teacherFullName = "Oswaldo Lopez Michellini",
+                    section = 8
+                )
+            }
+        }
     }
+
+    override fun getSubPartSummary(idCourse: Int, idSubPart: Int): SubPartSummary {
+        val calculoLabEnd = Calendar.getInstance(timeZone)
+        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
+
+        return SubPartSummary(
+            idCourse = 1,
+            subpart = "Practica",
+            courseName = "Calculo I",
+            section = 4,
+            startDate = Calendar.getInstance(),
+            endDate = calculoLabEnd ,
+            isFinished = false
+        )
+    }
+
+    override fun getCourseSummary(idCourse: Int): CourseSummary {
+        val calculoTeoStart = Calendar.getInstance(timeZone)
+        calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
+
+        val calculoLabEnd = Calendar.getInstance(timeZone)
+        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
+
+
+        return CourseSummary(
+            idCourse = 1,
+            courseName = "Calculo I",
+            section = 4,
+            startDate = calculoTeoStart,
+            endDate = calculoLabEnd,
+        )
+    }
+
+    override fun isToday(idCourse: Int): Boolean {
+        return true
+    }
+
 }

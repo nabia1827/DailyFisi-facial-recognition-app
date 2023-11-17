@@ -30,8 +30,7 @@ class AttendanceReportStudentViewModel
     private val _totalAssistClasses = MutableLiveData<Int>(0)
     val totalAssistClasses : LiveData<Int> = _totalAssistClasses
 
-    private val _semester = MutableLiveData<String>(" ")
-    //Here!!
+    private val _semester = MutableLiveData<String>("2023-II") //We have to do a Semester Manager - local
     val semester : LiveData<String> = _semester
 
     private val _courseReports = MutableLiveData<MutableList<CourseReport>>()
@@ -64,26 +63,18 @@ class AttendanceReportStudentViewModel
                             if(i in indexesToday){
                                 if(isCurrentCourse(reports[i].startTime,reports[i].endTime,now)){
                                     updateForChanges(reports, i)
-                                    println("es momento")
+
                                     println(_courseReports.value?.get(i)?.totalAssist ?: 5)
                                 }
-                                else{
-                                    println("no es momento")
-                                }
 
-                            }else{
-                                println("i no está en rango")
+
                             }
                         }
-                        else{
-                            println("indices es null")
-                        }
+
 
                     }
                 }
-                else{
-                    println("report es null")
-                }
+
             }
         }, 0, 3000) // Actualizar cada 3 segundo
     }

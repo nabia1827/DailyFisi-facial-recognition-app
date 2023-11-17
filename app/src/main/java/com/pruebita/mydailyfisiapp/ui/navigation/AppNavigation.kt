@@ -39,9 +39,11 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.HelpScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SettingsScreen
 import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceListTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.CurseReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 import kotlinx.coroutines.launch
@@ -59,6 +61,9 @@ fun AppNavigation(
     val todayAttendanceStudentViewModel: TodayAttendanceStudentViewModel = hiltViewModel()
     val attendanceReportStudentViewModel: AttendanceReportStudentViewModel = hiltViewModel()
     val curseReportStudentViewModel: CurseReportStudentViewModel = hiltViewModel()
+    val attendanceListTeacherViewModel: AttendanceListTeacherViewModel = hiltViewModel()
+    val curseReportTeacherViewModel: CurseReportTeacherViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = start
@@ -325,15 +330,35 @@ fun AppNavigation(
             VerifyingIdentityStudentScreen(navController)
         }
 
-        composable(route = InternalScreens.AttendanceListTeacherScreen.route) {
-            AttendanceListTeacherScreen(navController)
+        composable(
+            route = InternalScreens.AttendanceListTeacherScreen.route + "/{idCourse}" + "/{idSubPart}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                },navArgument(name = "idSubPart") {
+                    type = NavType.IntType
+                })
+
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: -1
+            val idSubPart = it.arguments?.getInt("idSubPart") ?: -1
+            attendanceListTeacherViewModel.updateShowedAttendanceList(idCourse,idSubPart)
+            AttendanceListTeacherScreen(navController, attendanceListTeacherViewModel)
         }
 
         composable(route = InternalScreens.AttendanceReportTeacherScreen.route) {
             AttedanceReportTeacherScreen(navController)
         }
-        composable(route = InternalScreens.CurseReportTeacherScreen.route) {
-            CurseReportTeacherScreen(navController)
+        composable(route = InternalScreens.CurseReportTeacherScreen.route + "/{idCourse}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: -1
+            print("traspaso: $idCourse")
+            curseReportTeacherViewModel.updateTeacherReport(idCourse)
+            CurseReportTeacherScreen(navController, curseReportTeacherViewModel)
         }
         composable(
             route = InternalScreens.CurseReportStudentScreen.route +"/{idCourse}",

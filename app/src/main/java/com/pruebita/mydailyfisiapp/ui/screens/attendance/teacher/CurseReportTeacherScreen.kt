@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,21 +33,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.pruebita.mydailyfisiapp.ui.screens.events.dele.EventsScreen
+import com.pruebita.mydailyfisiapp.data.model.domain.StudentAssistUnit
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.CurseReportTeacherViewModel
 
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCurseReportTeacherScreen(){
     val navController = rememberNavController()
-    CurseReportTeacherScreen(navController)
+    val viewModel:CurseReportTeacherViewModel = hiltViewModel()
+    CurseReportTeacherScreen(navController,viewModel)
 }
 
 @Composable
-fun CurseReportTeacherScreen(navController: NavHostController) {
+fun CurseReportTeacherScreen(navController: NavHostController, viewModel:CurseReportTeacherViewModel) {
+
+    val courseName: String by viewModel.courseName.observeAsState(initial = "")
+    val section: Int by viewModel.section.observeAsState(initial = 0)
+    val cont: Int by viewModel.cont.observeAsState(initial = 0)
+    val totalClasses: Int by viewModel.totalClasses.observeAsState(initial = 0)
+    val listStudents: MutableList<StudentAssistUnit> by viewModel.listStudents.observeAsState(initial = mutableListOf())
+    val listTheoryAssists: MutableList<Int> by viewModel.listTheoryAssists.observeAsState(initial = mutableListOf())
+    val listLabAssists: MutableList<Int> by viewModel.listLabAssists.observeAsState(initial = mutableListOf())
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -59,21 +73,22 @@ fun CurseReportTeacherScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier.height(120.dp)
             ) {
-                HeaderCurseReport(navController,"Algoritmica", 3)
+                HeaderCurseReport(navController,courseName, section)
             }
-        }
-        item {
             TableHeader()
-        }
-        item {
-            StudentRow()
-            StudentRow()
-            StudentRow()
-            StudentRow()
-            StudentRow()
-            StudentRow()
-            StudentRow()
-            StudentRow()
+            for (i in 0 until listStudents.size){
+                StudentRow(listStudents[i],listTheoryAssists[i], listLabAssists[i],totalClasses)
+            }
+            Text(
+                text = "$cont",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black
+
+                )
+            )
         }
 
     }
@@ -81,9 +96,11 @@ fun CurseReportTeacherScreen(navController: NavHostController) {
 }
 
 @Composable
-fun StudentRow() {
+fun StudentRow(student: StudentAssistUnit, theory: Int, lab: Int, totalClasses: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth().height(70.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -91,7 +108,7 @@ fun StudentRow() {
             modifier = Modifier.weight(0.5f)
         ) {
             Text(
-                text = "Nuñez Zegarra,",
+                text = "${student.lastNames},",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = poppins,
@@ -101,7 +118,7 @@ fun StudentRow() {
                     )
             )
             Text(
-                text = "Oscar Luis",
+                text = "${student.names}",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = poppins,
@@ -115,7 +132,7 @@ fun StudentRow() {
             modifier = Modifier.weight(0.25f)
         ) {
             Text(
-                text = "7/8",
+                text = "$theory/$totalClasses",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = poppins,
@@ -129,7 +146,7 @@ fun StudentRow() {
             modifier = Modifier.weight(0.25f)
         ) {
             Text(
-                text = "7/8",
+                text = "$lab/$totalClasses",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = poppins,
@@ -154,7 +171,9 @@ fun TableHeader() {
         )
     }
     Row(
-        modifier = Modifier.fillMaxWidth().height(40.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
