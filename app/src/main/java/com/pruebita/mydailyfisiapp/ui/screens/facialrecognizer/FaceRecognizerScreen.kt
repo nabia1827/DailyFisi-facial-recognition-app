@@ -27,6 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -37,13 +39,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.FaceRecognizingViewModel
 
 @Composable
 fun FaceRecognizerScreen(
@@ -51,6 +56,9 @@ fun FaceRecognizerScreen(
     error: Boolean = false,
     isGoogleAccount: Boolean
 ) {
+
+    val faceRecognizingViewModel: FaceRecognizingViewModel = hiltViewModel()
+    val currentUser: User by faceRecognizingViewModel.currentUser.observeAsState(initial = User())
 
     Column (
         modifier = Modifier
@@ -69,7 +77,7 @@ fun FaceRecognizerScreen(
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizer(error,navController, isGoogleAccount)
+            ContentRecognizer(error,navController, isGoogleAccount,currentUser)
         }
         Column(
             modifier = Modifier
@@ -93,7 +101,12 @@ fun FooterRecognizer() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ContentRecognizer(error: Boolean, navController: NavHostController,isGoogleAccount:Boolean) {
+fun ContentRecognizer(
+    error: Boolean,
+    navController: NavHostController,
+    isGoogleAccount: Boolean,
+    currentUser: User
+) {
     val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
     val deshabilitado = Brush.horizontalGradient(
         colors = listOf(Color(0xFFEBECF0), Color(0xFFEBECF0))
@@ -127,7 +140,7 @@ fun ContentRecognizer(error: Boolean, navController: NavHostController,isGoogleA
                 color = Color(0xFFEC3773)
             }
             Text(
-                text = "Miguel Perez",
+                text = currentUser.names,
                 textAlign = TextAlign.Center,
                 fontSize = 34.sp,
                 fontFamily = poppins,

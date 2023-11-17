@@ -1,30 +1,33 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.view.LifecycleCameraController
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
+
 import com.pruebita.mydailyfisiapp.data.repository.repositories.PythonAPIImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
-import kotlinx.datetime.*
-import java.io.File
-import java.util.concurrent.Executor
 import javax.inject.Inject
 
 @HiltViewModel
 
 class VerifyingIdentityStudentViewModel @Inject constructor(private val context: Context) : ViewModel()  {
+    private val userManager: UserManager = UserManager(context)
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+
+    private val _currentUser = MutableLiveData(userManager.getIdUser())
+    val currentIdUser: MutableLiveData<Int> = _currentUser
+
+    fun getCourseDetails(idCourse: Int, isLabo: Int): Pair<String, String> {
+        val courseCard = repoCourse.getCourseCardInfo(idCourse, isLabo)
+        return courseCard
+    }
 
 
-    private val PythonAPI: PythonAPIImpl = PythonAPIImpl()
-    private val StorageImage: StorageImagesImpl = StorageImagesImpl()
     /*@RequiresApi(Build.VERSION_CODES.O)
     fun takePictureToAPI(
         camaraController: LifecycleCameraController,

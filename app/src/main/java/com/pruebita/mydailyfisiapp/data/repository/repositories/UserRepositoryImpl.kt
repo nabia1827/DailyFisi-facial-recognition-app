@@ -7,7 +7,7 @@ import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
 class UserRepositoryImpl: UserRepository {
     override fun getUser(email:String, password:String): User {
         return User(
-            idUser = 1989,
+            idUser = 4,
             idRol = 1,
             names = "Kevin Miguel",
             firstLastName = "Ortiz",
@@ -27,7 +27,7 @@ class UserRepositoryImpl: UserRepository {
         val palabras = user.userName.toString().split(" ")
 
         return User(
-            idUser = 1,
+            idUser = 4,
             idRol = 1,
             names = palabras[0] + " " + palabras[1] ,
             firstLastName = "Perez" ,

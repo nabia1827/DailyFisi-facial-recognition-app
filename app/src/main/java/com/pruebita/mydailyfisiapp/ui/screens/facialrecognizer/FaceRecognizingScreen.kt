@@ -2,8 +2,8 @@ package com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.camera.view.LifecycleCameraController
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -45,7 +44,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -57,7 +55,7 @@ import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-import com.pruebita.mydailyfisiapp.viewmodel.RecognizingViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.FaceRecognizingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -78,11 +76,10 @@ fun RecognizingScreen(
     navController: NavHostController,
     isGoogleAccount: Boolean
 ) {
-    val recognizingViewModel: RecognizingViewModel = hiltViewModel()
-    val currentUser: User by recognizingViewModel.currentUser.observeAsState(initial = User())
+    val faceRecognizingViewModel: FaceRecognizingViewModel = hiltViewModel()
+    val currentUser: User by faceRecognizingViewModel.currentUser.observeAsState(initial = User())
 
-
-    var countFace = remember {
+    val countFace = remember {
         mutableStateOf(0)
     }
 
@@ -103,7 +100,7 @@ fun RecognizingScreen(
             modifier = Modifier
                 .weight(0.8f)
         ) {
-            ContentRecognizing(navController, countFace, recognizingViewModel, isGoogleAccount,currentUser)
+            ContentRecognizing(navController, countFace, faceRecognizingViewModel, isGoogleAccount,currentUser)
         }
         Column(
             modifier = Modifier
@@ -121,18 +118,14 @@ fun Recognizing(
     porcentaje: MutableState<String>,
     navController: NavHostController,
     countFace: MutableState<Int>,
-    RecognizingViewModel: RecognizingViewModel,
+    faceRecognizingViewModel: FaceRecognizingViewModel,
     isGoogleAccount: Boolean,
     currentUser: User
 ) {
-    val animationDurationMillis = 2000 // Duración total de 2 segundos
-    val context = LocalContext.current
-    val cameraController = remember {
-        LifecycleCameraController(context)
-    }
-    val lifecycle = LocalLifecycleOwner.current
-    val executor = ContextCompat.getMainExecutor(context)
 
+    val animationDurationMillis = 2000 // Duración total de 2 segundos
+
+    val lifecycle = LocalLifecycleOwner.current
 
     var nuevo = remember {
         mutableStateOf(0.0)
@@ -153,14 +146,11 @@ fun Recognizing(
                     animationSpec = tween(durationMillis = animationDurationMillis)
                 )
 
-
                 // Reiniciar la animación al 0%
                 if (nuevo.value != 1.0) {
                     animationProgress.snapTo(0f)
                 }
-
                 nuevo.value += 0.20
-
             }
         }
     }
@@ -169,24 +159,6 @@ fun Recognizing(
     LaunchedEffect(Unit) {
         delay(4000)
         updatePercentageText()
-        /*var i = 0
-        while (porcentaje.value != "100") {
-            launch {
-                RecognizingViewModel.takePicture(
-                    cameraController,
-                    executor,
-                    "photo_$i",
-                    "user_${3}",
-                    "facial_identity"
-                )
-                i += 1
-            }
-            // Introduce a delay here if needed
-            delay(100) // for example, wait for 100 milliseconds between each iteration
-        }*/
-
-        //deferredTasks.awaitAll()
-
     }
 
     if (porcentaje.value == "100") {
@@ -198,9 +170,9 @@ fun Recognizing(
         }
 
         LaunchedEffect(Unit) {
-            val route = RecognizingViewModel.getMainRoute()
+            val route = faceRecognizingViewModel.getMainRoute()
             if (countFace.value > 0) {
-                RecognizingViewModel.sentImages(3)
+                faceRecognizingViewModel.sentImages(currentUser.idUser)
                 delay(1500)
                 navController.navigate("$route/$isGoogleAccount") // Reemplaza "nuevo_screen" con la ruta de tu destino
             }
@@ -216,11 +188,14 @@ fun Recognizing(
             .width(250.dp)
             .clip(RoundedCornerShape(190.dp))
     ) {
-        Camera(
-            countFace= countFace,
-            isDetecting = false,
-            lifecycle = lifecycle
-        )
+        faceRecognizingViewModel.currentUser.value?.let {
+            Camera(
+                countFace= countFace,
+                isDetecting = false,
+                lifecycle = lifecycle,
+                idUser = it.idUser
+            )
+        }
     }
 
     val composition by rememberLottieComposition(
@@ -247,7 +222,7 @@ fun Recognizing(
 fun ContentRecognizing(
     navController: NavHostController,
     countFace: MutableState<Int>,
-    RecognizingViewModel: RecognizingViewModel,
+    FaceRecognizingViewModel: FaceRecognizingViewModel,
     isGoogleAccount:Boolean,
     currentUser: User
 ) {
@@ -286,7 +261,7 @@ fun ContentRecognizing(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Recognizing(porcentaje, navController, countFace, RecognizingViewModel, isGoogleAccount,currentUser)
+            Recognizing(porcentaje, navController, countFace, FaceRecognizingViewModel, isGoogleAccount,currentUser)
         }
         Column(
             modifier = Modifier
