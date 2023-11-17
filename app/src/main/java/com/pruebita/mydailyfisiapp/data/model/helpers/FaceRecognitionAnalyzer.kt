@@ -30,14 +30,15 @@ import kotlin.coroutines.suspendCoroutine
 class FaceRecognitionAnalyzer(
     private val previewView: PreviewView,
     private val onCount: (Int) -> Unit,
-    private val id_user: Int,
-    private val id_curso: Int
+    private val idUser: Int,
+    private val idCourse: Int
 ) : ImageAnalysis.Analyzer
 {
     private val StorageImage: StorageImagesImpl = StorageImagesImpl()
     private val pythonAPI: PythonAPIImpl = PythonAPIImpl()
 
     private var isRecognized: Boolean = false
+    
     companion object{
         const val THROTTLE_TIMEOUT_MS = 1_000L
     }
@@ -52,13 +53,13 @@ class FaceRecognitionAnalyzer(
     private fun Verifiyng(data: ByteArray) {
         if(!isRecognized){
             val fechaActual = Clock.System.todayIn(TimeZone.currentSystemDefault())
-            val fechaFormateada = fechaActual.toString()
-            val fechaModificada = fechaFormateada.replace('-', '_')
-            val id_image = "${id_user}_${fechaModificada}_${id_curso}"
+            val fechaActualFormateada = fechaActual.toString()
+            val fechaActualModificada = fechaActualFormateada.replace('-', '_')
+            val id_image = "${idUser}_${fechaActualModificada}_${idCourse}"
 
-            StorageImage.ImageToStorageFirebase(data,nameImage=id_image)
+            StorageImage.ImageToStorageFirebase(byte = data,filpath = "temp",nameImage=id_image)
 
-            pythonAPI.getStateValidation(3,id_image)
+            pythonAPI.getStateValidation(idUser,id_image)
             if(pythonAPI.isRecognized.value == true){
                 isRecognized = true
                 onCount(1)
@@ -102,7 +103,7 @@ class FaceRecognitionAnalyzer(
 
                     }
                     .addOnFailureListener{
-                        println("Hay un error mmmhhh"+ it.message)
+                        println("Unexpected error in FaceRecognitionAnalyzer: "+ it.message)
                     }
                     .addOnCompleteListener{
                         continuation.resume(Unit)

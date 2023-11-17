@@ -41,12 +41,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 
 @Composable
-fun CardRecordatorio(showMyDialog: MutableState<Boolean>, navController: NavHostController) {
+fun CardRecordatorio(
+    showMyDialog: MutableState<Boolean>,
+    navController: NavHostController,
+    reminder: Reminder
+) {
+    val title = reminder.title
+    val timeStart = "${reminder.dateStart.hour}.${reminder.dateStart.minute}"
+    val timeEnd = "${reminder.dateEnd.hour}.${reminder.dateEnd.minute}"
+    val totalTime = "$timeStart : $timeEnd"
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -95,7 +104,7 @@ fun CardRecordatorio(showMyDialog: MutableState<Boolean>, navController: NavHost
                 verticalArrangement = Arrangement.Center
             ){
                 Text(
-                    text = "Reunion de Gestion de Proyectos",
+                    text = title,
                     fontFamily = poppins,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -115,7 +124,7 @@ fun CardRecordatorio(showMyDialog: MutableState<Boolean>, navController: NavHost
                     Spacer(modifier = Modifier.padding(5.dp))
                     Text(
 
-                        text = "20:00 - 21:00",
+                        text = totalTime,
                         fontFamily = poppins,
                         color = Color.White,
                         modifier = Modifier.wrapContentHeight()

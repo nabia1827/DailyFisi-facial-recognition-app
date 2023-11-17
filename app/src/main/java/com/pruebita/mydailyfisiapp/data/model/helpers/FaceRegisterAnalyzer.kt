@@ -35,11 +35,11 @@ import kotlin.coroutines.suspendCoroutine
 
 class FaceRegisterAnalyzer(
     private val previewView: PreviewView,
-    private val onCount: (Int) -> Unit
+    private val onCount: (Int) -> Unit,
+    private val idUser: Int
 ) : ImageAnalysis.Analyzer{
 
     private val StorageImage: StorageImagesImpl = StorageImagesImpl()
-    private val pythonAPI: PythonAPIImpl = PythonAPIImpl()
     private var count: Int = 0
     companion object{
         const val THROTTLE_TIMEOUT_MS = 1_000L
@@ -54,7 +54,7 @@ class FaceRegisterAnalyzer(
 
 
     private fun Register(data: ByteArray) {
-        StorageImage.ImageToStorageFirebase(data,"photo_$count")
+        StorageImage.ImageToStorageFirebase(byte = data,filpath = "facial_identity/user_$idUser",nameImage="photo_$count")
         count += 1
         onCount(count)
     }

@@ -12,7 +12,6 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -24,27 +23,28 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pruebita.mydailyfisiapp.data.model.helpers.FaceRecognitionAnalyzer
 import com.pruebita.mydailyfisiapp.data.model.helpers.FaceRegisterAnalyzer
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Camera(
     lifecycle: LifecycleOwner = LocalLifecycleOwner.current,
     countFace: MutableState<Int> = remember { mutableStateOf(0) } ,
-    isDetecting: Boolean = false
+    isDetecting: Boolean = false,
+    idUser: Int,
+    idCourse: Int = 0,
 ) {
     Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
 
     }) {
         CameraPreview(
             lifecycle,
-            modifier = Modifier.padding(it),
             countFace,
-            isDetecting
+            isDetecting,
+            idUser,
+            idCourse
         )
     }
 }
@@ -53,9 +53,10 @@ fun Camera(
 @Composable
 fun CameraPreview(
     lifecycle: LifecycleOwner,
-    modifier: Modifier = Modifier,
     countFace: MutableState<Int>,
-    isDetecting: Boolean
+    isDetecting: Boolean,
+    idUser: Int,
+    idCourse: Int
 ) {
     val contextx = LocalContext.current
     val cameraController = remember {
@@ -80,7 +81,9 @@ fun CameraPreview(
                     lifecycleOwner = lifecycle,
                     previewView = previewView,
                     onCount = ::onCountUpdated,
-                    isDetecting = isDetecting
+                    isDetecting = isDetecting,
+                    idUser = idUser,
+                    idCourse = idCourse
                 )
                 cameraController.bindToLifecycle(lifecycle)
                 previewView.controller = cameraController
@@ -95,18 +98,19 @@ fun startFaceRecognition(
     lifecycleOwner: LifecycleOwner,
     previewView: PreviewView,
     onCount: (Int) -> Unit,
-    isDetecting: Boolean
+    isDetecting: Boolean,
+    idUser: Int,
+    idCourse: Int
 ) {
     cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
     cameraController.setImageAnalysisAnalyzer(
         ContextCompat.getMainExecutor(context),
         if(!isDetecting){
-            FaceRegisterAnalyzer(previewView, onCount)
+            FaceRegisterAnalyzer(previewView, onCount,idUser = idUser)
         } else {
-            FaceRecognitionAnalyzer(previewView, onCount, id_user = 3, id_curso = 5)
+            FaceRecognitionAnalyzer(previewView, onCount, idUser = idUser, idCourse = idCourse)
         }
     )
     cameraController.bindToLifecycle(lifecycleOwner)
     previewView.controller = cameraController
 }
-

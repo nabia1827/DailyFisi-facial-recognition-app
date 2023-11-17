@@ -29,10 +29,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,22 +83,24 @@ fun PreviewVerifyingIdentityStudentScreen(){
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VerifyingIdentityStudentScreen(navController: NavHostController) {
-    var state = remember {
+    val state = remember {
         mutableStateOf<Int>(0)
     }
 
-
-
-    var switch = remember {
+    val switch = remember {
         mutableStateOf<Boolean>(true)
     }
 
-
-    var selectedImageUri by remember {
+    val selectedImageUri by remember {
         mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/predefinidos/img_verifyingposition.png"))
     }
 
+    val idCourse = 5
+    val isLabo = 0
+
     val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
+    val currentIdUser: Int by verifyingIdentityStudentViewModel.currentIdUser.observeAsState(initial = 0)
+    val cardInfo: Pair<String, String> = verifyingIdentityStudentViewModel.getCourseDetails(idCourse,isLabo)
 
     Column (
         modifier = Modifier
@@ -117,7 +119,7 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.8f)
         ){
-            ContentRecognizing(navController,state,selectedImageUri, verifyingIdentityStudentViewModel,switch)
+            ContentRecognizing(navController,state,selectedImageUri, currentIdUser,switch, idCourse, cardInfo)
         }
         Column(
             modifier = Modifier
@@ -133,8 +135,9 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
 @Composable
 fun RecognizingFace(
     porcentaje: MutableState<String>,
-    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
-    state: MutableState<Int>
+    currentIdUser: Int,
+    state: MutableState<Int>,
+    idCourse: Int
 ) {
     val animationDurationMillis = 2000 // Duración total de 2 segundos
 
@@ -182,21 +185,6 @@ fun RecognizingFace(
     LaunchedEffect(Unit) {
         delay(4000)
         updatePercentageText()
-
-        /*while (porcentaje.value != "100" && !state.value) {
-            launch {
-                state.value = verifyingIdentityStudentViewModel.takePictureToAPI(
-                    cameraController,
-                    executor,
-                    "photo_prueba",
-                    3,
-                    5
-                ) == true
-                println("Estado:"+ state.value)
-            }
-            // Introduce a delay here if needed
-            delay(100) // for example, wait for 100 milliseconds between each iteration
-        }*/
         println("procentaje incrementado: " + nuevo.value)
 
     }
@@ -210,7 +198,9 @@ fun RecognizingFace(
         Camera(
             lifecycle = lifecycle,
             countFace = state,
-            isDetecting = true
+            isDetecting = true,
+            idUser = currentIdUser,
+            idCourse = idCourse
         )
     }
 
@@ -320,8 +310,10 @@ fun ContentRecognizing(
     navController: NavHostController,
     state: MutableState<Int>,
     img: Uri?,
-    verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel,
-    switch: MutableState<Boolean>
+    currentIdUser: Int,
+    switch: MutableState<Boolean>,
+    idCourse: Int,
+    cardInfo: Pair<String, String>
 ) {
     var porcentaje = remember {
         mutableStateOf("")
@@ -351,8 +343,9 @@ fun ContentRecognizing(
             if(porcentaje.value != "100"){
                 RecognizingFace(
                     porcentaje,
-                    verifyingIdentityStudentViewModel,
-                    state
+                    currentIdUser,
+                    state,
+                    idCourse,
                 )
             }
             else{
@@ -402,8 +395,8 @@ fun ContentRecognizing(
             horizontalAlignment = Alignment.CenterHorizontally,
         )
         {
-            val curso = "Calculo II"
-            val lugar = "Lab 04 -NP"
+            val curso = cardInfo.first
+            val lugar = cardInfo.second
 
             Row (
                 modifier = Modifier

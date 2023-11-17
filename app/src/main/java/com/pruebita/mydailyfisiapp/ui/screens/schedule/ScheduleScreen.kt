@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,12 +49,15 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.domain.Course
+import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.KalendarType
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardCurso
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardHora
 import com.pruebita.mydailyfisiapp.ui.screens.schedule.components.CardRecordatorio
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -73,6 +77,7 @@ fun PreviewScheduleScreen(){
 @Composable
 fun ScheduleScreen(navController: NavHostController){
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
     var currentDay by remember{
         mutableStateOf<LocalDate>(today)
     }
@@ -86,6 +91,16 @@ fun ScheduleScreen(navController: NavHostController){
     var showMyDialog = remember{
         mutableStateOf<Boolean>(false)
     }
+
+    val scheduleViewModel = ScheduleViewModel()
+
+    val courses: MutableList<Course> by scheduleViewModel.courses.observeAsState(scheduleViewModel.getCourseInfo(today))
+    val reminders: MutableList<Reminder> by scheduleViewModel.reminders.observeAsState(initial = scheduleViewModel.getReminderInfo(today))
+    //val isAcutal: Boolean by scheduleViewModel.isActual.observeAsState(initial = false)
+    //val isDone: Boolean by scheduleViewModel.isDone.observeAsState(initial = false)
+
+
+
     MyDialog(showMyDialog)
 
 
@@ -126,6 +141,8 @@ fun ScheduleScreen(navController: NavHostController){
                         .fillMaxWidth(),
                     onDayClick = { selectedDay, events ->
                         currentDay = selectedDay
+                        scheduleViewModel.setCourseInfo(selectedDay)
+                        scheduleViewModel.setReminderInfo(selectedDay)
                     },
                 )
             }
@@ -134,14 +151,22 @@ fun ScheduleScreen(navController: NavHostController){
                 modifier = Modifier
             )
             {
-                gridCards(navController,currentDay)
+                gridCards(
+                    navController,
+                    currentDay,
+                    courses
+                )
             }
 
             Column(
                 modifier = Modifier
             )
             {
-                Recordatorios(navController,showMyDialog)
+                Recordatorios(
+                    navController,
+                    showMyDialog,
+                    reminders
+                )
             }
 
 
@@ -151,7 +176,11 @@ fun ScheduleScreen(navController: NavHostController){
 }
 
 @Composable
-fun Recordatorios(navController: NavHostController, showMyDialog: MutableState<Boolean>) {
+fun Recordatorios(
+    navController: NavHostController,
+    showMyDialog: MutableState<Boolean>,
+    reminders: MutableList<Reminder>,
+) {
     Row (
         modifier = Modifier
             .fillMaxWidth(),
@@ -177,9 +206,10 @@ fun Recordatorios(navController: NavHostController, showMyDialog: MutableState<B
             Text("Agregar")
         }
     }
-    CardRecordatorio(showMyDialog, navController)
-    CardRecordatorio(showMyDialog,navController)
-    CardRecordatorio(showMyDialog, navController)
+
+    repeat(reminders.size){ index ->
+        CardRecordatorio(showMyDialog, navController, reminders.get(index))
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -187,6 +217,7 @@ fun Recordatorios(navController: NavHostController, showMyDialog: MutableState<B
 fun gridCards(
     navController: NavHostController,
     curr: LocalDate,
+    courses: List<Course>,
 ) {
     var dia = curr.dayOfMonth.toString()
     val locale = Locale("es", "ES")
@@ -197,6 +228,8 @@ fun gridCards(
     if (dia.toInt()<10){
         dia = String.format("%02d", dia.toInt())
     }
+
+
 
     Column(
         modifier = Modifier
@@ -224,16 +257,18 @@ fun gridCards(
                     modifier = Modifier
                         .padding(start = 10.dp)
                 )
-                CardHora()
-                CardHora()
-                CardHora()
-                CardHora()
-                CardHora()
+                repeat(courses.size){ index ->
+                    CardHora(courses.get(index))
+                }
+
             }
             Spacer(Modifier.padding(7.dp))
-            linea()
+            linea(courses.size)
 
             Spacer(Modifier.padding(7.dp))
+
+
+
             Column (
                 verticalArrangement = Arrangement.SpaceAround,
             ){
@@ -245,20 +280,20 @@ fun gridCards(
                     modifier = Modifier
                         .padding(start = 10.dp)
                 )
-                CardCurso(navController = navController,true)
-                CardCurso(navController = navController)
-                CardCurso(navController = navController)
-                CardCurso(navController = navController)
-                CardCurso(navController = navController)
+                repeat(courses.size){ index ->
+                    CardCurso(course = courses.get(index), navController = navController)
+                }
+
+
             }
         }
     }
 
 }
 @Composable
-fun linea() {
+fun linea(size: Int) {
 
-    var distancia = 190 + 170*4
+    var distancia = 190 + 170*(size-1)
     Box {
         Canvas(
             modifier = Modifier
@@ -269,8 +304,8 @@ fun linea() {
             drawLine(
                 color = Color(0x99BCC1CD),
                 strokeWidth = 2f,
-                start = Offset(size.width / 2, 0f),
-                end = Offset(size.width / 2, size.height),
+                start = Offset(this.size.width / 2, 0f),
+                end = Offset(this.size.width / 2, this.size.height),
             )
         }
     }
@@ -401,7 +436,9 @@ fun MyDialog(showMyDialog: MutableState<Boolean>) {
                 )
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row {
-                    Spacer(modifier = Modifier.padding(10.dp).weight(0.3f))
+                    Spacer(modifier = Modifier
+                        .padding(10.dp)
+                        .weight(0.3f))
                     TextButton(
                         modifier = Modifier.weight(0.25f),
                         onClick = {

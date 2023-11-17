@@ -22,8 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,27 +43,47 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
+import java.util.Calendar
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewCardCurso(){
     val navController = rememberNavController()
-    CardCurso(navController)
+    CardCurso(Course(), navController)
 }
 
 @Composable
 fun CardCurso(
+    course: Course,
     navController: NavHostController,
-    isactual: Boolean = false,
 ){
-    var curso = "Calculo III"
-    var seccion = "Seccion 3"
-    var teoria = "Aula 102 NP"
-    var labo = "Lab 05 NP"
-    var docente = "Oswaldo Lopez Michellini"
+
+
+
+    val curso = course.courseName
+    val seccion = "Seccion: ${course.section}"
+    val teoria = "Aula ${course.theoryPart.room.idRoom} ${course.theoryPart.room.pavilion}"
+
+    var labo = ""
     var isLabo = false
-    var colorCampos = if(isactual) Color.White else Color.Black
+
+    val docente = course.teacherFullName
+
+    if(course.labPart!=null){
+        labo = "Lab ${course.labPart.room.idRoom} ${course.labPart.room.pavilion}"
+        isLabo = true
+    }
+
+    val currentTime = Calendar.getInstance()
+    val inicio = course.startDate
+    val final = course.endDate
+    val isActual = currentTime.after(inicio) && currentTime.before(final)
+
+    var colorCampos = if(isActual) Color.White else Color.Black
     var pixel = 40
     var expanded by remember { mutableStateOf(false) }
 
@@ -80,12 +100,13 @@ fun CardCurso(
             .wrapContentWidth()
             .height(170.dp)
             .padding(10.dp)
-            .clip(RoundedCornerShape(18.dp)).clickable { navController.navigate(InternalScreens.HorarioScreen.route) }
+            .clip(RoundedCornerShape(18.dp))
+            .clickable { navController.navigate(InternalScreens.HorarioScreen.route) }
     ){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(brush = if(isactual) actual else otros)
+                .background(brush = if (isActual) actual else otros)
                 .padding(15.dp)
 
         ){
@@ -100,7 +121,7 @@ fun CardCurso(
                 ){
                     Text(
                         text = curso,
-                        color = if(isactual) Color.White else Color(0xFF495ECA),
+                        color = if(isActual) Color.White else Color(0xFF495ECA),
                         fontSize = 16.sp,
                         fontFamily = poppins,
                         fontWeight = FontWeight.SemiBold
@@ -124,7 +145,7 @@ fun CardCurso(
                         )
                     }
 
-                    if(isactual){
+                    if(isActual){
                         pixel = 80
                     }
 
@@ -156,7 +177,7 @@ fun CardCurso(
                                 navController.navigate(InternalScreens.HorarioScreen.route)
                             },
                         )
-                        if(isactual){
+                        if(isActual){
                             DropdownMenuItem(
                                 modifier = Modifier.weight(0.5f),
                                 text = {
@@ -217,7 +238,7 @@ fun CardCurso(
                     Spacer(Modifier.padding(5.dp))
                     Text(
                         text ="P: $labo",
-                        color = Color.White,
+                        color = colorCampos,
                         fontSize = 12.sp,
                         fontFamily = poppins,
                         fontWeight = FontWeight.Normal,
