@@ -22,9 +22,25 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
     private val _currentUser = MutableLiveData(userManager.getIdUser())
     val currentIdUser: MutableLiveData<Int> = _currentUser
 
-    fun getCourseDetails(idCourse: Int, isLabo: Int): Pair<String, String> {
-        val courseCard = repoCourse.getCourseCardInfo(idCourse, isLabo)
-        return courseCard
+    private val _idCourse= MutableLiveData<Int>(-1)
+    val idCourse: LiveData<Int> = _idCourse
+
+    private val _idSubPart= MutableLiveData<Int>(-1)
+    val idSubPart: LiveData<Int> = _idSubPart
+
+    fun getCourseDetails(): Pair<String, String> {
+        val idCourse = _idCourse.value
+        val idSubPart = _idSubPart.value
+        return if(idCourse != null && idSubPart!= null){
+            repoCourse.getCourseCardInfo(idCourse,idSubPart)
+        }else{
+            Pair("","")
+        }
+    }
+
+    fun updateCourseRecognition(idCourse: Int, idSubPart: Int){
+        _idCourse.value = idCourse
+        _idSubPart.value = idSubPart
     }
 
 

@@ -200,7 +200,7 @@ fun RectanguloConTextoYBoton2(text1: String, text2: String, navController: NavHo
 fun LoginButtonR1(navController: NavHostController) {
     ElevatedButton(
         onClick = {
-            navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route)
+            navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route + "/0")
         },
         modifier = Modifier
             .width(62.dp)

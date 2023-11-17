@@ -156,44 +156,56 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean,navController: NavHostController
                 .weight(0.15f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if(type ==1){
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brush)
-                ) {
-                    Text(text = "")
+            when (type) {
+                1 -> {//Done, taken
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brush)
+                    ) {
+                        Text(text = "")
+                    }
                 }
-            }
-            else if(type ==2){
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brushOpen)
-                ) {
-                    Text(text = "")
+                2 -> {//Done not taken
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brush)
+                    ) {
+                        Text(text = "")
+                    }
                 }
-            }
-            else if(type ==3){
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(4.dp)
-                        .background(brushDisabled)
-                ) {
-                    Text(text = "")
+                3 -> {//Now, In progress
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(4.dp)
+                            .background(brushInProcess)
+                    ) {
+                        Text(text = "")
+                    }
                 }
-            }
-            else{
-                Box(
-                    modifier = Modifier
-                        .height(125.dp)
-                        .width(8.dp)
-                        .background(brushInProcess)
-                ) {
-                    Text(text = "")
+                4 -> {//Now, no init
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(4.dp)
+                            .background(brushOpen)
+                    ) {
+                        Text(text = "")
+                    }
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(8.dp)
+                            .background(brushDisabled)
+                    ) {
+                        Text(text = "")
+                    }
                 }
             }
 
@@ -226,9 +238,11 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean,navController: NavHostController
                         .background(
                             when (type) {
                                 1 -> Color(0xFF495ECA)
-                                2 -> Color(0xFF29D697)
-                                3 -> Color(0xFFBBB8C0)
-                                else -> Color(0xFFC05AFF)
+                                2 -> Color(0xFF495ECA)
+                                3 -> Color(0xFFC05AFF)
+                                4 -> Color(0xFF29D697)
+                                else -> Color(0xFFBBB8C0)
+
                             }, CircleShape
                         )
                 ) {
@@ -250,9 +264,11 @@ fun RowAsignature(typeCard: Int, isEnd: Boolean,navController: NavHostController
                         fontWeight = FontWeight.SemiBold,
                         color = when (type) {
                             1 -> Color(0xFF495ECA)
-                            2 -> Color(0xFF29D697)
-                            3 -> Color(0xFFBBB8C0)
-                            else -> Color(0xFFC05AFF)
+                            2 -> Color(0xFF495ECA)
+                            3 -> Color(0xFFC05AFF)
+                            4 -> Color(0xFF29D697)
+                            else -> Color(0xFFBBB8C0)
+
                         },
                     )
                 )
@@ -267,6 +283,10 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
     val brush = Brush.verticalGradient(
         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
     )
+    val brushNoTaken= Brush.verticalGradient(
+        colors = listOf(Color(0xFFED3B71), Color(0xFFF25C59))
+    )
+
     val brushOpen = Brush.verticalGradient(
         colors = listOf(Color(0xFF29D697), Color(0xFF29D697))
     )
@@ -307,9 +327,10 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
                         brush =
                         when (getTypeCard()) {
                             1 -> brush
-                            2 -> brushOpen
-                            3 -> brushDisabled
-                            else -> brushInProcess
+                            2 -> brushNoTaken
+                            3 -> brushInProcess
+                            4 -> brushOpen
+                            else -> brushDisabled
                         },
                     ),
             ) {
@@ -377,12 +398,12 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
                     ) {
                         ElevatedButton(
                             onClick = {
-                                if(getTypeCard() == 2){
+                                if(getTypeCard() == 3){//Come back
                                     navController.navigate(InternalScreens.AttendanceListTeacherScreen.route+"/1/1")
                                     setTypeCard(4)
 
                                 }
-                                else if(getTypeCard() == 4){
+                                else if(getTypeCard() == 4){ //init the attendance
                                     navController.navigate(InternalScreens.AttendanceListTeacherScreen.route+"/1/1")
                                 }
                             },
@@ -394,12 +415,12 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
                                 containerColor = Color.Transparent,
                                 contentColor = Color(0xFFFFFFFF),
                                 disabledContainerColor = Color(0xFFB3B6C4),
-                                disabledContentColor = if (getTypeCard() != 3) Color.White else Color(
+                                disabledContentColor = if (getTypeCard() != 5) Color.White else Color(
                                     0xFF404650
                                 )
 
                             ), contentPadding = PaddingValues(),
-                            enabled = getTypeCard() == 2 || getTypeCard() ==4
+                            enabled = getTypeCard() == 3 || getTypeCard() ==4
                         ) {
                             Box(
                                 modifier = Modifier
@@ -408,25 +429,16 @@ fun CardAsignature(getTypeCard: () -> Int,setTypeCard: (Int) ->Unit, navControll
                                         brush =
                                         when (getTypeCard()) {
                                             1 -> brush
-                                            2 -> brushOpen
-                                            3 -> brushDisabled
-                                            else -> brushInProcess
+                                            2 -> brushNoTaken
+                                            3 -> brushInProcess
+                                            4 -> brushOpen
+                                            else -> brushDisabled
                                         },
                                         shape = RoundedCornerShape(22.dp)
                                     ),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Text(
-                                    text =
-                                    when (getTypeCard()) {
-                                        1 -> "Marcado"
-                                        2 -> "Iniciar"
-                                        3 -> "Iniciar"
-                                        else -> "En proceso"
-                                    },
-                                    fontSize = 12.sp,
-                                    fontFamily = poppins
-                                )
+
                             }
                         }
 
