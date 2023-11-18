@@ -14,7 +14,7 @@ import okhttp3.Response
 import java.io.IOException
 
 class PythonAPIImpl {
-    private val serverUrl = "http://192.168.1.4:5000/upload_images"
+    private val serverUrl = "http://192.168.1.67:5000/upload_images"
     private val client = OkHttpClient()
 
     private val _isRecognized = MutableLiveData<Boolean>(false)
@@ -80,7 +80,7 @@ class PythonAPIImpl {
 
     fun getStateValidation(id_user: Int, id_image: String){
         val client = OkHttpClient()
-        val url = "http://192.168.1.4:5000/api?id_user=$id_user&id_image=$id_image"
+        val url = "http://192.168.1.67:5000/api?id_user=$id_user&id_image=$id_image"
         val request = Request.Builder()
             .url(url)
             .get()

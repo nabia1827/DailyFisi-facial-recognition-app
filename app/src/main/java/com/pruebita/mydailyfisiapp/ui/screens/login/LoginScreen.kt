@@ -73,10 +73,7 @@ import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
-    //LoginScreen(navController)
 }
-
-
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -93,7 +90,6 @@ fun LoginScreen(
 
     ) {
         Login(Modifier.padding(0.dp), loginViewModel, navController, onSignInClick)
-
     }
 }
 

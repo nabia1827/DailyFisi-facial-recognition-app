@@ -70,7 +70,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
         } else {
             _txtValidationPassCorrect.value = _passwordErrors[1]
-            return true
+            return false
         }
 
 
@@ -78,7 +78,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
     private fun isValidEmail(email: String): Boolean {
         if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            if (email == "lucia.rivera@unmsm.edu.pe") {
+            if (email == "nabia.pachas@unmsm.edu.pe" || email == "kevinmiguel.ortiz@unmsm.edu.pe") {
                 _txtValidationUserCorrect.value = ""
                 return true
             } else {
@@ -87,7 +87,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         } else {
             _txtValidationUserCorrect.value = _userErrors[1]
         }
-        return true
+        return false
     }
 
     fun onLoginSelected(): Boolean {
