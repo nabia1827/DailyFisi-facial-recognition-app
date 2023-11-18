@@ -43,7 +43,9 @@ import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.Attendance
 import com.pruebita.mydailyfisiapp.data.model.helpers.DateManager
+import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
+import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 
@@ -512,7 +514,7 @@ fun HeaderTodayAttendance(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.navigate(ItemMenu.AttendanceScreen.routeStudent)}) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "User",

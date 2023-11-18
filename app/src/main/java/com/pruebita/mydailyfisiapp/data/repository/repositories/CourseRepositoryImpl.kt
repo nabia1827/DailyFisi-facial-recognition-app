@@ -12,9 +12,9 @@ import java.util.TimeZone
 
 class CourseRepositoryImpl: CourseRepository {
     private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
-    private val initMin = 53
-    private val initHour = 10
-    val day = 17
+    private val initMin = 17
+    private val initHour = 13
+    val day = 18
     override fun getTodayCourses(idUser: Int): MutableList<Course> {
 
         // API has to return today courses later than actual hour

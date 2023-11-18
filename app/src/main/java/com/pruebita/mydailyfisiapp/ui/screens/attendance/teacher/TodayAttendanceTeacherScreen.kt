@@ -45,6 +45,7 @@ import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.Attendance
 import com.pruebita.mydailyfisiapp.data.model.helpers.DateManager
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
+import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceTeacherViewModel
 
@@ -526,7 +527,7 @@ fun HeaderTodayAttendance(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.navigate(ItemMenu.AttendanceScreen.routeTeacher)}) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "User",

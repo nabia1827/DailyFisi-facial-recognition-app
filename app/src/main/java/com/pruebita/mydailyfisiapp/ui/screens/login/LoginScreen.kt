@@ -102,7 +102,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
     val isPassCorrect: Boolean by viewModel.isValidationPassCorrect.observeAsState(initial = true)
     val txtUserCorrect: String by viewModel.txtValidationUserCorrect.observeAsState(initial = "")
     val txtPassCorrect: String by viewModel.txtValidationPassCorrect.observeAsState(initial = "")
-    val isFirstLogin: Boolean by viewModel.isFirstLogin.observeAsState(initial = true)
+    val isFirstLogin: Boolean by viewModel.isFirstLogin.observeAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
 
     //Mutable

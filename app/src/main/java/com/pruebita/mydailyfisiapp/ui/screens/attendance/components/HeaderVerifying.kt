@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
+import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 @Preview(showBackground = true)
@@ -87,7 +89,7 @@ fun HeaderVerifying(navController: NavHostController, state: MutableState<Boolea
                 .fillMaxSize(),
             contentAlignment = Alignment.CenterStart
         ) {
-            IconButton(onClick = { navController.popBackStack()}) {
+            IconButton(onClick = { navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route+"/0")}) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "back",
