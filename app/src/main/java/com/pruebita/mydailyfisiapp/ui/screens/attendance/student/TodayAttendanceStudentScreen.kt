@@ -430,7 +430,9 @@ fun CardAsignature(
                         ElevatedButton(
                             onClick = {
                                 if (attendance.state== 3) {
-                                    navController.navigate(InternalScreens.VerifyingIdentityStudentScreen.route)
+                                    navController.navigate(
+                                        InternalScreens.VerifyingIdentityStudentScreen.route
+                                                + "/${attendance.idCourse}/${attendance.idSubPart}")
                                 }
 
                             },

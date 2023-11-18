@@ -41,12 +41,15 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
 import com.pruebita.mydailyfisiapp.viewmodel.AttendanceListTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceTeacherViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -64,7 +67,15 @@ fun AppNavigation(
     val curseReportStudentViewModel: CurseReportStudentViewModel = hiltViewModel()
     val attendanceListTeacherViewModel: AttendanceListTeacherViewModel = hiltViewModel()
     val curseReportTeacherViewModel: CurseReportTeacherViewModel = hiltViewModel()
+
     val scheduleViewModel: ScheduleViewModel = hiltViewModel()
+
+    val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
+
+    val todayAttendanceTeacherViewModel: TodayAttendanceTeacherViewModel = hiltViewModel()
+
+    val attendanceReportTeacherViewModel: AttendanceReportTeacherViewModel = hiltViewModel()
+
 
     NavHost(
         navController = navController,
@@ -319,17 +330,36 @@ fun AppNavigation(
         }
 
         // Sub screens
-        composable(route = InternalScreens.TodayAttendanceStudentScreen.route) {
-
+        composable(
+            route = InternalScreens.TodayAttendanceStudentScreen.route + "/{takeAttendance}",
+            arguments = listOf(
+                navArgument(name = "takeAttendance") {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            val takeAttendance = it.arguments?.getInt("takeAttendance") ?: 0
+            if(takeAttendance == 1){
+                todayAttendanceStudentViewModel.takeAttendance()
+            }
             TodayAttendanceStudentScreen(navController, todayAttendanceStudentViewModel)
         }
 
         composable(route = InternalScreens.AttendanceReportStudentScreen.route) {
             AttendanceReportStudentScreen(navController, attendanceReportStudentViewModel)
         }
-
-        composable(route = InternalScreens.VerifyingIdentityStudentScreen.route) {
-            VerifyingIdentityStudentScreen(navController)
+        composable(route = InternalScreens.VerifyingIdentityStudentScreen.route+"/{idCourse}" + "/{idSubPart}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                },navArgument(name = "idSubPart") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: -1
+            val idSubPart = it.arguments?.getInt("idSubPart") ?: -1
+            verifyingIdentityStudentViewModel.updateCourseRecognition(idCourse,idSubPart)
+            VerifyingIdentityStudentScreen(navController,verifyingIdentityStudentViewModel)
         }
 
         composable(
@@ -349,7 +379,7 @@ fun AppNavigation(
         }
 
         composable(route = InternalScreens.AttendanceReportTeacherScreen.route) {
-            AttedanceReportTeacherScreen(navController)
+            AttendanceReportTeacherScreen(navController,attendanceReportTeacherViewModel)
         }
         composable(route = InternalScreens.CurseReportTeacherScreen.route + "/{idCourse}",
             arguments = listOf(
@@ -375,7 +405,8 @@ fun AppNavigation(
         }
 
         composable(route = InternalScreens.TodayAttendanceTeacherScreen.route) {
-            TodayAttendanceTeacherScreen(navController)
+
+            TodayAttendanceTeacherScreen(navController,todayAttendanceTeacherViewModel)
         }
 
         /*

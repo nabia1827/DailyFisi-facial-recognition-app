@@ -9,7 +9,7 @@ import com.pruebita.mydailyfisiapp.data.model.domain.UpdatedReport
 
 interface AttendanceRepository {
     fun getTodayAssists(idUser: Int):MutableList<Attendance>
-    fun isAttendanceOpen(idCourse:Int):Boolean
+    fun isAttendanceOpen(idCourse:Int):Int
 
     fun getTotalPercentageAttendance(idUser:Int):Int
 

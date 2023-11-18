@@ -392,7 +392,9 @@ fun MyDatePickerDialog(
 
 
     if (getOpenDialog()) {
+
         val datePickerState = rememberDatePickerState()
+
         val confirmEnabled =
             remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
         DatePickerDialog(

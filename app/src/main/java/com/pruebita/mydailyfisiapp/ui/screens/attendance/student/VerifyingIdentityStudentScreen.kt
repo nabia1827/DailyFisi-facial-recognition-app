@@ -61,6 +61,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.HeaderVerifying
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.Camera
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.FooterRecognizer
@@ -75,14 +76,15 @@ import kotlin.math.roundToInt
 @Composable
 fun PreviewVerifyingIdentityStudentScreen(){
     val navController = rememberNavController()
-    VerifyingIdentityStudentScreen(navController)
+    val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
+    VerifyingIdentityStudentScreen(navController,verifyingIdentityStudentViewModel)
 }
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun VerifyingIdentityStudentScreen(navController: NavHostController) {
+fun VerifyingIdentityStudentScreen(navController: NavHostController, viewModel: VerifyingIdentityStudentViewModel) {
     val state = remember {
         mutableStateOf<Int>(0)
     }
@@ -92,15 +94,13 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController) {
     }
 
     val selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/predefinidos/img_verifyingposition.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/maps%2Fdefaults%2Floading.png?alt=media&token=c0b51c03-2f73-4226-b0fe-6d4540b3e2d9"))
     }
+    //0 Theory 1 Lab
 
-    val idCourse = 5
-    val isLabo = 0
-
-    val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
-    val currentIdUser: Int by verifyingIdentityStudentViewModel.currentIdUser.observeAsState(initial = 0)
-    val cardInfo: Pair<String, String> = verifyingIdentityStudentViewModel.getCourseDetails(idCourse,isLabo)
+    val currentIdUser: Int by viewModel.currentIdUser.observeAsState(initial = 0)
+    val cardInfo: Pair<String, String> = viewModel.getCourseDetails()
+    val idCourse: Int by viewModel.idCourse.observeAsState(initial = 0)
 
     Column (
         modifier = Modifier
@@ -263,8 +263,10 @@ fun RecognizingPosition(porcentaje2: MutableState<String>, navController: NavHos
             drawCircle(Color(0xFFC8DBF8), radius = 140.dp.toPx())
         }
         LaunchedEffect(Unit) {
-            delay(500) // Ajusta el tiempo de retraso según tus necesidades (1000ms = 1 segundo)
-            navController.popBackStack()
+            //if verifying position it's ok mandar a BD
+            //llamar viewModel
+            delay(500)
+            navController.navigate(InternalScreens.TodayAttendanceStudentScreen.route + "/1")
         }
     }
 

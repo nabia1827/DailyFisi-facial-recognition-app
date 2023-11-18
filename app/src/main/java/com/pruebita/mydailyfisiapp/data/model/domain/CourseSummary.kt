@@ -6,6 +6,6 @@ data class CourseSummary(
     val idCourse: Int = 0,
     val courseName: String = "course",
     val section: Int = 0,
-    val startDate: Calendar? = null,
-    val endDate: Calendar? = null,
+    val startDate: Calendar? = null,//Start hour
+    val endDate: Calendar? = null,//End hour
 )

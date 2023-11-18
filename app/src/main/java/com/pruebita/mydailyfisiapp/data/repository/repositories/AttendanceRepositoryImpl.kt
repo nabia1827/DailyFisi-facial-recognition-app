@@ -55,6 +55,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 1,
+                idSubPart = 0,
                 courseName = "Calculo",
                 coursePart = "Teoria",
                 courseRoom = "102 - NP",
@@ -65,6 +66,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 1,
+                idSubPart = 1,
                 courseName = "Calculo",
                 coursePart = "Practica",
                 courseRoom = "Lab 04 - NP",
@@ -75,6 +77,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 2,
+                idSubPart = 0,
                 courseName = "Algoritmica I",
                 coursePart = "Teoria",
                 courseRoom = "102 - NP",
@@ -85,6 +88,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 2,
+                idSubPart = 1,
                 courseName = "Algoritmica I",
                 coursePart = "Practica",
                 courseRoom = "Lab 04 - NP",
@@ -95,6 +99,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 3,
+                idSubPart = 0,
                 courseName = "Marketing",
                 coursePart = "Teoria",
                 courseRoom = "102 - NP",
@@ -105,6 +110,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             Attendance(
                 date = now,
                 idCourse = 3,
+                idSubPart = 1,
                 courseName = "Marketing",
                 coursePart = "Practica",
                 courseRoom = "Lab 04 - NP",
@@ -115,13 +121,13 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         )
     }
 
-    override fun isAttendanceOpen(idCourse: Int): Boolean {
-
+    override fun isAttendanceOpen(idCourse: Int): Int {
+        // (1) No taken yet (2)Opening (3) taken
         val now = Calendar.getInstance(timeZone)
         val openTime = Calendar.getInstance(timeZone)
         openTime.set(2023, Calendar.NOVEMBER, 10, initHour, initMin+1, 0)
         val remaining = openTime.timeInMillis - now.timeInMillis
-        return false
+        return 1
     }
 
     override fun getTotalPercentageAttendance(idUser: Int): Int {
@@ -151,6 +157,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         return mutableListOf(
             CourseReport(
                 idCourse = 1,
+                section = 1,
                 courseName = "Calculo",
                 startTime = calculoTeoStart,
                 endTime = calculoLabEnd,
@@ -159,6 +166,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             CourseReport(
                 idCourse = 2,
+                section = 5,
                 courseName = "Algoritmica I",
                 startTime = algoTeoStart,
                 endTime = algoLabEnd,
@@ -167,6 +175,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             CourseReport(
                 idCourse = 3,
+                section = 4,
                 courseName = "Marketing",
                 startTime = marketingTeoStart,
                 endTime = marketingLabEnd,

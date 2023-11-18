@@ -16,8 +16,9 @@ import java.util.TimeZone
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+
 @HiltViewModel
-class AttendanceReportStudentViewModel
+class AttendanceReportTeacherViewModel
 @Inject constructor(private val context: Context): ViewModel(){
     private val repoAssists: AttendanceRepositoryImpl = AttendanceRepositoryImpl()
     private val userManager: UserManager = UserManager(context)
@@ -90,13 +91,12 @@ class AttendanceReportStudentViewModel
         _totalClasses.postValue(fraction.second)
     }
 
-    fun isCurrentCourse(courseStart:Calendar, courseEnd:Calendar, now:Calendar):Boolean{
+    fun isCurrentCourse(courseStart: Calendar, courseEnd: Calendar, now: Calendar):Boolean{
         return now.timeInMillis>courseStart.timeInMillis && now.timeInMillis<courseEnd.timeInMillis
     }
     fun updateForChanges(reports:MutableList<CourseReport>, i:Int){
         val updated = repoAssists.getUpdatedCourseReport(userManager.getIdUser(),reports[i].idCourse)
         if(updated != null){
-            reports[i].totalAssist = updated.totalCourse
             reports[i].percentage = updated.percentageCourse
             _courseReports.postValue(reports)
             _totalAssistClasses.postValue(updated.totalAssistClasses)
@@ -105,6 +105,4 @@ class AttendanceReportStudentViewModel
 
         }
     }
-
-
 }

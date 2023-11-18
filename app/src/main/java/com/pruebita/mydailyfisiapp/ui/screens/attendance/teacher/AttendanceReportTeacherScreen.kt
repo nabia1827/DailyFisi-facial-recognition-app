@@ -22,6 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,26 +39,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pruebita.mydailyfisiapp.data.model.domain.CourseReport
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CircularCustomComponent
 import com.pruebita.mydailyfisiapp.ui.screens.attendance.components.CustomComponent
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportTeacherViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewAttedanceReportTeacherScreen() {
+fun PreviewAttendanceReportTeacherScreen() {
     val navController = rememberNavController()
-    AttedanceReportTeacherScreen(navController)
+    val viewModel: AttendanceReportTeacherViewModel = hiltViewModel()
+    AttendanceReportTeacherScreen(navController,viewModel)
 }
 
 
 @Composable
-fun AttedanceReportTeacherScreen(navController: NavHostController) {
-    var globalValue = remember {
-        mutableStateOf<Int>(70)
-    }
+fun AttendanceReportTeacherScreen(navController: NavHostController, viewModel: AttendanceReportTeacherViewModel) {
+    val totalPercentage: Int by viewModel.totalPercentage.observeAsState(initial = 0)
+    val totalAssistClasses: Int by viewModel.totalAssistClasses.observeAsState(initial = 0)
+    val totalClasses: Int by viewModel.totalClasses.observeAsState(initial = 0)
+    val listReports: MutableList<CourseReport> by viewModel.courseReports.observeAsState(initial = mutableListOf())
+    val semester: String by viewModel.semester.observeAsState(initial = "")
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +96,7 @@ fun AttedanceReportTeacherScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CustomComponent(indicatorValue = globalValue.value)
+                        CustomComponent(indicatorValue = totalPercentage,smallText = "SEMESTRE $semester")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -95,7 +104,7 @@ fun AttedanceReportTeacherScreen(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "65/70",
+                            text = "$totalAssistClasses/$totalClasses",
                             style = TextStyle(
                                 fontSize = 32.sp,
                                 fontFamily = poppins,
@@ -120,16 +129,15 @@ fun AttedanceReportTeacherScreen(navController: NavHostController) {
                 }
 
             }
+            for (i in 0 until listReports.size){
+                CursoAsistenciasCard(
+                    listReports[i],
+                    navController
+                )
+            }
 
         }
-        item {
-            CursoAsistenciasCard(80,navController)
-            CursoAsistenciasCard(75,navController)
-            CursoAsistenciasCard(30,navController)
-            CursoAsistenciasCard(80,navController)
-            CursoAsistenciasCard(75,navController)
-            CursoAsistenciasCard(30,navController)
-        }
+
 
 
     }
@@ -137,11 +145,12 @@ fun AttedanceReportTeacherScreen(navController: NavHostController) {
 }
 
 @Composable
-fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
+fun CursoAsistenciasCard(courseReport: CourseReport, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp).clickable { navController.navigate(InternalScreens.CurseReportTeacherScreen.route+"/1") },
+            .height(130.dp),
+
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -158,7 +167,7 @@ fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
                         spotColor = Color(0xC98B8BFF),
                         ambientColor = Color(0xC47697D3),
                         shape = RoundedCornerShape(15.dp)
-                    )
+                    ).clickable { navController.navigate(InternalScreens.CurseReportTeacherScreen.route + "/${courseReport.idCourse}") }
                     .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFC8DBF8)),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -173,7 +182,7 @@ fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Algotimica I",
+                        text = courseReport.courseName,
                         style = TextStyle(
                             fontSize = 15.sp,
                             lineHeight = 20.sp,
@@ -184,7 +193,7 @@ fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
                             )
                     )
                     Text(
-                        text = "Seccion 1",
+                        text = "Seccion ${courseReport.section}",
                         style = TextStyle(
                             fontSize = 13.sp,
                             lineHeight = 18.sp,
@@ -215,7 +224,7 @@ fun CursoAsistenciasCard(value: Int, navController: NavHostController) {
             ) {
                 CircularCustomComponent(
                     canvasSize = 100.dp,
-                    indicatorValue = value, smallText = "",
+                    indicatorValue = courseReport.percentage, smallText = "",
                     backgroundIndicatorStrokeWidth = 30f,
                     foregroundIndicatorStrokeWidth = 30f,
                     bigTextFontSize = 17.sp,

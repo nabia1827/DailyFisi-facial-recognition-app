@@ -5,6 +5,7 @@ import java.util.Calendar
 data class Attendance(
     val date: Calendar,
     val idCourse: Int = 0,
+    val idSubPart: Int = 0,
     val courseName:String = "",
     val coursePart:String = "Teoria",
     val courseRoom:String ="",

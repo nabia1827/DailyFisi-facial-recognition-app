@@ -8,7 +8,7 @@ class SemesterRepositoryImpl:SemesterRepository {
     override fun getCurrentSemester():Semester{
         return Semester(
             idSemester = 1,
-            semesterDesc = "2023-1",
+            semesterDesc = "2023-II",
             null,
             null
         )

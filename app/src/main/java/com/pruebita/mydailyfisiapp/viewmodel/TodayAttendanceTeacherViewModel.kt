@@ -18,12 +18,11 @@ import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
-class TodayAttendanceStudentViewModel
-@Inject constructor(private val context: Context): ViewModel() {
+class TodayAttendanceTeacherViewModel
+@Inject constructor(private val context: Context): ViewModel(){
     private val repoAssists: AttendanceRepositoryImpl = AttendanceRepositoryImpl()
     private val userManager: UserManager = UserManager(context)
 
-    //val todayAssists2 = mutableStateOf<MutableList<Attendance>>(mutableListOf()) // Cambiado a MutableState
     private val _dateManager = MutableLiveData<DateManager>(DateManager())
     val dateManager: LiveData<DateManager> = _dateManager
 
@@ -67,11 +66,9 @@ class TodayAttendanceStudentViewModel
                     // Attendance is available
                     val todayAss = _todayAssists.value?.toMutableList()
                     if (todayAss != null && currentIndex!=-1){
-                        if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse)==2 && todayAss[currentIndex].state == 4){
-                            todayAss[currentIndex].state = 3 //Open
+                        if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse)==3 && todayAss[currentIndex].state == 3){
+                            todayAss[currentIndex].state = 1 //Taken
                             _todayAssists.postValue(todayAss)
-                        }else if(repoAssists.isAttendanceOpen(todayAss[currentIndex].idCourse)==3 && todayAss[currentIndex].state != 1){
-                            todayAss[currentIndex].state = 2 //You lost it
                         }
                     }
 
@@ -127,6 +124,7 @@ class TodayAttendanceStudentViewModel
     }
 
     fun updateAssistsData(){
+        //Repository give it in 5
         _todayAssists.postValue(repoAssists.getTodayAssists(userManager.getIdUser()))
         val todayAss = repoAssists.getTodayAssists(userManager.getIdUser()).toMutableList()
 
@@ -162,8 +160,11 @@ class TodayAttendanceStudentViewModel
         val todayAss = _todayAssists.value?.toMutableList()
         if(todayAss != null && (currentIndex + 1) < todayAss.size){
             if(currentIndex != -1){
-                if(todayAss[currentIndex].state == 3 || todayAss[currentIndex].state == 4){
-                    todayAss[currentIndex].state = 2 //absent
+                if(todayAss[currentIndex].state == 4){ //No se aperturo
+                    todayAss[currentIndex].state = 2 //no tomado
+
+                }else if(todayAss[currentIndex].state == 3){
+                    todayAss[currentIndex].state = 1 //finalizar
                 }
             }
             currentIndex += 1
@@ -183,7 +184,7 @@ class TodayAttendanceStudentViewModel
         }
     }
 
-    fun getTimeRange(start:Calendar, end:Calendar):String{
+    fun getTimeRange(start: Calendar, end: Calendar):String{
         val mng = _dateManager.value
         return if(mng != null)
             "${mng.getHourString(start)} - ${mng.getHourString(end)}"
@@ -191,17 +192,15 @@ class TodayAttendanceStudentViewModel
             ""
     }
 
-    fun takeAttendance(){
+    fun initAttendance(){
         val todayAss = _todayAssists.value?.toMutableList()
         if(todayAss != null && currentIndex != -1){
-            todayAss[currentIndex].state = 1 //presenr
+            if(todayAss[currentIndex].state == 4){
+                todayAss[currentIndex].state = 3 //in progress
+            }
             _todayAssists.postValue(todayAss)
         }
 
 
     }
-
-
-
-
 }
