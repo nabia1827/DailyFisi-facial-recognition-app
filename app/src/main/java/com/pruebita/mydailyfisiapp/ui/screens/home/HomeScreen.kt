@@ -152,16 +152,18 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = course1.courseName,
-                        style = TextStyle(
-                            fontSize = 18.sp,
-                            lineHeight = 22.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFFFFFFFF),
+                    course1.courseName?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                lineHeight = 22.sp,
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFFFFFFFF),
+                            )
                         )
-                    )
+                    }
                     Text(
                         text = "Seccion ${course1.section}",
                         style = TextStyle(
@@ -205,16 +207,18 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = course2.courseName,
-                            style = TextStyle(
-                                fontSize = 18.sp,
-                                lineHeight = 22.sp,
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFFFFFFFF),
+                        course2.courseName?.let {
+                            Text(
+                                text = it,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    lineHeight = 22.sp,
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFFFFFFFF),
+                                )
                             )
-                        )
+                        }
                         Text(
                             text = "Seccion ${course2.section}",
                             style = TextStyle(
@@ -416,8 +420,9 @@ fun InstantClassDer(viewModel: ClockViewModel) {
 }
 @Composable
 fun LaterClassContent(course: Course, dateToString: (Calendar) -> String) {
-    Text(
-        text = course.courseName,
+    course.courseName?.let {
+        Text(
+        text = it,
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 20.sp,
@@ -427,6 +432,7 @@ fun LaterClassContent(course: Course, dateToString: (Calendar) -> String) {
             textAlign = TextAlign.Start
         )
     )
+    }
     Row(
         modifier = Modifier.height(30.dp)
     ){
@@ -500,8 +506,9 @@ fun LaterClassContent(course: Course, dateToString: (Calendar) -> String) {
 
 @Composable
 fun InstantClassIzq(course: Course, dateToString: (Calendar) -> String) {
-    Text(
-        text = course.courseName,
+    course.courseName?.let {
+        Text(
+        text = it,
         modifier = Modifier.fillMaxWidth(),
         style = TextStyle(
             fontSize = 24.sp,
@@ -511,6 +518,7 @@ fun InstantClassIzq(course: Course, dateToString: (Calendar) -> String) {
             textAlign = TextAlign.Start
         )
     )
+    }
     Row(
         modifier = Modifier.height(30.dp)
     ){

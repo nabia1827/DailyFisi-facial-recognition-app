@@ -46,6 +46,7 @@ import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
@@ -66,11 +67,15 @@ fun AppNavigation(
     val curseReportStudentViewModel: CurseReportStudentViewModel = hiltViewModel()
     val attendanceListTeacherViewModel: AttendanceListTeacherViewModel = hiltViewModel()
     val curseReportTeacherViewModel: CurseReportTeacherViewModel = hiltViewModel()
+
+    val scheduleViewModel: ScheduleViewModel = hiltViewModel()
+
     val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
 
     val todayAttendanceTeacherViewModel: TodayAttendanceTeacherViewModel = hiltViewModel()
 
     val attendanceReportTeacherViewModel: AttendanceReportTeacherViewModel = hiltViewModel()
+
 
     NavHost(
         navController = navController,
@@ -406,30 +411,54 @@ fun AppNavigation(
 
         /*
         *  SUBMODULE OF SCHEDULE
-        * */
+        */
 
         composable(route = ItemMenu.ScheduleScreen.routeStudent) {
-            ScheduleScreen(navController)
+            ScheduleScreen(navController, scheduleViewModel)
         }
         composable(route = ItemMenu.ScheduleScreen.routeDele) {
-            ScheduleScreen(navController)
+            ScheduleScreen(navController, scheduleViewModel)
         }
         composable(route = ItemMenu.ScheduleScreen.routeTeacher) {
-            ScheduleScreen(navController)
+            ScheduleScreen(navController, scheduleViewModel)
         }
 
         // Sub screens
         composable(route = InternalScreens.AddReminderScreen.route) {
-            AddReminderScreen(navController)
+            AddReminderScreen(navController, scheduleViewModel)
         }
-        composable(route = InternalScreens.EditReminderScreen.route) {
-            EditReminderScreen(navController)
+
+        composable(
+            route = InternalScreens.EditReminderScreen.route + "/{idReminder}",
+            arguments = listOf(
+                navArgument(name = "idReminder") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idReminder = it.arguments?.getInt("idReminder") ?: 0
+            EditReminderScreen(navController, scheduleViewModel, idReminder)
         }
-        composable(route = InternalScreens.HorarioScreen.route) {
-            HorarioScreen(navController)
+
+
+        composable(
+            route = InternalScreens.HorarioScreen.route + "/{idCourse}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: 0
+            HorarioScreen(navController, idCourse, scheduleViewModel)
         }
-        composable(route = InternalScreens.LocationScreen.route) {
-            LocationScreen(navController)
+        composable(
+            route = InternalScreens.LocationScreen.route+ "/{idCourse}",
+            arguments = listOf(
+                navArgument(name = "idCourse") {
+                    type = NavType.IntType
+                })
+        ) {
+            val idCourse = it.arguments?.getInt("idCourse") ?: 0
+            LocationScreen(navController, idCourse =idCourse, scheduleViewModel = scheduleViewModel)
         }
 
         /*

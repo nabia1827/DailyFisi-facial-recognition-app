@@ -1,5 +1,8 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,34 +49,47 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
 import java.util.Calendar
 
 @Preview(showBackground = true)
 @Composable
 fun EditReminderScreen(){
     val navController = rememberNavController()
-    EditReminderScreen(navController)
+    //EditReminderScreen(navController)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EditReminderScreen(navController: NavHostController) {
+fun EditReminderScreen(
+    navController: NavHostController,
+    scheduleViewModel: ScheduleViewModel,
+    idReminder: Int
+) {
+    val reminderActual = scheduleViewModel.getReminder(idReminder)
     //Variables Predefinidas
     var title_reminder = remember {
-        mutableStateOf("nuevo")
+        reminderActual?.let { mutableStateOf(it.title) }
     }
     val initialSelectedDay = Calendar.getInstance().apply {
         set(2023, Calendar.NOVEMBER, 22) // Establece la fecha específica que deseas (año, mes, día)
     }
     val initialstartHour = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 10)
-        set(Calendar.MINUTE, 40)
+        if (reminderActual != null) {
+            set(Calendar.HOUR_OF_DAY, reminderActual.dateStart.hour)
+        }
+        if (reminderActual != null) {
+            set(Calendar.MINUTE, reminderActual.dateStart.minute)
+        }
     }
     val initialendHout = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 16)
-        set(Calendar.MINUTE, 20)
+        if (reminderActual != null) {
+            set(Calendar.HOUR_OF_DAY, reminderActual.dateEnd.hour)
+        }
+        if (reminderActual != null) {
+            set(Calendar.MINUTE, reminderActual.dateEnd.minute)
+        }
     }
-
-
 
     var selectedId by rememberSaveable { mutableIntStateOf(3) }
     var selectedDate by rememberSaveable { mutableStateOf(initialSelectedDay) }
@@ -84,7 +101,6 @@ fun EditReminderScreen(navController: NavHostController) {
     var endHour by rememberSaveable { mutableStateOf(initialendHout) }
 
 
-
     MyDatePickerDialog({ openDialog.value }, { newValue: Boolean ->
         openDialog.value = newValue
     }) { newId: Int, newDate: Calendar ->
@@ -92,14 +108,14 @@ fun EditReminderScreen(navController: NavHostController) {
         selectedDate = newDate
     }
 
-    MyTimePickerLeft({newValue: Calendar ->
+    MyTimePickerLeft({ newValue: Calendar ->
         initHour = newValue
-    },{ showTimePickerLeft }) { newValue: Boolean ->
+    }, { showTimePickerLeft }) { newValue: Boolean ->
         showTimePickerLeft = newValue
     }
-    MyTimePickerRight({newValue: Calendar ->
+    MyTimePickerRight({ newValue: Calendar ->
         endHour = newValue
-    },{ showTimePickerRight }) { newValue: Boolean ->
+    }, { showTimePickerRight }) { newValue: Boolean ->
         showTimePickerRight = newValue
     }
 
@@ -123,11 +139,13 @@ fun EditReminderScreen(navController: NavHostController) {
                 .weight(0.21f),
             verticalArrangement = Arrangement.Center
         ){
-            FieldEditEvent(
-                title = "Titulo de Recordatorio",
-                isSingleLine = false, 3,6,
-                title_reminder
-            )
+            if (title_reminder != null) {
+                FieldEditEvent(
+                    title = "Titulo de Recordatorio",
+                    isSingleLine = false, 3,6,
+                    title_reminder
+                )
+            }
         }
         Column (
             modifier = Modifier
@@ -159,7 +177,17 @@ fun EditReminderScreen(navController: NavHostController) {
                 .weight(0.2f),
             verticalArrangement = Arrangement.Center
         ){
-            ButtonEditEvent(navController)
+            if (title_reminder != null) {
+                ButtonEditEvent(
+                    navController,
+                    idReminder,
+                    scheduleViewModel,
+                    title_reminder,
+                    initHour,
+                    endHour,
+                    selectedDate
+                )
+            }
         }
     }
 
@@ -222,11 +250,42 @@ fun HeaderEditEvent(navController:NavHostController) {
 
 
 @Composable
-fun ButtonEditEvent(navController: NavHostController) {
+fun ButtonEditEvent(
+    navController: NavHostController,
+    idReminder: Int,
+    scheduleViewModel: ScheduleViewModel,
+    text: MutableState<String>,
+    initHour: Calendar,
+    endHour: Calendar,
+    selectedDate: Calendar
+) {
+    val contextForToast = LocalContext.current.applicationContext
+
     ElevatedButton(
-        onClick =
-        {
-           navController.popBackStack()
+
+        onClick = {
+            //scheduleViewModel.g
+            if(text.value != ""){
+                if(initHour.timeInMillis<endHour.timeInMillis){
+                    scheduleViewModel.editReminder(
+                        idReminder,
+                        text.value,
+                        endHour,
+                        initHour,
+                        selectedDate
+                    )
+                    navController.popBackStack()
+                }
+                else{
+                    Toast.makeText(contextForToast, "Horas Inconsistentes", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            else{
+                Toast.makeText(contextForToast, "Titulo en Blanco", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
         },
         modifier = Modifier
             .fillMaxWidth()

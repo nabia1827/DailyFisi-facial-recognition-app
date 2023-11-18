@@ -4,8 +4,8 @@ import kotlinx.datetime.LocalDateTime
 
 data class Reminder(
     val idReminder: Int = -1,
-    val title: String = "",
-    val dateStart: LocalDateTime,
-    val dateEnd: LocalDateTime,
-    val isDone: Boolean
+    var title: String = "",
+    var dateStart: LocalDateTime,
+    var dateEnd: LocalDateTime,
+    var isDone: Boolean
 )

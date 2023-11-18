@@ -23,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,23 +45,20 @@ import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
-import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
-import java.util.Calendar
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCardCurso(){
     val navController = rememberNavController()
-    CardCurso(Course(), navController)
+    CardCurso(Course(), navController, false)
 }
 
 @Composable
 fun CardCurso(
     course: Course,
     navController: NavHostController,
+    isActual: Boolean,
 ){
-
-
 
     val curso = course.courseName
     val seccion = "Seccion: ${course.section}"
@@ -77,11 +73,6 @@ fun CardCurso(
         labo = "Lab ${course.labPart.room.idRoom} ${course.labPart.room.pavilion}"
         isLabo = true
     }
-
-    val currentTime = Calendar.getInstance()
-    val inicio = course.startDate
-    val final = course.endDate
-    val isActual = currentTime.after(inicio) && currentTime.before(final)
 
     var colorCampos = if(isActual) Color.White else Color.Black
     var pixel = 40
@@ -101,7 +92,7 @@ fun CardCurso(
             .height(170.dp)
             .padding(10.dp)
             .clip(RoundedCornerShape(18.dp))
-            .clickable { navController.navigate(InternalScreens.HorarioScreen.route) }
+            .clickable { navController.navigate(InternalScreens.HorarioScreen.route + "/${course.idCourse}") }
     ){
         Column(
             modifier = Modifier
@@ -119,13 +110,15 @@ fun CardCurso(
                     modifier = Modifier
                         .weight(0.9f)
                 ){
-                    Text(
-                        text = curso,
-                        color = if(isActual) Color.White else Color(0xFF495ECA),
-                        fontSize = 16.sp,
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (curso != null) {
+                        Text(
+                            text = curso,
+                            color = if(isActual) Color.White else Color(0xFF495ECA),
+                            fontSize = 16.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
                 Box(
@@ -174,7 +167,7 @@ fun CardCurso(
                             },
                             onClick = {
                                 expanded = false
-                                navController.navigate(InternalScreens.HorarioScreen.route)
+                                navController.navigate(InternalScreens.HorarioScreen.route + "/${course.idCourse}")
                             },
                         )
                         if(isActual){

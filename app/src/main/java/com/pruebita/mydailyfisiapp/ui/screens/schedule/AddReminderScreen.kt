@@ -1,5 +1,9 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
+import android.annotation.SuppressLint
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +39,7 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -47,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -59,19 +65,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewAddReminderScreen(){
     val navController = rememberNavController()
-    AddReminderScreen(navController)
+    //AddReminderScreen(navController, null)
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddReminderScreen(navController: NavHostController) {
+fun AddReminderScreen(
+    navController: NavHostController,
+    scheduleViewModel: ScheduleViewModel
+) {
     var selectedId by rememberSaveable { mutableIntStateOf(0) }
     var selectedDate by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
     val openDialog = remember { mutableStateOf(false) }
@@ -80,7 +93,7 @@ fun AddReminderScreen(navController: NavHostController) {
     var showTimePickerRight by remember { mutableStateOf(false) }
     var initHour by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
     var endHour by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
-
+    val text = remember { mutableStateOf("") }
 
     MyDatePickerDialog({ openDialog.value }, { newValue: Boolean ->
         openDialog.value = newValue
@@ -122,7 +135,7 @@ fun AddReminderScreen(navController: NavHostController) {
         ){
             FieldAddEvent(
                 title = "Titulo de Recordatorio",
-                isSingleLine = false, 3,6
+                isSingleLine = false, 3,6,text
             )
         }
         Column (
@@ -155,18 +168,31 @@ fun AddReminderScreen(navController: NavHostController) {
                 .weight(0.2f),
             verticalArrangement = Arrangement.Center
         ){
-            ButtonAddEvent(navController)
+
+            ButtonAddEvent(
+                navController,
+                scheduleViewModel,
+                text,
+                initHour,
+                endHour,
+                selectedDate
+            )
         }
     }
 
 }
 
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
-fun MyTimePickerRight(changeEndHour: (Calendar) -> Unit, getShowTimePicker: () -> Boolean, changeShow: (Boolean) -> Unit) {
+fun MyTimePickerRight(
+    changeEndHour: (Calendar) -> Unit,
+    getShowTimePicker: () -> Boolean,
+    changeShow: (Boolean) -> Unit
+) {
+    val contextForToast = LocalContext.current.applicationContext
     val state = rememberTimePickerState()
     val formatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
-
     val brush = remember {
         Brush.horizontalGradient(
             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
@@ -177,14 +203,19 @@ fun MyTimePickerRight(changeEndHour: (Calendar) -> Unit, getShowTimePicker: () -
         AlertDialog(
             onDismissRequest = { changeShow(false) },
             confirmButton = {
-
                 TextButton(
                     onClick = {
                         val cal = Calendar.getInstance()
                         cal.set(Calendar.HOUR_OF_DAY, state.hour)
                         cal.set(Calendar.MINUTE, state.minute)
+                        val newTime = Calendar.getInstance()
+                        if(cal.timeInMillis>newTime.timeInMillis){
+                            changeEndHour(cal)
+                        }else{
+                            Toast.makeText(contextForToast, "La hora debe ser mayor", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                         cal.isLenient = false
-                        changeEndHour(cal)
                         changeShow(false)
                     },
                     enabled = true
@@ -233,20 +264,27 @@ fun MyTimePickerRight(changeEndHour: (Calendar) -> Unit, getShowTimePicker: () -
                         timeSelectorSelectedContainerColor = Color(0xFF495ECA),
                         timeSelectorUnselectedContainerColor = Color(0xFFF1F5F9),
                         timeSelectorSelectedContentColor = Color.White
-
-
                     )
                 )
             }
 
         )
+
     }
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
-fun MyTimePickerLeft(changeInitHour: (Calendar) -> Unit,getShowTimePicker: () -> Boolean, changeShow: (Boolean) -> Unit) {
+fun MyTimePickerLeft(
+    changeInitHour: (Calendar) -> Unit,
+    getShowTimePicker: () -> Boolean,
+    changeShow: (Boolean) -> Unit
+) {
     val state = rememberTimePickerState()
+    val contextForToast = LocalContext.current.applicationContext
 
     val brush = remember {
         Brush.horizontalGradient(
@@ -264,8 +302,18 @@ fun MyTimePickerLeft(changeInitHour: (Calendar) -> Unit,getShowTimePicker: () ->
                         val cal = Calendar.getInstance()
                         cal.set(Calendar.HOUR_OF_DAY, state.hour)
                         cal.set(Calendar.MINUTE, state.minute)
+
                         cal.isLenient = false
-                        changeInitHour(cal)
+
+                        val newTime = Calendar.getInstance()
+                        if(cal.timeInMillis>newTime.timeInMillis){
+                            changeInitHour(cal)
+                        }else{
+                            Toast.makeText(contextForToast, "La hora debe ser mayor", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+
                         changeShow(false)
                     },
                     enabled = true
@@ -324,6 +372,7 @@ fun MyTimePickerLeft(changeInitHour: (Calendar) -> Unit,getShowTimePicker: () ->
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
 fun MyDatePickerDialog(
@@ -331,7 +380,8 @@ fun MyDatePickerDialog(
     changeOpenDialog: (Boolean) -> Unit,
     changeSelection: (Int, Calendar) -> Unit
 ) {
-    var selectedDatePicker by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
+    val timeZone = TimeZone.getTimeZone("America/Lima")
+    var selectedDatePicker by rememberSaveable { mutableStateOf(Calendar.getInstance(timeZone)) }
 
     val brush = remember {
         Brush.horizontalGradient(
@@ -400,6 +450,7 @@ fun MyDatePickerDialog(
                 )
         ) {
             DatePicker(
+
                 state = datePickerState,
                 colors = DatePickerDefaults.colors(
                     containerColor = Color.White,
@@ -407,11 +458,20 @@ fun MyDatePickerDialog(
                     selectedDayContainerColor = Color(0xFF495ECA),
                     todayContentColor = Color(0xFF495ECA),
                     todayDateBorderColor = Color(0xFF495ECA),
-
-                    )
+                ) ,
+                dateValidator = { selectedDateInMillis ->
+                    isDateValid(selectedDateInMillis)
+                }
             )
         }
     }
+}
+
+fun isDateValid(selectedDateInMillis: Long): Boolean {
+    val timeZone = TimeZone.getTimeZone("America/Lima")
+    val currentTime = Calendar.getInstance(timeZone)
+    currentTime.add(Calendar.DAY_OF_MONTH, 1)
+    return currentTime.timeInMillis<=selectedDateInMillis
 }
 
 @Composable
@@ -471,17 +531,15 @@ fun SelectorFecha(
 
             )
             Text(
-                text = "${sdf.format(getSelectedDate().time)}",
+                text = sdf.format(getSelectedDate().time),
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF495ECA),
-
-                    ),
+                ),
                 modifier = Modifier.padding(7.dp)
             )
-
         }
         Row(
             modifier = Modifier
@@ -502,7 +560,6 @@ fun SelectorFecha(
                     .height(150.dp)
             ) {
                 ButtonDia(1, tomorrow, getSelectedId, changeSelection)
-
             }
             Column(
                 modifier = Modifier
@@ -517,10 +574,7 @@ fun SelectorFecha(
                     .height(150.dp)
             ) {
                 ButtonOther(3, getSelectedId, changeOpenDialog, changeSelection)
-
             }
-
-
         }
     }
 
@@ -797,11 +851,39 @@ fun SelectorHora(
 }
 
 @Composable
-fun ButtonAddEvent(navController: NavHostController) {
+fun ButtonAddEvent(
+    navController: NavHostController,
+    scheduleViewModel: ScheduleViewModel,
+    text: MutableState<String>,
+    initHour: Calendar,
+    endHour: Calendar,
+    selectedDate: Calendar
+) {
+    val contextForToast = LocalContext.current.applicationContext
     ElevatedButton(
         onClick = {
-                  navController.popBackStack()
-             },
+            //scheduleViewModel.g
+            if(text.value != ""){
+                if(initHour.timeInMillis<endHour.timeInMillis){
+                    scheduleViewModel.addReminder(
+                        text.value,
+                        endHour,
+                        initHour,
+                        selectedDate
+                    )
+                    navController.popBackStack()
+                }
+                else{
+                    Toast.makeText(contextForToast, "Horas Inconsistentes", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            else{
+                Toast.makeText(contextForToast, "Titulo en Blanco", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)
@@ -832,8 +914,13 @@ fun ButtonAddEvent(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FieldAddEvent(title: String, isSingleLine: Boolean, minLines: Int, maxLines: Int) {
-    var text by remember { mutableStateOf("") }
+fun FieldAddEvent(
+    title: String, isSingleLine: Boolean,
+    minLines: Int,
+    maxLines: Int,
+    text: MutableState<String>
+) {
+
     Column(
 
     ) {
@@ -856,8 +943,8 @@ fun FieldAddEvent(title: String, isSingleLine: Boolean, minLines: Int, maxLines:
         }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = text,
-            onValueChange = { text = it },
+            value = text.value,
+            onValueChange = { text.value = it  },
             enabled = true,
             textStyle = TextStyle(
                 fontSize = 13.sp,
@@ -941,8 +1028,7 @@ fun HeaderAddEvent(navController:NavHostController) {
                     fontSize = 34.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold,
-
-                    )
+                )
             )
 
         }
@@ -953,5 +1039,5 @@ fun HeaderAddEvent(navController:NavHostController) {
 
 fun getNameDayofWeek(numeroDia: Int): String {
     val names = arrayOf("Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb")
-    return names.getOrNull(numeroDia - 1) ?: " "
+    return names.getOrNull(numeroDia-1) ?: " "
 }

@@ -32,4 +32,26 @@ class ReminderRepositoryImpl: ReminderRepository{
             )
         )
     }
+
+    override fun markAsCompleted(idReminder: Int, idUser: Int?) {
+        //Update the Reminder as Completed
+    }
+
+    override fun addReminder(userId: Int?, title: String, startTime: LocalDateTime, endTime: LocalDateTime): Int {
+        //Update and return the id value
+        return 4
+    }
+
+    override  fun editReminder(
+        userId: Int?,
+        idReminder: Int,
+        title: String,
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ){
+        //Edit the Reminder by its userId
+    }
+
+
+
 }

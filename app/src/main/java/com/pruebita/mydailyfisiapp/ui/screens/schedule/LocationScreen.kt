@@ -1,13 +1,7 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
-import android.graphics.Bitmap
-import android.graphics.BlendMode
-import android.graphics.ColorFilter
 import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -31,18 +24,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,14 +40,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.pruebita.mydailyfisiapp.R
-import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
-import kotlin.math.absoluteValue
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
+import java.util.Calendar
 
 @Preview
 @Composable
 fun PreviewLocationScreen(){
     val navController = rememberNavController()
-    LocationScreen(navController)
+    //LocationScreen(navController, idCourse = idCourse, scheduleViewModel = scheduleViewModel)
 }
 
 @Composable
@@ -66,8 +55,13 @@ fun LocationScreen(
     navController: NavHostController,
     imageModifier: Modifier = Modifier,
     maxScale: Float = 4f,
-    minScale: Float = 2.1f
+    minScale: Float = 2.1f,
+    idCourse: Int,
+    scheduleViewModel: ScheduleViewModel
 ) {
+
+
+
     var scale by remember { mutableStateOf(2.1f) }
     var maxOffsetX by remember{ mutableStateOf((200 * (scale - 1)).coerceAtLeast(0f))}
     var maxOffsetY by remember{ mutableStateOf( (200 * (scale - 1.8)).coerceAtLeast(0.0))}
@@ -96,7 +90,23 @@ fun LocationScreen(
     var istheoric = remember {
         mutableStateOf(true)
     }
+    val courseActual = scheduleViewModel.getCourse(idCourse)
 
+    val timeTheoryStartHour = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeTheoryStartMin = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeTheoryEndHour = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeTheoryEndMin = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin - $timeTheoryEndHour:$timeTheoryEndMin"
+
+
+    val timeLaboStartHour = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeLaboStartMin = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeLaboEndHour = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeLaboEndMin = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeLabo = "$timeLaboStartHour:$timeLaboStartMin - $timeLaboEndHour:$timeLaboEndMin"
+
+    val theoryDescription = "Aula ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
+    val laboDescription = "Lab ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
 
 
     Column(
@@ -131,7 +141,7 @@ fun LocationScreen(
                 }
         ){
             Image(
-                painter = rememberImagePainter(data = "https://dfapruebaf.blob.core.windows.net/mapas/Fisi_piso_1.png"),
+                painter = rememberImagePainter(data = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/maps%2Ffloors%2Ffisi_floor_2.png?alt=media&token=dca9b720-af54-4eef-94f4-36fc0cd987a7"),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -255,10 +265,10 @@ fun LocationScreen(
 
                 ) {
                     if(istheoric.value){
-                        CardTeorica()
+                        CardTeorica(theoryDescription, timeTheory)
                     }
                     else{
-                        CardPractica()
+                        CardPractica(timeLabo, laboDescription)
                     }
                 }
 
