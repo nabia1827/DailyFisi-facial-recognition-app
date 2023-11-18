@@ -195,7 +195,9 @@ class TodayAttendanceTeacherViewModel
     fun initAttendance(){
         val todayAss = _todayAssists.value?.toMutableList()
         if(todayAss != null && currentIndex != -1){
-            todayAss[currentIndex].state = 3 //in progress
+            if(todayAss[currentIndex].state == 4){
+                todayAss[currentIndex].state = 3 //in progress
+            }
             _todayAssists.postValue(todayAss)
         }
 

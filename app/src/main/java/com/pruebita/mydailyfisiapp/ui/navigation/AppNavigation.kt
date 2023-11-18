@@ -41,11 +41,13 @@ import com.pruebita.mydailyfisiapp.ui.screens.others.SplashScreen
 import com.pruebita.mydailyfisiapp.ui.screens.facialrecognizer.*
 import com.pruebita.mydailyfisiapp.viewmodel.AttendanceListTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.AttendanceReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportStudentViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.CurseReportTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceStudentViewModel
+import com.pruebita.mydailyfisiapp.viewmodel.TodayAttendanceTeacherViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.VerifyingIdentityStudentViewModel
 import kotlinx.coroutines.launch
 
@@ -65,6 +67,11 @@ fun AppNavigation(
     val attendanceListTeacherViewModel: AttendanceListTeacherViewModel = hiltViewModel()
     val curseReportTeacherViewModel: CurseReportTeacherViewModel = hiltViewModel()
     val verifyingIdentityStudentViewModel: VerifyingIdentityStudentViewModel = hiltViewModel()
+
+    val todayAttendanceTeacherViewModel: TodayAttendanceTeacherViewModel = hiltViewModel()
+
+    val attendanceReportTeacherViewModel: AttendanceReportTeacherViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = start
@@ -367,7 +374,7 @@ fun AppNavigation(
         }
 
         composable(route = InternalScreens.AttendanceReportTeacherScreen.route) {
-            AttedanceReportTeacherScreen(navController)
+            AttendanceReportTeacherScreen(navController,attendanceReportTeacherViewModel)
         }
         composable(route = InternalScreens.CurseReportTeacherScreen.route + "/{idCourse}",
             arguments = listOf(
@@ -393,7 +400,8 @@ fun AppNavigation(
         }
 
         composable(route = InternalScreens.TodayAttendanceTeacherScreen.route) {
-            TodayAttendanceTeacherScreen(navController)
+
+            TodayAttendanceTeacherScreen(navController,todayAttendanceTeacherViewModel)
         }
 
         /*

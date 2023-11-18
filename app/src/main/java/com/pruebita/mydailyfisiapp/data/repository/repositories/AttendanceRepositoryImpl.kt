@@ -157,6 +157,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         return mutableListOf(
             CourseReport(
                 idCourse = 1,
+                section = 1,
                 courseName = "Calculo",
                 startTime = calculoTeoStart,
                 endTime = calculoLabEnd,
@@ -165,6 +166,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             CourseReport(
                 idCourse = 2,
+                section = 5,
                 courseName = "Algoritmica I",
                 startTime = algoTeoStart,
                 endTime = algoLabEnd,
@@ -173,6 +175,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             CourseReport(
                 idCourse = 3,
+                section = 4,
                 courseName = "Marketing",
                 startTime = marketingTeoStart,
                 endTime = marketingLabEnd,
