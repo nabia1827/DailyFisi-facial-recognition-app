@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,14 +52,45 @@ import coil.compose.rememberAsyncImagePainter
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
+import com.pruebita.mydailyfisiapp.viewmodel.ScheduleViewModel
+import java.util.Calendar
+
 @Preview
 @Composable
 fun PreviewHorarioScreen(){
     val navController = rememberNavController()
-    HorarioScreen(navController)
+    //HorarioScreen(navController, idCourse)
 }
 @Composable
-fun HorarioScreen(navController: NavHostController) {
+fun HorarioScreen(
+    navController: NavHostController,
+    idCourse: Int,
+    scheduleViewModel: ScheduleViewModel
+) {
+    val courseActual = scheduleViewModel.getCourse(idCourse)
+    val currentWeek: Int by scheduleViewModel.currentWeek.observeAsState(initial = -1)
+
+
+    val courseName = courseActual?.courseName
+    val generalDescription = "Seccion ${courseActual?.section} - Semana $currentWeek"
+    val teacher = "${courseActual?.teacherFullName}"
+
+    val timeTheoryStartHour = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeTheoryStartMin = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeTheoryEndHour = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeTheoryEndMin = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin - $timeTheoryEndHour:$timeTheoryEndMin"
+
+
+    val timeLaboStartHour = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeLaboStartMin = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeLaboEndHour = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
+    val timeLaboEndMin = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
+    val timeLabo = "$timeLaboStartHour:$timeLaboStartMin - $timeLaboEndHour:$timeLaboEndMin"
+
+    val theoryDescription = "Aula ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
+    val laboDescription = "Lab ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +102,7 @@ fun HorarioScreen(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.3f)
         ){
-            HeaderHorario(navController)
+            HeaderHorario(navController, generalDescription, courseName, teacher)
         }
         Column(
             modifier = Modifier
@@ -99,7 +131,7 @@ fun HorarioScreen(navController: NavHostController) {
                 )
 
             ) {
-                CardTeorica()
+                CardTeorica(theoryDescription, timeTheory)
             }
             ElevatedButton(
                 onClick = {
@@ -122,7 +154,7 @@ fun HorarioScreen(navController: NavHostController) {
                 )
 
             ) {
-                CardPractica()
+                CardPractica(timeLabo, laboDescription)
             }
         }
         Column(
@@ -149,7 +181,7 @@ fun HorarioScreen(navController: NavHostController) {
                 )
 
             ) {
-                Mapa(navController)
+                Mapa(navController, idCourse)
             }
 
         }
@@ -157,7 +189,7 @@ fun HorarioScreen(navController: NavHostController) {
 }
 
 @Composable
-fun Mapa(navController: NavHostController) {
+fun Mapa(navController: NavHostController, idCourse: Int) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -168,7 +200,7 @@ fun Mapa(navController: NavHostController) {
     ) {
 
         Image(
-            painter =  rememberAsyncImagePainter(model = "https://dfapruebaf.blob.core.windows.net/mapas/piso_1.png"),
+            painter =  rememberAsyncImagePainter(model = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/maps%2Fdefaults%2Floading.png?alt=media&token=c0b51c03-2f73-4226-b0fe-6d4540b3e2d9"),
             contentDescription = null, // Proporciona una descripción significativa si es necesario
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
@@ -206,7 +238,7 @@ fun Mapa(navController: NavHostController) {
                     clip = true
                 )
                 .clickable {
-                    navController.navigate(InternalScreens.LocationScreen.route)
+                    navController.navigate(InternalScreens.LocationScreen.route + "/$idCourse")
 
                 },
             contentAlignment = Alignment.BottomEnd
@@ -223,7 +255,7 @@ fun Mapa(navController: NavHostController) {
 
 
 @Composable
-fun CardPractica() {
+fun CardPractica(timeLabo: String, laboDescription: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -281,7 +313,7 @@ fun CardPractica() {
                 ){
 
                     Text(
-                        text = "Lab 05, 2° piso -  Nuevo Pabellón",
+                        text = laboDescription,
                         fontFamily = poppins,
                         fontSize = 15.sp,
                         color = Color.Black,
@@ -324,7 +356,7 @@ fun CardPractica() {
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(
-                    text = "20:00 - 21:00",
+                    text = timeLabo,
                     fontFamily = poppins,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
@@ -340,7 +372,7 @@ fun CardPractica() {
 }
 
 @Composable
-fun CardTeorica() {
+fun CardTeorica(theoryDescription: String, timeTheory: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -398,7 +430,7 @@ fun CardTeorica() {
                 ){
 
                     Text(
-                        text = "Lab 05, 2° piso -  Nuevo Pabellón",
+                        text = theoryDescription,
                         fontFamily = poppins,
                         fontSize = 15.sp,
                         color = Color.Black,
@@ -440,7 +472,7 @@ fun CardTeorica() {
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(
-                    text = "20:00 - 21:00",
+                    text = timeTheory,
                     fontFamily = poppins,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
@@ -458,7 +490,12 @@ fun CardTeorica() {
 }
 
 @Composable
-fun HeaderHorario(navController: NavHostController) {
+fun HeaderHorario(
+    navController: NavHostController,
+    generalDescription: String,
+    courseName: String?,
+    teacher: String
+) {
     Box(
         modifier = Modifier,
         contentAlignment = Alignment.Center,
@@ -510,17 +547,19 @@ fun HeaderHorario(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth().padding(top = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Calculo III",
-                        textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
-                        fontFamily = poppins,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (courseName != null) {
+                        Text(
+                            text = courseName,
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp,
+                            fontFamily = poppins,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
 
                     Text(
-                        text = "Seccion 3 -Semana 1",
+                        text = generalDescription,
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp,
                         fontFamily = poppins,
@@ -546,7 +585,7 @@ fun HeaderHorario(navController: NavHostController) {
                         Spacer(modifier = Modifier.padding(3.dp))
 
                         Text(
-                            text = "Prof. Oswaldo Lopez Michellini",
+                            text = teacher,
                             textAlign = TextAlign.Center,
                             fontSize = 12.sp,
                             fontFamily = poppins,

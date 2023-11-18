@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "1.5.21"
+    id("kotlin-parcelize")
 }
 
 android {
@@ -23,6 +24,7 @@ android {
             useSupportLibrary = true
         }
     }
+
 
     buildTypes {
         release {

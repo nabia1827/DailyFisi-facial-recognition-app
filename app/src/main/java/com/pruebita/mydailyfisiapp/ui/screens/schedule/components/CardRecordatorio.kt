@@ -1,5 +1,6 @@
 package com.pruebita.mydailyfisiapp.ui.screens.schedule.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,21 +43,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
+import com.pruebita.mydailyfisiapp.data.model.domain.DialogState
 import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun CardRecordatorio(
-    showMyDialog: MutableState<Boolean>,
+    showMyDialog: MutableState<DialogState>,
     navController: NavHostController,
-    reminder: Reminder
+    reminder: Reminder,
+    change: MutableState<Boolean>,
+    idReminder: Int,
 ) {
     val title = reminder.title
-    val timeStart = "${reminder.dateStart.hour}.${reminder.dateStart.minute}"
-    val timeEnd = "${reminder.dateEnd.hour}.${reminder.dateEnd.minute}"
-    val totalTime = "$timeStart : $timeEnd"
+
+
+    val timeStart = "${String.format("%02d",reminder.dateStart.hour)}:${String.format("%02d",reminder.dateStart.minute)}"
+    val timeEnd = "${String.format("%02d",reminder.dateEnd.hour)}:${String.format("%02d",reminder.dateEnd.minute)}"
+    val totalTime = "$timeStart - $timeEnd"
+
+
+    change.value = reminder.isDone
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -87,13 +98,28 @@ fun CardRecordatorio(
                     .height(70.dp),
                 contentAlignment = Alignment.Center
             ){
-                Image(
-                    painter = painterResource(id = R.drawable.calendario_horario),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .size(35.dp)
-                )
+                if(change.value){
+                    Image(
+                        painter = painterResource(id = R.drawable.check_reminder),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .size(35.dp)
+                    )
+                    
+
+                }else{
+
+                    Image(
+                        painter = painterResource(id = R.drawable.calendario_horario),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .size(35.dp)
+                    )
+
+                }
+
 
             }
             Spacer(modifier = Modifier.padding(10.dp))
@@ -174,7 +200,9 @@ fun CardRecordatorio(
                             )
 
                         },
-                        onClick = { navController.navigate(InternalScreens.EditReminderScreen.route) },
+                        onClick = {
+                            navController.navigate(InternalScreens.EditReminderScreen.route + "/$idReminder")
+                        },
                     )
                     DropdownMenuItem(
                         modifier = Modifier.weight(0.5f),
@@ -189,7 +217,12 @@ fun CardRecordatorio(
                                 )
                             )
                         },
-                        onClick = {expanded = false;showMyDialog.value = true},
+                        onClick = {
+                            expanded = false;
+
+                            showMyDialog.value = DialogState(showDialog = true, dialogId = idReminder)
+
+                        },
                     )
                 }
 

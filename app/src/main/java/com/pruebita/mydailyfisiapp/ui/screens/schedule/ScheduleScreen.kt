@@ -41,15 +41,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
+import com.pruebita.mydailyfisiapp.data.model.domain.DialogState
 import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.KalendarType
@@ -66,17 +65,14 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
 @Composable
-fun PreviewScheduleScreen(){
-    val navController = rememberNavController()
-    ScheduleScreen(navController)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ScheduleScreen(navController: NavHostController){
+fun ScheduleScreen(
+    navController: NavHostController,
+    scheduleViewModel: ScheduleViewModel
+){
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+
 
     var currentDay by remember{
         mutableStateOf<LocalDate>(today)
@@ -89,20 +85,15 @@ fun ScheduleScreen(navController: NavHostController){
     }
     var kalendarType: KalendarType = KalendarType.Firey
     var showMyDialog = remember{
-        mutableStateOf<Boolean>(false)
+        mutableStateOf(DialogState(false, -1))
     }
 
-    val scheduleViewModel = ScheduleViewModel()
-
-    val courses: MutableList<Course> by scheduleViewModel.courses.observeAsState(scheduleViewModel.getCourseInfo(today))
-    val reminders: MutableList<Reminder> by scheduleViewModel.reminders.observeAsState(initial = scheduleViewModel.getReminderInfo(today))
-    //val isAcutal: Boolean by scheduleViewModel.isActual.observeAsState(initial = false)
-    //val isDone: Boolean by scheduleViewModel.isDone.observeAsState(initial = false)
+    val courses: MutableList<Course> by scheduleViewModel.courses.observeAsState(initial = mutableListOf())
+    val reminders: MutableList<Reminder> by scheduleViewModel.reminders.observeAsState(initial = mutableListOf())
+    val currentIndex: Int by scheduleViewModel.currentIndex.observeAsState(initial = -1)
 
 
-
-    MyDialog(showMyDialog)
-
+    MyDialog(showMyDialog, scheduleViewModel)
 
     LazyColumn (
         modifier = Modifier
@@ -154,7 +145,8 @@ fun ScheduleScreen(navController: NavHostController){
                 gridCards(
                     navController,
                     currentDay,
-                    courses
+                    courses,
+                    currentIndex
                 )
             }
 
@@ -165,12 +157,9 @@ fun ScheduleScreen(navController: NavHostController){
                 Recordatorios(
                     navController,
                     showMyDialog,
-                    reminders
+                    reminders,
                 )
             }
-
-
-
         }
     }
 }
@@ -178,9 +167,13 @@ fun ScheduleScreen(navController: NavHostController){
 @Composable
 fun Recordatorios(
     navController: NavHostController,
-    showMyDialog: MutableState<Boolean>,
+    showMyDialog: MutableState<DialogState>,
     reminders: MutableList<Reminder>,
 ) {
+
+    val change = remember {
+        mutableStateOf(false)
+    }
     Row (
         modifier = Modifier
             .fillMaxWidth(),
@@ -188,7 +181,7 @@ fun Recordatorios(
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(
-            text = "Recordatorios de Hoy",
+            text = "Mis Recordatorios",
             fontSize = 18.sp,
             fontFamily = poppins,
             fontWeight = FontWeight.SemiBold
@@ -208,7 +201,13 @@ fun Recordatorios(
     }
 
     repeat(reminders.size){ index ->
-        CardRecordatorio(showMyDialog, navController, reminders.get(index))
+        CardRecordatorio(
+            showMyDialog,
+            navController,
+            reminders.get(index),
+            change,
+            reminders.get(index).idReminder,
+        )
     }
 }
 
@@ -218,6 +217,7 @@ fun gridCards(
     navController: NavHostController,
     curr: LocalDate,
     courses: List<Course>,
+    currentIndex: Int,
 ) {
     var dia = curr.dayOfMonth.toString()
     val locale = Locale("es", "ES")
@@ -281,7 +281,11 @@ fun gridCards(
                         .padding(start = 10.dp)
                 )
                 repeat(courses.size){ index ->
-                    CardCurso(course = courses.get(index), navController = navController)
+                    CardCurso(
+                        course = courses.get(index),
+                        navController = navController,
+                        isActual = index == currentIndex
+                    )
                 }
 
 
@@ -392,10 +396,14 @@ fun headerCalendar(date: LocalDate, minimize: MutableState<Boolean>, label: Muta
 
 
 @Composable
-fun MyDialog(showMyDialog: MutableState<Boolean>) {
-    if(showMyDialog.value){
+fun MyDialog(
+    showMyDialog: MutableState<DialogState>,
+    scheduleViewModel: ScheduleViewModel,
+
+    ) {
+    if(showMyDialog.value.showDialog){
         Dialog(
-            onDismissRequest = { showMyDialog.value=false },
+            onDismissRequest = { showMyDialog.value.showDialog =false },
             properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = true
@@ -442,7 +450,7 @@ fun MyDialog(showMyDialog: MutableState<Boolean>) {
                     TextButton(
                         modifier = Modifier.weight(0.25f),
                         onClick = {
-                            showMyDialog.value = false
+                            showMyDialog.value = DialogState(false,-1)
                         }
                     ) {
                         Text(
@@ -456,7 +464,8 @@ fun MyDialog(showMyDialog: MutableState<Boolean>) {
                             .weight(0.45f),
                         colors = ButtonDefaults.buttonColors(Color(0xFFC8DBF8)),
                         onClick = {
-
+                            scheduleViewModel.markAsCompleted(showMyDialog.value.dialogId)
+                            showMyDialog.value = DialogState(false,-1)
                         },
 
                         ) {
