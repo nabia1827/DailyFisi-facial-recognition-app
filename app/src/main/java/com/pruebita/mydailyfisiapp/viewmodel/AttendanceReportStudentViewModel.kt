@@ -66,7 +66,7 @@ class AttendanceReportStudentViewModel
                                 if(isCurrentCourse(reports[i].startTime,reports[i].endTime,now)){
                                     updateForChanges(reports, i)
 
-                                    println(_courseReports.value?.get(i)?.totalAssist ?: 5)
+                                    //println(_courseReports.value?.get(i)?.totalAssist ?: 5)
                                 }
 
 

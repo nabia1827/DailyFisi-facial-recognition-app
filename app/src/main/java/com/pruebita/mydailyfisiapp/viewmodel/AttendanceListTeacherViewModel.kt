@@ -104,7 +104,7 @@ class AttendanceListTeacherViewModel
             val hours:Int = ((remaining / (1000 * 60 * 60)) % 24).toInt()
             if(remaining >= 0){
                 _timeRemaining.postValue("$hours:${String.format("%02d", minutes)}:${String.format("%02d", seconds)}")
-                println("Hora: $hours:$minutes:$seconds")
+                //println("Hora: $hours:$minutes:$seconds")
             }
             else{
                 _timeRemaining.postValue("00:00:00")

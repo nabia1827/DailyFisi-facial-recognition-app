@@ -1,87 +1,46 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.pruebita.mydailyfisiapp.data.model.domain.Event
+import com.pruebita.mydailyfisiapp.data.model.domain.RecognizeResponse
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.EventRepository
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
-class EventRepositoryImpl: EventRepository {
-    override fun listAllTodayEvents(): MutableList<Event> {
-        return mutableListOf(
-            Event(
-               idEvent = 1,
-                idUser = 1,
-                title = "Hackathon",
-                shortDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                longDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                eventImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_1.jpg?alt=media&token=6fed1f03-67f0-4357-a32e-fd4876faa52f",
-                eventDate = Calendar.getInstance(),
-                place = "Auditorio FISI",
-                address = "Av. Perez Tudela",
-                publisherName = "Lucia Rivera",
-                publisherImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                category = "Estudios",
-                publishingDate = Calendar.getInstance(),
-            ),
-            Event(
-                idEvent = 1,
-                idUser = 1,
-                title = "Aniversario",
-                shortDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                longDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                eventImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_1.jpg?alt=media&token=6fed1f03-67f0-4357-a32e-fd4876faa52f",
-                eventDate = Calendar.getInstance(),
-                place = "Auditorio FISI",
-                address = "Av. Perez Tudela",
-                publisherName = "Lucia Rivera",
-                publisherImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                category = "Estudios",
-                publishingDate = Calendar.getInstance(),
-            ),
-            Event(
-                idEvent = 1,
-                idUser = 1,
-                title = "WIE UNMSM",
-                shortDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                longDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                eventImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_1.jpg?alt=media&token=6fed1f03-67f0-4357-a32e-fd4876faa52f",
-                eventDate = Calendar.getInstance(),
-                place = "Auditorio FISI",
-                address = "Av. Perez Tudela",
-                publisherName = "Lucia Rivera",
-                publisherImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                category = "Estudios",
-                publishingDate = Calendar.getInstance(),
-            ),
-            Event(
-                idEvent = 1,
-                idUser = 1,
-                title = "Hult Prize",
-                shortDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                longDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                eventImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_1.jpg?alt=media&token=6fed1f03-67f0-4357-a32e-fd4876faa52f",
-                eventDate = Calendar.getInstance(),
-                place = "Auditorio FISI",
-                address = "Av. Perez Tudela",
-                publisherName = "Lucia Rivera",
-                publisherImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                category = "Estudios",
-                publishingDate = Calendar.getInstance(),
-            ),
-            Event(
-                idEvent = 1,
-                idUser = 1,
-                title = "Charla NTT DATA",
-                shortDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                longDescription = "El día de hoy se presentaran 5 grupos en el Auditorio.",
-                eventImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_1.jpg?alt=media&token=6fed1f03-67f0-4357-a32e-fd4876faa52f",
-                eventDate = Calendar.getInstance(),
-                place = "Auditorio FISI",
-                address = "Av. Perez Tudela",
-                publisherName = "Lucia Rivera",
-                publisherImage = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                category = "Estudios",
-                publishingDate = Calendar.getInstance(),
-            )
-        )
+class EventRepositoryImpl(private val apiService:ApiService): EventRepository {
+
+    override suspend fun listAllTodayEvents(token:String): MutableList<Event>? {
+        val authorizationHeader = "Bearer $token"
+        println("Bearer in event $token")
+        var list:MutableList<Event>? = mutableListOf<Event>()
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val timeZone = TimeZone.getTimeZone("America/Lima")
+            dateFormat.timeZone = timeZone
+
+            val response = apiService.listAllTodayEvents(authorizationHeader)
+            if (response.isSuccessful) {
+                list = response.body()
+                println("Fecha primera: ${dateFormat.format(list?.get(0)?.eventDate?.time)}")
+            } else {
+                println("Error api event: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api event en catch: $e" )
+        }
+
+        return list
     }
 }

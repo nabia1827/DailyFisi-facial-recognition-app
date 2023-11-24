@@ -35,6 +35,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +68,7 @@ import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ForgotPasswordViewModel
 import com.pruebita.mydailyfisiapp.viewmodel.LoginViewModel
+import kotlinx.coroutines.launch
 
 
 @Preview(showBackground = true)
@@ -170,10 +172,9 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostC
                     true,
                     isFirstLogin,
                     navController,
-                    { viewModel.onLoginSelected() },
-                    { viewModel.saveLocallyUserData() }) {
-                    viewModel.getMainRoute()
-                }
+                    viewModel
+                )
+
 
             }
 
@@ -225,22 +226,35 @@ fun LoginButton(
     loginEnable: Boolean,
     isFirstLogin: Boolean,
     navController: NavHostController,
-    onLoginSelected: () -> Boolean,
-    saveUser: () -> Unit,
-    getMainRoute: () -> String
+    viewModel: LoginViewModel
 ) {
+    var isClicked = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    if(isClicked.value){
+        LaunchedEffect(Unit) {
+            scope.launch {
+                if (viewModel.onLoginSelected()) {
+                    viewModel.saveLocallyUserData()
+
+                    if (viewModel.getUserActive()) {
+                        navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false"+"/false")
+                        viewModel.setUserActive(true)
+                    } else {
+                        val route = viewModel.getMainRoute()
+                        navController.navigate("$route/false")
+                    }
+
+                }
+            }
+        }
+    }
+
+
+
     ElevatedButton(
         onClick = {
-            if (onLoginSelected()) {
-                saveUser()
-                if (isFirstLogin) {
-                    navController.navigate(route = AppScreens.FaceRecognizerScreen.route + "/false"+"/false")
-                } else {
-                    val route = getMainRoute()
-                    navController.navigate("$route/false")
-                }
 
-            }
+            isClicked.value = true
         },
         modifier = Modifier
             .fillMaxWidth()

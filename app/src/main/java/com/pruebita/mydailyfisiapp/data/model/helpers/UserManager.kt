@@ -20,7 +20,6 @@ class UserManager(private val context: Context) {
         editor.putString("email", user.email)
         editor.putString("cellphone", user.cellphone)
         editor.putString("imageUser", user.imageUser)
-        editor.putString("idFacialIdentity", user.idFacialIdentity)
         editor.putBoolean("sessionActive", user.sessionActive)
         editor.putBoolean("userActive", user.userActive)
         editor.apply()
@@ -37,14 +36,13 @@ class UserManager(private val context: Context) {
         val email = sharedPreferences.getString("email", "")
         val cellphone = sharedPreferences.getString("cellphone", "")
         val imageUser = sharedPreferences.getString("imageUser", "")
-        val idFacialIdentity = sharedPreferences.getString("idFacialIdentity", "")
         val sessionActive = sharedPreferences.getBoolean("sessionActive", false)
         val userActive = sharedPreferences.getBoolean("userActive", false)
 
 
         return User(idUser,idRol, user!!,
             password!!,names!!,firstLastName!!,secondLastName!!,email!!,
-            cellphone!!,imageUser!!,idFacialIdentity!!,sessionActive,userActive)
+            cellphone!!,imageUser!!,sessionActive,userActive)
     }
 
     fun deleteUser() {
@@ -59,7 +57,6 @@ class UserManager(private val context: Context) {
         editor.remove("email")
         editor.remove("cellphone")
         editor.remove("imageUser")
-        editor.remove("idFacialIdentity")
         editor.remove("sessionActive")
         editor.remove("userActive")
         editor.apply()

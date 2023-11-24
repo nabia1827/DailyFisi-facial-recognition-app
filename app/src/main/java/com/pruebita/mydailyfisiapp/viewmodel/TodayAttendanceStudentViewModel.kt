@@ -131,7 +131,7 @@ class TodayAttendanceStudentViewModel
         val todayAss = repoAssists.getTodayAssists(userManager.getIdUser()).toMutableList()
 
         if(todayAss != null){
-            println("Entrooo: ${todayAss[0].startTime}")
+            //println("Entrooo: ${todayAss[0].startTime}")
             _isFinished.postValue(false)
             _nextClassStartTime.postValue(todayAss[0].startTime)
 

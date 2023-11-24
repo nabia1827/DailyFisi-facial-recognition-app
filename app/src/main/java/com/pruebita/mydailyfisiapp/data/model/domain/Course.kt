@@ -15,4 +15,5 @@ data class Course(
     val labPart: SubPart = SubPart(),
     val teacherFullName: String? = "Someone",
     val section: Int = 0
+
 )

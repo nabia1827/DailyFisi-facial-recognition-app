@@ -5,15 +5,19 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.helpers.AcademicTimeManager
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.AttendanceRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.RolRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.SemesterRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -23,9 +27,11 @@ import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val context: Context) : ViewModel() {
+class MainViewModel @Inject constructor(private val context: Context, private val apiService: ApiService) : ViewModel() {
 
     private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
+
     private val academicTimeManager: AcademicTimeManager = AcademicTimeManager(context)
 
     private val _currentUser = MutableLiveData<User>(userManager.getUser() ?: User())
@@ -34,7 +40,7 @@ class MainViewModel @Inject constructor(private val context: Context) : ViewMode
     private val _currentUserRol = MutableLiveData<String>()
     val currentUserRol: LiveData<String> = _currentUserRol
 
-    private val repo: UserRepositoryImpl = UserRepositoryImpl()
+    private val repo: UserRepositoryImpl = UserRepositoryImpl(apiService)
     private val repoRol: RolRepositoryImpl = RolRepositoryImpl()
     private val storage: StorageImagesImpl = StorageImagesImpl()
     private val repoSemester: SemesterRepositoryImpl = SemesterRepositoryImpl()
@@ -110,7 +116,10 @@ class MainViewModel @Inject constructor(private val context: Context) : ViewMode
                 "users"
             )
             _currentUser.value = user
-            repo.updateUser(user)
+            viewModelScope.launch{
+                repo.updateImageUser(tokenManager.getToken(),user)
+            }
+
         }
     }
 
@@ -118,7 +127,10 @@ class MainViewModel @Inject constructor(private val context: Context) : ViewMode
     fun logOut() {
         var tmp = _currentUser.value
         if (tmp != null) {
-            repo.setActiveSession(tmp.idUser, false)
+            viewModelScope.launch{
+                repo.setActiveSession(tokenManager.getToken(),tmp.idUser, false)
+            }
+
         }
     }
 }

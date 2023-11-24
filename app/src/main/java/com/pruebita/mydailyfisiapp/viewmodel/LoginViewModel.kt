@@ -5,32 +5,44 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
 import com.pruebita.mydailyfisiapp.data.model.domain.SignInResult
 import com.pruebita.mydailyfisiapp.data.model.domain.SignInState
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.AuthService
+import com.pruebita.mydailyfisiapp.data.repository.repositories.AuthRepository
 
 import com.pruebita.mydailyfisiapp.data.repository.repositories.UserRepositoryImpl
+import com.pruebita.mydailyfisiapp.data.source.credentials
 import com.pruebita.mydailyfisiapp.ui.navigation.AppScreens
 import com.pruebita.mydailyfisiapp.ui.navigation.ItemMenu
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val context: Context) : ViewModel() {
-    private val repo: UserRepositoryImpl = UserRepositoryImpl()
+class LoginViewModel
+@Inject constructor(private val context: Context, private val authService: AuthService, private val apiService: ApiService) : ViewModel() {
+    private val repo: UserRepositoryImpl = UserRepositoryImpl(apiService)
+    private val authRepository: AuthRepository = AuthRepository(authService)
 
     private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
 
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> = _currentUser
 
-    private val _userErrors = listOf("Campo vacio", "Usuario no valido", "Usuario no registrado")
-    private val _passwordErrors = listOf("Campo vacio", "Contraseña incorrecta")
+    private val _userErrors = listOf("Campo vacio", "Correo no valido", "Dominio no valido")
+    private val _passwordErrors = listOf("Campo vacio", "Contraseña invalida")
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -56,6 +68,17 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
 
+    init {
+        auth()
+        val timer = Timer()
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                auth()
+            }
+        }, 0, 30 * 60 * 1000)
+
+    }
+
 
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
@@ -64,7 +87,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
 
     private fun isValidPassword(password: String): Boolean {
-        if (password == "123") {
+        if (password.length > 4) {
             _txtValidationPassCorrect.value = ""
             return true
 
@@ -78,7 +101,7 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
     private fun isValidEmail(email: String): Boolean {
         if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            if (email == "nabia.pachas@unmsm.edu.pe" || email == "kevinmiguel.ortiz@unmsm.edu.pe") {
+            if (validateDomain(email)) {
                 _txtValidationUserCorrect.value = ""
                 return true
             } else {
@@ -90,14 +113,21 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         return false
     }
 
-    fun onLoginSelected(): Boolean {
+    suspend fun onLoginSelected(): Boolean {
         val email = _email.value
         val password = _password.value
 
         if (email != null && password != null) {
             _isValidationUserCorrect.value = isValidEmail(email)
             _isValidationPassCorrect.value = isValidPassword(password)
-            return _isValidationUserCorrect.value == true && _isValidationPassCorrect.value == true
+            var isValid = false
+            if(_isValidationUserCorrect.value == true && _isValidationPassCorrect.value == true){
+                isValid = repo.validateUser(tokenManager.getToken(),email,password) == 1
+
+                return isValid
+            }
+
+            return false
         } else {
             if (email == null)
                 _txtValidationUserCorrect.value = _userErrors[0]
@@ -109,36 +139,39 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
         }
     }
 
-    private fun loadUserData(): Unit {
+    private suspend fun loadUserData(): Unit {
         val email = _email.value
         val password = _password.value
         if (email != null && password != null) {
-            _currentUser.value = repo.getUser(email, password)
+            _currentUser.value = repo.getUser(tokenManager.getToken(),email, password)
         }
 
     }
 
     //--
-    private fun loadUserDataFromGoogle(user: UserFromGmail): Unit {
-        _currentUser.value = repo.getUserFromGoogle(user)
+    private suspend fun loadUserDataFromGoogle(user: UserFromGmail): Unit {
+        _currentUser.value = repo.getUserFromGoogle(tokenManager.getToken(),user)
+
 
     }
 
-    fun saveLocallyUserData(): Unit {
+    suspend fun saveLocallyUserData(): Unit {
         loadUserData()
         val curr = _currentUser.value
         if (curr != null) {
-            repo.setActiveSession(curr.idUser, true)
+            repo.setActiveSession(tokenManager.getToken(),curr.idUser, true)
             userManager.saveUser(curr)
+
         }
     }
 
-    fun saveLocallyUserDataFromGoogle(user: UserFromGmail): Unit {
+    suspend fun saveLocallyUserDataFromGoogle(user: UserFromGmail): Unit {
         if (user.email != null) {
             loadUserDataFromGoogle(user)
 
             val curr = _currentUser.value
             if (curr != null) {
+                repo.setActiveSession(tokenManager.getToken(),curr.idUser, true)
                 userManager.saveUser(curr)
             }
         }
@@ -180,6 +213,40 @@ class LoginViewModel @Inject constructor(private val context: Context) : ViewMod
 
     fun resetState() {
         _state.update { SignInState() }
+    }
+
+    fun auth() {
+        viewModelScope.launch {
+            try {
+
+                val token = authRepository.auth(credentials).Token
+                tokenManager.saveToken(token)
+            } catch (e: Exception) {
+                println("error en login: ${e.message}")
+
+            }
+        }
+    }
+
+    private fun validateDomain(email: String): Boolean {
+        val domain = "@unmsm.edu.pe"
+        val regex = Regex(".*$domain$")
+
+        return regex.matches(email)
+    }
+
+    suspend fun getUserActive():Boolean{
+        val first = !repo.getUserActive(tokenManager.getToken(),userManager.getIdUser())
+        _isFirstLogin.postValue(first)
+        return first
+    }
+
+
+    fun setUserActive(userActive: Boolean){
+        viewModelScope.launch{
+            _isFirstLogin.postValue(!userActive)
+            repo.setUserActive(tokenManager.getToken(),userManager.getIdUser(), userActive)
+        }
     }
 
 

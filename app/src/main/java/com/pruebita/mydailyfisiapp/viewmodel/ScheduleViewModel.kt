@@ -73,12 +73,12 @@ class ScheduleViewModel @Inject constructor(private val context: Context): ViewM
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                println("aaaaaaaa")
+                //println("aaaaaaaa")
                 val indexTemp = indexTemp.value
                 if (indexTemp!=-1 && indexTemp!=null){
                     val currentTime = Calendar.getInstance(timeZone)
                     if(CompareTime(currentTime)){
-                        print("no entroooo pipipi")
+                        //print("no entroooo pipipi")
                         if(indexTemp + 1 < (courses.value?.size ?: -1)){
                             val tempCourse = _courses.value?.get(indexTemp+1)
                             if (tempCourse != null) {

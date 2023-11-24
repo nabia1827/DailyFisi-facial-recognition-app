@@ -53,7 +53,7 @@ fun HomeScreen(clockViewModel: ClockViewModel) {
 
     val currentUser: User by clockViewModel.user.observeAsState(initial = User())
 
-    val listTodayEvents: MutableList<Event> by clockViewModel.todayEvents.observeAsState(initial = mutableListOf())
+    val listTodayEvents: MutableList<Event>? by clockViewModel.todayEvents.observeAsState(initial = mutableListOf())
     val listCourses: MutableList<Course> by clockViewModel.courses.observeAsState(initial = mutableListOf())
 
     val pagerState = rememberPagerState()
@@ -69,12 +69,12 @@ fun HomeScreen(clockViewModel: ClockViewModel) {
     ) {
         item{
             Spacer(modifier = Modifier.padding(2.dp))
-            HeaderHome(currentUser.names,currentUser.idRol) { listTodayEvents.size }
+            HeaderHome(currentUser.names,currentUser.idRol) { listTodayEvents?.size ?: 0 }
         }
         item {
             Spacer(modifier = Modifier.padding(4.dp))
-            HorizontalPager(pageCount = listTodayEvents.size, state = pagerState) {
-                    index ->CardEvent(listTodayEvents[index], index%3)
+            HorizontalPager(pageCount = listTodayEvents?.size ?: 0, state = pagerState) {
+                    index ->CardEvent(listTodayEvents?.get(index) ?: Event(), index%3)
             }
         }
         item{

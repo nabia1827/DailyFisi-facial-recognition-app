@@ -1,5 +1,7 @@
 package com.pruebita.mydailyfisiapp.data.model.domain
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 import java.util.Calendar
 
 data class Event(

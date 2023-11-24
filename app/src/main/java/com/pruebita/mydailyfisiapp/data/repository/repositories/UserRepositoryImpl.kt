@@ -1,73 +1,132 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
+import com.pruebita.mydailyfisiapp.data.model.domain.ProfileUser
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
-class UserRepositoryImpl: UserRepository {
-    override fun getUser(email:String, password:String): User {
-        if(email == "nabia.pachas@unmsm.edu.pe"){
-            return User(
-                idUser = 1,
-                idRol = 1,
-                names = "Nabia Jasmin",
-                firstLastName = "Pachas",
-                secondLastName = "Lopez",
-                user = "nabia.pachas",
-                password = password,
-                email = "nabia.pachas@unmsm.edu.pe",
-                cellphone = "950415842",
-                imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-                idFacialIdentity = "nabia_pachas_fi",
-                sessionActive = true,
-                userActive = true,
-            )
-        }else{
-            return User(
-                idUser = 2,
-                idRol = 1,
-                names = "Kevin Miguel",
-                firstLastName = "Ortiz",
-                secondLastName = "Abanto",
-                user = "kevinmiguel.ortiz",
-                password = password,
-                email = "kevinmiguel.ortiz@unmsm.edu.pe",
-                cellphone = "950415842",
-                imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_2.jpg?alt=media&token=4fbbf795-91fe-4e3b-a738-2afcce491c2d",
-                idFacialIdentity = "kevin_ortiz_fi",
-                sessionActive = true,
-                userActive = true,
-            )
+class UserRepositoryImpl(private val apiService: ApiService): UserRepository {
+
+    override suspend fun getUser(token:String, email:String, password:String): User? {
+        val authorizationHeader = "Bearer $token"
+        val pUser = email.substringBefore("@")
+        var user :User?= User()
+        try {
+            val response = apiService.getUser(authorizationHeader,pUser,password)
+            if (response.isSuccessful) {
+                user = response.body()
+                println("getUser: ${user?.names}")
+            } else {
+                println("Error api getUser: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUser en catch: $e" )
+        }
+        return user
+    }
+
+    override suspend fun getUserFromGoogle(token:String,userGmail: UserFromGmail): User? {
+        val authorizationHeader = "Bearer $token"
+
+        val userName = userGmail.email?:"".substringBefore("@")
+        var user :User?= User()
+        try {
+            val response = apiService.getUserFromGoogle(authorizationHeader,userName)
+            if (response.isSuccessful) {
+                user = response.body()
+                println("getUserFromGoogle: ${user?.names}")
+            } else {
+                println("Error api getUserFromGoogle: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUserFromGoogle en catch: $e" )
+        }
+        return user
+    }
+
+    override suspend fun updateImageUser(token:String, user: User) {
+        val authorizationHeader = "Bearer $token"
+        try {
+            val response = apiService.updateImageUser(authorizationHeader, ProfileUser(user.idUser,user.imageUser))
+            if (response.isSuccessful) {
+                val i = response.body()
+                println("getUserFromGoogle: $i")
+            } else {
+                println("Error api getUserFromGoogle: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUserFromGoogle en catch: $e" )
+        }
+    }
+
+    override suspend fun setActiveSession(token: String,id: Int,isActive: Boolean) {
+        val authorizationHeader = "Bearer $token"
+        try {
+            val response = apiService.setActiveSession(authorizationHeader,id,isActive)
+            if (response.isSuccessful) {
+                val i = response.body()
+                println("setActiveSession: $i")
+            } else {
+                println("Error api setActiveSession: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api setActiveSession en catch: $e" )
+        }
+    }
+
+    override suspend fun validateUser(token: String, email: String, password: String): Int {
+        val authorizationHeader = "Bearer $token"
+        val pUser = email.substringBefore("@")
+        var i = 0
+        try {
+            val response = apiService.validateUser(authorizationHeader,pUser,password,0)
+            if (response.isSuccessful) {
+                i = response.body()?:0
+                println("getUser: $i")
+            } else {
+                println("Error api getUser: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUser en catch: $e" )
+        }
+        return i
+    }
+
+    override suspend fun getUserActive(token: String,idUser: Int): Boolean {
+        val authorizationHeader = "Bearer $token"
+        var isActive:Boolean? = false
+        try {
+            val response = apiService.getUserActive(authorizationHeader,idUser)
+            if (response.isSuccessful) {
+                isActive = response.body()
+                println("getUserActive: $isActive")
+            } else {
+                println("Error api getUserActive: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUserActive en catch: $e" )
+        }
+        return isActive == true
+    }
+    override suspend fun setUserActive(token: String,idUser: Int, userActive: Boolean) {
+        val authorizationHeader = "Bearer $token"
+        var isActive:Int? = 0
+        try {
+            val response = apiService.setUserActive(authorizationHeader,idUser, userActive,0)
+            if (response.isSuccessful) {
+                isActive = response.body()
+                println("setUserActive: $isActive")
+            } else {
+                println("Error api setUserActive: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api setUserActive en catch: $e" )
         }
 
-    }
-
-    override fun getUserFromGoogle(user: UserFromGmail): User {
-        val palabras = user.userName.toString().split(" ")
-
-        return User(
-            idUser = 1,
-            idRol = 1,
-            names = "Nabia Jasmin",
-            firstLastName = "Pachas",
-            secondLastName = "Lopez",
-            user = "nabia.pachas",
-            password = "123456",
-            email = "nabia.pachas@unmsm.edu.pe",
-            cellphone = "950415842",
-            imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
-            idFacialIdentity = "nabia_pachas_fi",
-            sessionActive = true,
-            userActive = true,
-        )
-    }
-
-    override fun updateUser(user: User) {
-        //Go to API
-    }
-
-    override fun setActiveSession(id: Int,isActive: Boolean) {
-        //Nothing for a while
     }
 
 }

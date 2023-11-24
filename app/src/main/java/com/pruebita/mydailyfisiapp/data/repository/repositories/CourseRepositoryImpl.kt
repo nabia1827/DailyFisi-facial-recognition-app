@@ -15,6 +15,8 @@ class CourseRepositoryImpl: CourseRepository {
     private val initMin = 17
     private val initHour = 13
     val day = 18
+
+    //with order
     override fun getTodayCourses(idUser: Int): MutableList<Course> {
 
         // API has to return today courses later than actual hour
@@ -169,6 +171,7 @@ class CourseRepositoryImpl: CourseRepository {
         )
     }
 
+    // without order
     override fun getUserCourses(idUser: Int): MutableList<Course> {
         return mutableListOf(
             Course(courseName = "Algoritmica I", section = 1),

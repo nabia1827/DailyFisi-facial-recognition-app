@@ -4,13 +4,17 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.Event
 import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.EventRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -19,10 +23,11 @@ import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
 @HiltViewModel
-class ClockViewModel @Inject constructor(private val context: Context): ViewModel() {
+class ClockViewModel @Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel() {
     private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
-    private val repoEvent: EventRepositoryImpl = EventRepositoryImpl()
+    private val repoEvent: EventRepositoryImpl = EventRepositoryImpl(apiService)
     private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
     private var currentIndex = -1
 
     private var todayCourses: MutableList<Course> = mutableListOf()
@@ -68,7 +73,7 @@ class ClockViewModel @Inject constructor(private val context: Context): ViewMode
 
 
     init {
-        _todayEvents.value = repoEvent.listAllTodayEvents()
+        realizarSolicitud()
         _user.value = userManager.getUser() ?: User()
         val user = _user.value
 
@@ -108,7 +113,7 @@ class ClockViewModel @Inject constructor(private val context: Context): ViewMode
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                _todayEvents.value = repoEvent.listAllTodayEvents()
+                realizarSolicitud()
                 val user = _user.value
                 if (user!=null){
                     _courses.value = repoCourse.getUserCourses(user.idUser)
@@ -231,7 +236,13 @@ class ClockViewModel @Inject constructor(private val context: Context): ViewMode
         return sdf.format(calendar.time)
     }
 
+    fun realizarSolicitud() {
+        viewModelScope.launch {
+            _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
 
+
+        }
+    }
 
 
 }
