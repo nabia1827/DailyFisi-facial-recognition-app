@@ -113,6 +113,7 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
+                
                 realizarSolicitud()
                 val user = _user.value
                 if (user!=null){

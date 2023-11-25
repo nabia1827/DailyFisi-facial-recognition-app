@@ -427,7 +427,7 @@ fun AppNavigation(
         composable(route = InternalScreens.AddReminderScreen.route) {
             AddReminderScreen(navController, scheduleViewModel)
         }
-
+//Nuevoooo
         composable(
             route = InternalScreens.EditReminderScreen.route + "/{idReminder}",
             arguments = listOf(
