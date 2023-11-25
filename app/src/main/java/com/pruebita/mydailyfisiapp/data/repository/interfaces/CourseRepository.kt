@@ -7,18 +7,18 @@ import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
 import kotlinx.datetime.LocalDate
 
 interface CourseRepository {
-    fun getTodayCourses(idUser: Int):MutableList<Course>
+    suspend fun getTodayCourses(token:String,idUser: Int):MutableList<Course>?
 
-    fun getUserCourses(idUser: Int):MutableList<Course>
+    suspend fun getUserCourses(token:String,idUser: Int):MutableList<Course>?
 
-    fun getCourseShortInfo(idCourse: Int): Course
+    suspend fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course?
 
-    fun getSubPartSummary(idCourse: Int, idSubPart: Int): SubPartSummary
+    suspend fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary?
 
-    fun getCourseSummary(idCourse: Int):CourseSummary
+    suspend fun getCourseSummary(token:String,idCourse: Int,idUser: Int):CourseSummary?
 
-    fun isToday(idCourse: Int):Boolean
+    suspend fun isToday(token:String,idCourse: Int,idUser: Int):Boolean
 
-    fun getCourseCardInfo (idCourse: Int, isLabo: Int): Pair<String, String>
-    fun getCourseInfoFromTime(specificDate: LocalDate): MutableList<Course>
+    suspend fun getCourseCardInfo (token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String>
+    suspend fun getCourseInfoFromTime(token:String,idUser: Int,specificDate: LocalDate): MutableList<Course>?
 }

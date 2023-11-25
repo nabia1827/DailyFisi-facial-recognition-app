@@ -99,7 +99,7 @@ fun VerifyingIdentityStudentScreen(navController: NavHostController, viewModel: 
     //0 Theory 1 Lab
 
     val currentIdUser: Int by viewModel.currentIdUser.observeAsState(initial = 0)
-    val cardInfo: Pair<String, String> = viewModel.getCourseDetails()
+    val cardInfo: Pair<String, String> by viewModel.cardInfo.observeAsState(Pair("",""))
     val idCourse: Int by viewModel.idCourse.observeAsState(initial = 0)
 
     Column (
@@ -397,8 +397,8 @@ fun ContentRecognizing(
             horizontalAlignment = Alignment.CenterHorizontally,
         )
         {
-            val curso = cardInfo.first
-            val lugar = cardInfo.second
+            val curso = cardInfo.first?:" "
+            val lugar = cardInfo.second?:" "
 
             Row (
                 modifier = Modifier

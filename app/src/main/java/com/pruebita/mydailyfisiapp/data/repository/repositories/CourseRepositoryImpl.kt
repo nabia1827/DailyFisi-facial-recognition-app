@@ -1,293 +1,180 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
+import com.google.gson.JsonPrimitive
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.CourseSummary
 import com.pruebita.mydailyfisiapp.data.model.domain.Room
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
+import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.domain.UserSetTime
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
 import kotlinx.datetime.LocalDate
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 
-class CourseRepositoryImpl: CourseRepository {
+class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository {
     private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
     private val initMin = 17
     private val initHour = 13
     val day = 18
 
     //with order
-    override fun getTodayCourses(idUser: Int): MutableList<Course> {
+    override suspend fun getTodayCourses(token:String, idUser: Int): MutableList<Course>? {
+        val authorizationHeader = "Bearer $token"
+        val calendar = Calendar.getInstance()
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
-        // API has to return today courses later than actual hour
+        var list : MutableList<Course>? = mutableListOf()
+        try {
+            val response = apiService.getTodayCourses(authorizationHeader,idUser,dayOfWeek)
+            if (response.isSuccessful) {
+                list = response.body()
+                println("getTodayCourses: ${list?.get(0)?.idCourse}")
+            } else {
+                println("Error api getTodayCourses: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getTodayCourses en catch: $e" )
+        }
+        return list
 
-        val calculoTeoStart = Calendar.getInstance(timeZone)
-        calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
-        val calculoTeoEnd = Calendar.getInstance(timeZone)
-        calculoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
-
-        val calculoLabStart = Calendar.getInstance(timeZone)
-        calculoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
-        val calculoLabEnd = Calendar.getInstance(timeZone)
-        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
-
-
-        val algoTeoStart = Calendar.getInstance(timeZone)
-        algoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
-        val algoTeoEnd = Calendar.getInstance(timeZone)
-        algoTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+4, 0)
-
-        val algoLabStart = Calendar.getInstance(timeZone)
-        algoLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin +4, 0)
-        val algoLabEnd = Calendar.getInstance(timeZone)
-        algoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin +6, 0)
-
-
-        val marketingTeoStart = Calendar.getInstance(timeZone)
-        marketingTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+6, 0)
-        val marketingTeoEnd = Calendar.getInstance(timeZone)
-        marketingTeoEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
-
-        val marketingLabStart = Calendar.getInstance(timeZone)
-        marketingLabStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin+7, 0)
-        val marketingLabEnd = Calendar.getInstance(timeZone)
-        marketingLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+9, 0)
-
-
-
-        return mutableListOf(
-            Course(
-                idCourse = 1,
-                courseName = "Calculo",
-                startDate = Calendar.getInstance(),
-                endDate = Calendar.getInstance(),
-                term = "X",
-                theoryPart = SubPart(
-                    idPart = 1,
-                    desPart = "Teoria",
-                    startHour = calculoTeoStart,
-                    endHour = calculoTeoEnd,
-                    room = Room(
-                        idRoom = 102,
-                        typeRoom = "Salon",
-                        pavilion = "AP",
-                        floor = 1,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                labPart = SubPart(
-                    idPart = 2,
-                    desPart = "Laboratorio",
-                    startHour = calculoLabStart,
-                    endHour = calculoLabEnd,
-                    room = Room(
-                        idRoom = 5,
-                        typeRoom = "Lab",
-                        pavilion = "NP",
-                        floor = 2,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                teacherFullName = "Oswaldo Lopez Michellini",
-                section = 1
-            ),
-            Course(
-                idCourse = 2,
-                courseName = "Algoritmica I",
-                startDate = Calendar.getInstance(),
-                endDate = Calendar.getInstance(),
-                term = "X",
-                theoryPart = SubPart(
-                    idPart = 1,
-                    desPart = "Teoria",
-                    startHour = algoTeoStart,
-                    endHour = algoTeoEnd,
-                    room = Room(
-                        idRoom = 4,
-                        typeRoom = "Lab",
-                        pavilion = "NP",
-                        floor = 1,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                labPart = SubPart(
-                    idPart = 2,
-                    desPart = "Lab.",
-                    startHour = algoLabStart,
-                    endHour = algoLabEnd,
-                    room = Room(
-                        idRoom = 7,
-                        typeRoom = "Lab",
-                        pavilion = "NP",
-                        floor = 2,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                teacherFullName = "Andres Huertas Sanchez",
-                section = 1
-            ),
-            Course(
-                idCourse = 3,
-                courseName = "Marketing",
-                startDate = Calendar.getInstance(),
-                endDate = Calendar.getInstance(),
-                term = "X",
-                theoryPart = SubPart(
-                    idPart = 1,
-                    desPart = "Teoria",
-                    startHour = marketingTeoStart,
-                    endHour = marketingTeoEnd,
-                    room = Room(
-                        idRoom = 4,
-                        typeRoom = "Lab",
-                        pavilion = "NP",
-                        floor = 1,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                labPart = SubPart(
-                    idPart = 2,
-                    desPart = "Lab.",
-                    startHour = marketingLabStart,
-                    endHour = marketingLabEnd,
-                    room = Room(
-                        idRoom = 7,
-                        typeRoom = "Lab",
-                        pavilion = "NP",
-                        floor = 2,
-                        posX = 200,
-                        posY = 200,
-                    )
-                ),
-                teacherFullName = "Andres Huertas Sanchez",
-                section = 1
-            )
-
-        )
     }
 
     // without order
-    override fun getUserCourses(idUser: Int): MutableList<Course> {
-        return mutableListOf(
-            Course(courseName = "Algoritmica I", section = 1),
-            Course(courseName = "Base de Datos", section = 2),
-            Course(courseName = "IoT", section = 3),
-            Course(courseName = "Marketing", section = 4),
-            Course(courseName = "Calculo", section = 1),
-            Course(courseName = "Algebra", section = 2)
-
-        )
-    }
-
-    override fun getCourseShortInfo(idCourse: Int): Course {
-        when (idCourse) {
-            1 -> {
-                return Course(
-                    idCourse = 1,
-                    courseName = "Calculo",
-                    teacherFullName = "Oswaldo Lopez Michellini",
-                    section = 1
-                )
+    override suspend fun getUserCourses(token:String, idUser: Int): MutableList<Course>? {
+        val authorizationHeader = "Bearer $token"
+        var list : MutableList<Course>? = mutableListOf()
+        try {
+            val response = apiService.getUserCourses(authorizationHeader,idUser)
+            if (response.isSuccessful) {
+                list = response.body()
+                println("getUserCourses: ${list?.get(0)?.idCourse}")
+            } else {
+                println("Error api getUserCourses: ${response.code()}")
             }
-            2 -> {
-                return Course(
-                    idCourse = 2,
-                    courseName = "Algoritmica I",
-                    teacherFullName = "Oswaldo Lopez Michellini",
-                    section = 4
-                )
-            }
-            else -> {
-                return Course(
-                    idCourse = 3,
-                    courseName = "Marketing",
-                    teacherFullName = "Oswaldo Lopez Michellini",
-                    section = 8
-                )
-            }
+        } catch (e: Exception) {
+            println("Error api getUserCourses en catch: $e" )
         }
+        return list
     }
 
-    override fun getSubPartSummary(idCourse: Int, idSubPart: Int): SubPartSummary {
-        val calculoLabEnd = Calendar.getInstance(timeZone)
-        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
-
-        return SubPartSummary(
-            idCourse = 1,
-            subpart = "Practica",
-            courseName = "Calculo I",
-            section = 4,
-            startDate = Calendar.getInstance(),
-            endDate = calculoLabEnd ,
-            isFinished = false
-        )
+    override suspend fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course? {
+        val authorizationHeader = "Bearer $token"
+        var course:Course? = Course()
+        try {
+            val response = apiService.getCourseShortInfo(authorizationHeader,idCourse, idUser,0.0f)
+            if (response.isSuccessful) {
+                course = response.body()
+                println("getUserCourses: ${course?.idCourse}")
+            } else {
+                println("Error api getUserCourses: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getUserCourses en catch: $e" )
+        }
+        return course
     }
 
-    override fun getCourseSummary(idCourse: Int): CourseSummary {
-        val calculoTeoStart = Calendar.getInstance(timeZone)
-        calculoTeoStart.set(2023, Calendar.NOVEMBER, day, initHour, initMin, 0)
-
-        val calculoLabEnd = Calendar.getInstance(timeZone)
-        calculoLabEnd.set(2023, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
-
-
-        return CourseSummary(
-            idCourse = 1,
-            courseName = "Calculo I",
-            section = 4,
-            startDate = calculoTeoStart,
-            endDate = calculoLabEnd,
-        )
+    override suspend fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary? {
+        val authorizationHeader = "Bearer $token"
+        var summary:SubPartSummary? = SubPartSummary()
+        try {
+            val response = apiService.getSubPartSummary(authorizationHeader,idCourse,idSubPart,idUser,0)
+            if (response.isSuccessful) {
+                summary = response.body()
+                println("getSubPartSummary: ${summary?.courseName}")
+            } else {
+                println("Error api getSubPartSummary: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getSubPartSummary en catch: $e" )
+        }
+        return summary
     }
 
-    override fun isToday(idCourse: Int): Boolean {
-        return true
+    override suspend fun getCourseSummary(token:String,idCourse: Int,idUser: Int): CourseSummary? {
+        val authorizationHeader = "Bearer $token"
+        var summary:CourseSummary? = CourseSummary()
+        try {
+            val response = apiService.getCourseSummary(authorizationHeader,idCourse,idUser,false)
+            if (response.isSuccessful) {
+                summary = response.body()
+                println("getCourseSummary: ${summary?.courseName}")
+            } else {
+                println("Error api getCourseSummary: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getCourseSummary en catch: $e" )
+        }
+        return summary
     }
 
-    override fun getCourseCardInfo(idCourse: Int, isLabo: Int): Pair<String, String> {
-        val course = "Calculo aa"
-        val place = "Lab 04 - NP"
-        return Pair(course, place)
+    override suspend fun isToday(token:String,idCourse: Int,idUser: Int): Boolean {
+        val authorizationHeader = "Bearer $token"
+        var today = false
+        try {
+            val response = apiService.isToday(authorizationHeader,idCourse,idUser,"a")
+            if (response.isSuccessful) {
+                today = response.body()?:false
+                println("isToday: $today")
+            } else {
+                println("Error api isToday: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api isToday en catch: $e" )
+        }
+        return today
     }
 
-    override fun getCourseInfoFromTime(specificDate: LocalDate): MutableList<Course> {
+    override suspend fun getCourseCardInfo(token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String> {
+        val authorizationHeader = "Bearer $token"
+        var pair = Pair("","")
+        /*
+        try { //To change
+            val response = apiService.getCourseCardInfo(authorizationHeader,idCourse,idUser, isLabo+1)
+            if (response.isSuccessful) {
+                pair = response.body()?:Pair("","")
+                println("getCourseCardInfo: ${pair.first} - ${pair.second}")
+            } else {
+                println("Error api getCourseCardInfo: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getCourseCardInfo en catch: $e" )
+        }*/
+        return Pair("Moviles","Lab 04-NP")
+    }
+
+    override suspend fun getCourseInfoFromTime(token:String,idUser: Int,specificDate: LocalDate): MutableList<Course>? {
+        val authorizationHeader = "Bearer $token"
+        val calendar = Calendar.getInstance()
+        calendar.clear()
+        calendar.set(specificDate.year, specificDate.monthNumber-1, specificDate.dayOfMonth)
         val timeZone = TimeZone.getTimeZone("America/Lima")
-        // API has to return today courses later than actual hour
-        val initMin = 8
-        val initHour = 19
-        val day = 17
 
-        val marketingTeoStart = Calendar.getInstance(timeZone)
-        marketingTeoStart.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin, 0)
-        val marketingTeoEnd = Calendar.getInstance(timeZone)
-        marketingTeoEnd.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
-
-        val marketingTeoStart1 = Calendar.getInstance(timeZone)
-        marketingTeoStart1.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin+1, 0)
-        val marketingTeoEnd1 = Calendar.getInstance(timeZone)
-        marketingTeoEnd1.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
+        var list : MutableList<Course>? = mutableListOf()
+        try {
+            dateFormat.timeZone = timeZone
+            println("String date:" + dateFormat.format(calendar?.time))
+            println(JsonPrimitive("Json date:" + dateFormat.format(calendar?.time)))
+            val response = apiService.getCourseInfoFromTime(authorizationHeader, idUser,dateFormat.format(calendar?.time))
 
 
-        val marketingTeoStart2 = Calendar.getInstance(timeZone)
-        marketingTeoStart2.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin+3, 0)
-        val marketingTeoEnd2 = Calendar.getInstance(timeZone)
-        marketingTeoEnd2.set(specificDate.year, Calendar.NOVEMBER, day, initHour, initMin+4, 0)
-
-        return mutableListOf(
-            Course(
-                courseName = "Algoritmica ${specificDate.dayOfMonth}", section = 1,
-                endDate = marketingTeoEnd, startDate = marketingTeoStart),
-            Course(
-                courseName = "Base de Datos", section = 2,
-                endDate = marketingTeoEnd1, startDate = marketingTeoStart1),
-            Course(courseName = "IoT", section = 3, endDate = marketingTeoEnd2, startDate = marketingTeoStart2),
-        )
+            if (response.isSuccessful) {
+                list = response.body()
+                println("getCourseInfoFromTime: ${list?.get(0)?.idCourse}")
+            } else {
+                println("Error api getCourseInfoFromTime: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error api getCourseInfoFromTime en catch: $e" )
+        }
+        return list
     }
 
 

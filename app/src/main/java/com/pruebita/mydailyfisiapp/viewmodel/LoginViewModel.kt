@@ -62,7 +62,7 @@ class LoginViewModel
     private val _txtValidationPassCorrect = MutableLiveData<String>()
     val txtValidationPassCorrect: LiveData<String> = _txtValidationPassCorrect
 
-    private val _isFirstLogin = MutableLiveData<Boolean>()
+    private val _isFirstLogin = MutableLiveData<Boolean>(false)
     val isFirstLogin: LiveData<Boolean> = _isFirstLogin
 
     private val _state = MutableStateFlow(SignInState())

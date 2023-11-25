@@ -24,13 +24,14 @@ import java.util.TimerTask
 import javax.inject.Inject
 @HiltViewModel
 class ClockViewModel @Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel() {
-    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
     private val repoEvent: EventRepositoryImpl = EventRepositoryImpl(apiService)
     private val userManager: UserManager = UserManager(context)
     private val tokenManager: TokenManager = TokenManager(context)
     private var currentIndex = -1
 
     private var todayCourses: MutableList<Course> = mutableListOf()
+
     private val _user = MutableLiveData<User>()
     val user: LiveData<User> = _user
 
@@ -73,35 +74,8 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
 
 
     init {
-        realizarSolicitud()
         _user.value = userManager.getUser() ?: User()
-        val user = _user.value
-
-        if(user != null ){
-            todayCourses = repoCourse.getTodayCourses(user.idUser)
-            _courses.value = repoCourse.getUserCourses(user.idUser)
-
-            println(user.idUser)
-            if(todayCourses != null){
-                if(todayCourses.size != 0){
-                    currentIndex = 0
-                    _isFinished.postValue(false)
-                    _classStartTime.value = todayCourses[currentIndex].theoryPart.startHour
-                    _classEndTime.value = todayCourses[currentIndex].labPart.endHour
-                    _actualCourse.value = todayCourses[currentIndex]
-                    _pendingCourses.value = todayCourses.size
-
-                    if((currentIndex +1) < todayCourses.size){
-                        _nextCourse.value = todayCourses[currentIndex +1]
-
-                        if((currentIndex +2) < todayCourses.size){
-                            _subNextCourse.value = todayCourses[currentIndex + 2]
-                        }
-                    }
-
-                }
-            }
-        }
+        updateClockData()
 
         val timeZone = TimeZone.getTimeZone("America/Lima")
         val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
@@ -113,36 +87,7 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                
-                realizarSolicitud()
-                val user = _user.value
-                if (user!=null){
-                    _courses.value = repoCourse.getUserCourses(user.idUser)
-                    val newCourses = repoCourse.getTodayCourses(user.idUser)
-
-                    todayCourses.clear()
-                    todayCourses.addAll(newCourses)
-
-                    if(todayCourses != null){
-                        if(todayCourses.size != 0){
-                            currentIndex = 0
-                            _isFinished.postValue(false)
-                            _classStartTime.postValue(todayCourses[currentIndex].theoryPart.startHour)
-                            _classEndTime.postValue(todayCourses[currentIndex].labPart.endHour)
-                            _actualCourse.postValue(todayCourses[currentIndex])
-                            _pendingCourses.postValue(todayCourses.size)
-
-                            if((currentIndex +1) < todayCourses.size){
-                                _nextCourse.postValue(todayCourses[currentIndex +1])
-
-                                if((currentIndex +2) < todayCourses.size){
-                                    _subNextCourse.postValue(todayCourses[currentIndex + 2])
-                                }
-                            }
-
-                        }
-                    }
-                }
+                updateClockData()
             }
         }, timeToMidnight, 24 * 60 * 60 * 1000)
 
@@ -237,11 +182,51 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
         return sdf.format(calendar.time)
     }
 
-    fun realizarSolicitud() {
+    fun callAPI(idUser:Int) {
         viewModelScope.launch {
             _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
+            todayCourses = repoCourse.getTodayCourses(tokenManager.getToken(),idUser)?: mutableListOf()
+            _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),idUser))
+            if(todayCourses != null && todayCourses.isNotEmpty()){
+                _isFinished.postValue(false)
+            }
+        }
+    }
 
 
+    fun updateClockData(){
+        viewModelScope.launch{
+            val user = _user.value
+
+            if (user!=null){
+                _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
+                _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),user.idUser))
+                val newCourses = repoCourse.getTodayCourses(tokenManager.getToken(),user.idUser)
+                if (!newCourses.isNullOrEmpty()){
+                    todayCourses.clear()
+                    todayCourses.addAll(newCourses)
+                }
+
+                if(todayCourses != null && todayCourses.isNotEmpty()){
+                    if(todayCourses.size != 0){
+                        currentIndex = 0
+                        _isFinished.postValue(false)
+                        _classStartTime.postValue(todayCourses[currentIndex].theoryPart.startHour)
+                        _classEndTime.postValue(todayCourses[currentIndex].labPart.endHour)
+                        _actualCourse.postValue(todayCourses[currentIndex])
+                        _pendingCourses.postValue(todayCourses.size)
+
+                        if((currentIndex +1) < todayCourses.size){
+                            _nextCourse.postValue(todayCourses[currentIndex +1])
+
+                            if((currentIndex +2) < todayCourses.size){
+                                _subNextCourse.postValue(todayCourses[currentIndex + 2])
+                            }
+                        }
+
+                    }
+                }
+            }
         }
     }
 

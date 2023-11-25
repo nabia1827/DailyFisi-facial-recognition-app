@@ -18,8 +18,8 @@ import java.util.Calendar
 
 @Composable
 fun CardHora(course: Course) {
-    var horaInicio = "${String.format("%02d",course.startDate?.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d",course.startDate?.get(Calendar.MINUTE))}"
-    var horaFinal = "${String.format("%02d",course.endDate?.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d",course.endDate?.get(Calendar.MINUTE))}"
+    var horaInicio = "${String.format("%02d",course.theoryPart.startHour?.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d",course.theoryPart.startHour?.get(Calendar.MINUTE))}"
+    var horaFinal = "${String.format("%02d",course.labPart.endHour?.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d",course.labPart.endHour?.get(Calendar.MINUTE))}"
     Column (
         modifier = Modifier
             .wrapContentWidth()

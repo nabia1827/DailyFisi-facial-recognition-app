@@ -4,20 +4,25 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 
 import com.pruebita.mydailyfisiapp.data.repository.repositories.PythonAPIImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.StorageImagesImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 
-class VerifyingIdentityStudentViewModel @Inject constructor(private val context: Context) : ViewModel()  {
+class VerifyingIdentityStudentViewModel @Inject constructor(private val context: Context, private val apiService: ApiService) : ViewModel()  {
     private val userManager: UserManager = UserManager(context)
-    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+    private val tokenManager: TokenManager = TokenManager(context)
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
 
     private val _currentUser = MutableLiveData(userManager.getIdUser())
     val currentIdUser: MutableLiveData<Int> = _currentUser
@@ -28,19 +33,19 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
     private val _idSubPart= MutableLiveData<Int>(-1)
     val idSubPart: LiveData<Int> = _idSubPart
 
-    fun getCourseDetails(): Pair<String, String> {
-        val idCourse = _idCourse.value
-        val idSubPart = _idSubPart.value
-        return if(idCourse != null && idSubPart!= null){
-            repoCourse.getCourseCardInfo(idCourse,idSubPart)
-        }else{
-            Pair("","")
-        }
-    }
+    private val _cardInfo= MutableLiveData<Pair<String,String>>(Pair("",""))
+    val cardInfo: LiveData<Pair<String,String>> = _cardInfo
+
 
     fun updateCourseRecognition(idCourse: Int, idSubPart: Int){
-        _idCourse.value = idCourse
-        _idSubPart.value = idSubPart
+        viewModelScope.launch{
+            _idCourse.value = idCourse
+            _idSubPart.value = idSubPart
+            if(idCourse != null && idSubPart != null){
+                _cardInfo.value = repoCourse.getCourseCardInfo(tokenManager.getToken(),idCourse,userManager.getIdUser(),idSubPart)
+            }
+        }
+
     }
 
 

@@ -4,12 +4,16 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.DailyCourseAssist
 import com.pruebita.mydailyfisiapp.data.model.domain.StudentAssistUnit
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.AttendanceRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -20,8 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttendanceListTeacherViewModel
-@Inject constructor(private val context: Context): ViewModel(){
-    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+@Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel(){
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
     private val repoAssist: AttendanceRepositoryImpl = AttendanceRepositoryImpl()
 
     private val _idSubPart = MutableLiveData<Int>(null)
@@ -31,6 +35,7 @@ class AttendanceListTeacherViewModel
     val idCourse: LiveData<Int> = _idCourse
 
     private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
 
     private val _courseName = MutableLiveData<String>("")
     val courseName: LiveData<String> = _courseName
@@ -118,32 +123,35 @@ class AttendanceListTeacherViewModel
 
 
     fun updateShowedAttendanceList(idCourse:Int, idSubPart:Int){
-        val calendar = Calendar.getInstance(timeZone)
-        _currentTime.postValue(calendar)
+        viewModelScope.launch{
+            val calendar = Calendar.getInstance(timeZone)
+            _currentTime.postValue(calendar)
 
-        _idSubPart.value = idSubPart
-        _idCourse.value = idCourse
-        val course = repoCourse.getSubPartSummary(idCourse,idSubPart)
-        _courseName.value = course.courseName
-        _section.value = course.section
-        _subPart.value = course.subpart
-        _isFinished.value = course.isFinished
-        _endTime.value = course.endDate
+            _idSubPart.value = idSubPart
+            _idCourse.value = idCourse
+            val course = repoCourse.getSubPartSummary(tokenManager.getToken(),idCourse,idSubPart, userManager.getIdUser())
+            _courseName.value = course?.courseName
+            _section.value = course?.section
+            _subPart.value = course?.subpart
+            _isFinished.value = course?.isFinished
+            _endTime.value = course?.endDate
 
-        updateTimer()
+            updateTimer()
 
-        val list = repoAssist.getStudentList(idCourse)
-        val assists = repoAssist.getAttendanceList(idCourse,idSubPart)
-        if(list != null && list.isNotEmpty()){
-            _listStudents.value =list
-            _listAssists.value =assists
-            _cantAssisted.value = assists.count { it }
-        }else{
-            _listStudents.value = null
-            _listAssists.value = null
-            _cantAssisted.value = 0
+            val list = repoAssist.getStudentList(idCourse)
+            val assists = repoAssist.getAttendanceList(idCourse,idSubPart)
+            if(list != null && list.isNotEmpty()){
+                _listStudents.value =list
+                _listAssists.value =assists
+                _cantAssisted.value = assists.count { it }
+            }else{
+                _listStudents.value = null
+                _listAssists.value = null
+                _cantAssisted.value = 0
 
+            }
         }
+
     }
 
     fun endAttendance(){

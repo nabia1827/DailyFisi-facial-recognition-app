@@ -11,9 +11,9 @@ import java.util.TimeZone
 import kotlin.math.abs
 
 class AttendanceRepositoryImpl:AttendanceRepository {
-    private val initMin = 17
-    private val initHour = 13
-    val day = 18
+    private val initMin = 55
+    private val initHour = 7
+    val day = 25
     private val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")
     override fun getTodayAssists(idUser: Int): MutableList<Attendance> {
 
@@ -54,9 +54,9 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         return mutableListOf(
             Attendance(
                 date = now,
-                idCourse = 1,
+                idCourse = 7,
                 idSubPart = 0,
-                courseName = "Calculo",
+                courseName = "Moviles",
                 coursePart = "Teoria",
                 courseRoom = "102 - NP",
                 startTime = calculoTeoStart,
@@ -65,9 +65,9 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             Attendance(
                 date = now,
-                idCourse = 1,
+                idCourse = 7,
                 idSubPart = 1,
-                courseName = "Calculo",
+                courseName = "Moviles",
                 coursePart = "Practica",
                 courseRoom = "Lab 04 - NP",
                 startTime = calculoLabStart,
@@ -76,9 +76,9 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             Attendance(
                 date = now,
-                idCourse = 2,
+                idCourse = 8,
                 idSubPart = 0,
-                courseName = "Algoritmica I",
+                courseName = "Calculo",
                 coursePart = "Teoria",
                 courseRoom = "102 - NP",
                 startTime = algoTeoStart,
@@ -87,9 +87,9 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             Attendance(
                 date = now,
-                idCourse = 2,
+                idCourse = 8,
                 idSubPart = 1,
-                courseName = "Algoritmica I",
+                courseName = "Calculo",
                 coursePart = "Practica",
                 courseRoom = "Lab 04 - NP",
                 startTime = algoLabStart,
@@ -98,7 +98,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             Attendance(
                 date = now,
-                idCourse = 3,
+                idCourse = 9,
                 idSubPart = 0,
                 courseName = "Marketing",
                 coursePart = "Teoria",
@@ -109,7 +109,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             ),
             Attendance(
                 date = now,
-                idCourse = 3,
+                idCourse = 9,
                 idSubPart = 1,
                 courseName = "Marketing",
                 coursePart = "Practica",
@@ -158,7 +158,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             CourseReport(
                 idCourse = 1,
                 section = 1,
-                courseName = "Calculo",
+                courseName = "Moviles",
                 startTime = calculoTeoStart,
                 endTime = calculoLabEnd,
                 totalAssist = 35,
@@ -167,7 +167,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             CourseReport(
                 idCourse = 2,
                 section = 5,
-                courseName = "Algoritmica I",
+                courseName = "Calculo",
                 startTime = algoTeoStart,
                 endTime = algoLabEnd,
                 totalAssist = 36,

@@ -161,6 +161,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                                 fontFamily = poppins,
                                 fontWeight = FontWeight.Medium,
                                 color = Color(0xFFFFFFFF),
+                                textAlign = TextAlign.Center
                             )
                         )
                     }
@@ -172,6 +173,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                             fontFamily = poppins,
                             fontWeight = FontWeight.Normal,
                             color = Color(0xFFFFFFFF),
+                            textAlign = TextAlign.Center
                         )
                     )
                 }
@@ -216,6 +218,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                                     fontFamily = poppins,
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFFFFFFFF),
+                                    textAlign = TextAlign.Center
                                 )
                             )
                         }
@@ -227,6 +230,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                                 fontFamily = poppins,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFFFFFFF),
+                                textAlign = TextAlign.Center
                             )
                         )
                     }

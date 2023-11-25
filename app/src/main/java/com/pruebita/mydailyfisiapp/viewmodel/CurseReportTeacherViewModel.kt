@@ -4,12 +4,16 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.StudentAssistUnit
 import com.pruebita.mydailyfisiapp.data.model.helpers.AcademicTimeManager
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.AttendanceRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -20,10 +24,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurseReportTeacherViewModel
-@Inject constructor(private val context: Context): ViewModel(){
-    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+@Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel(){
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
     private val repoAssist: AttendanceRepositoryImpl = AttendanceRepositoryImpl()
     private val academicTimeManager: AcademicTimeManager = AcademicTimeManager(context)
+    private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
 
     private val _idCourse = MutableLiveData<Int>(null)
     val idCourse: LiveData<Int> = _idCourse
@@ -69,85 +75,91 @@ class CurseReportTeacherViewModel
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                val now = Calendar.getInstance(timeZone)
-                val id = _idCourse.value
-                if(id != null){
-                    _isToday.postValue(repoCourse.isToday(id))
+                viewModelScope.launch{
+                    val now = Calendar.getInstance(timeZone)
+                    val id = _idCourse.value
+                    if(id != null){
+                        _isToday.postValue(repoCourse.isToday(tokenManager.getToken(),id,userManager.getIdUser()))
 
-                    if(_isToday.value ==true){
-                        val start = _startTime.value
-                        val end = _endTime.value
-                        if(start != null && end !=null){
-                            print(isCurrent(start,now, end))
-                            if(isCurrent(start,now, end)) {
-                                val theoAssists = repoAssist.getSectionTheoryReport(id)
-                                val labAssists = repoAssist.getSectionLabReport(id)
-                                if(theoAssists != null){//Only theory part?
-                                    _listTheoryAssists.postValue(theoAssists)
-                                    _listLabAssists.postValue(labAssists)
-                                    val cn = _cont.value
-                                    if(cn != null){
-                                        if(cn <500){
-                                            _cont.postValue(cn +1)
+                        if(_isToday.value ==true){
+                            val start = _startTime.value
+                            val end = _endTime.value
+                            if(start != null && end !=null){
+                                print(isCurrent(start,now, end))
+                                if(isCurrent(start,now, end)) {
+                                    val theoAssists = repoAssist.getSectionTheoryReport(id)
+                                    val labAssists = repoAssist.getSectionLabReport(id)
+                                    if(theoAssists != null){//Only theory part?
+                                        _listTheoryAssists.postValue(theoAssists)
+                                        _listLabAssists.postValue(labAssists)
+                                        val cn = _cont.value
+                                        if(cn != null){
+                                            if(cn <500){
+                                                _cont.postValue(cn +1)
+                                            }
+                                            else{
+                                                _cont.postValue(0)
+                                            }
+                                            println("hey no null cont: ${cont.value}")
+                                        }else{
+                                            println("hey: ${cont.value}")
                                         }
-                                        else{
-                                            _cont.postValue(0)
-                                        }
-                                        println("hey no null cont: ${cont.value}")
+
                                     }else{
-                                        println("hey: ${cont.value}")
+                                        println("theo null")
                                     }
 
-                                }else{
-                                    println("theo null")
+
                                 }
-
-
+                                else{
+                                    println("no current")
+                                }
                             }
-                            else{
-                                println("no current")
-                            }
+
                         }
-
+                        else{
+                            println("is today?")
+                        }
                     }
                     else{
-                        println("is today?")
+                        println("id coursejhvbfddss $id")
                     }
                 }
-                else{
-                    println("id coursejhvbfddss $id")
-                }
+
             }
-        }, 0, 1000)
+        }, 0, 5000)
 
     }
 
     fun updateTeacherReport(idCourse:Int){
-        _totalClasses.value = academicTimeManager.getCurrentWeek()
-        _idCourse.value = idCourse
-        val course = repoCourse.getCourseSummary(idCourse)
-        _courseName.value = course.courseName
-        _section.value = course.section
-        _endTime.value = course.endDate
-        _startTime.value = course.startDate
-        _cont.value =0
+        viewModelScope.launch{
+            _totalClasses.value = academicTimeManager.getCurrentWeek()
+            _idCourse.value = idCourse
+            val course = repoCourse.getCourseSummary(tokenManager.getToken(),idCourse, userManager.getIdUser())
+            _courseName.value = course?.courseName
+            _section.value = course?.section
+            _endTime.value = course?.endDate
+            _startTime.value = course?.startDate
+            _cont.value =0
 
-        val list = repoAssist.getStudentList(idCourse)
-        val theoAssists = repoAssist.getSectionTheoryReport(idCourse)
-        val labAssists = repoAssist.getSectionLabReport(idCourse)
+            val list = repoAssist.getStudentList(idCourse)
+            val theoAssists = repoAssist.getSectionTheoryReport(idCourse)
+            val labAssists = repoAssist.getSectionLabReport(idCourse)
 
-        if(list != null && list.isNotEmpty()){
-            _listStudents.value =list
-            _listTheoryAssists.value = theoAssists
-            _listLabAssists.value = labAssists
+            if(list != null && list.isNotEmpty()){
+                _listStudents.value =list
+                _listTheoryAssists.value = theoAssists
+                _listLabAssists.value = labAssists
 
-        }else{
-            _listStudents.value = null
-            _listTheoryAssists.value = null
-            _listLabAssists.value = null
+            }else{
+                _listStudents.value = null
+                _listTheoryAssists.value = null
+                _listLabAssists.value = null
 
 
+            }
         }
+
     }
     fun isCurrent(courseStart:Calendar,now:Calendar, courseEnd:Calendar):Boolean{
         return now.timeInMillis>courseStart.timeInMillis && now.timeInMillis<courseEnd.timeInMillis

@@ -5,13 +5,17 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.data.model.helpers.AcademicTimeManager
+import com.pruebita.mydailyfisiapp.data.model.helpers.TokenManager
 import com.pruebita.mydailyfisiapp.data.model.helpers.UserManager
+import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.repositories.CourseRepositoryImpl
 import com.pruebita.mydailyfisiapp.data.repository.repositories.ReminderRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -25,10 +29,11 @@ import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
-class ScheduleViewModel @Inject constructor(private val context: Context): ViewModel(){
-    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl()
+class ScheduleViewModel @Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel(){
+    private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
     private val remiCalendar: ReminderRepositoryImpl =  ReminderRepositoryImpl()
     private val userManager: UserManager = UserManager(context)
+    private val tokenManager: TokenManager = TokenManager(context)
     private val academicTimeManager: AcademicTimeManager = AcademicTimeManager(context)
 
     private val _currentIdUser = MutableLiveData<Int>(userManager.getIdUser())
@@ -65,7 +70,7 @@ class ScheduleViewModel @Inject constructor(private val context: Context): ViewM
 
         val today = Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
 
-        _courses.postValue(getCourseInfo(today))
+        getCourseInfo(today)
         _reminders.postValue(getReminderInfo(today))
 
         _indexTemp.postValue(findCurrentIndex(courses.value))
@@ -113,13 +118,19 @@ class ScheduleViewModel @Inject constructor(private val context: Context): ViewM
     }
 
     fun setCourseInfo(specificDate: LocalDate){
-        val newCourses = repoCourse.getCourseInfoFromTime(specificDate)
-        _indexTemp.postValue(-1)
-        _courses.postValue(newCourses)
+        viewModelScope.launch{
+            val newCourses = repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate)
+            _indexTemp.postValue(-1)
+            _courses.postValue(newCourses)
+        }
+
     }
 
-    fun getCourseInfo(specificDate: LocalDate): MutableList<Course> {
-        return repoCourse.getCourseInfoFromTime(specificDate)
+    private fun getCourseInfo(specificDate: LocalDate) {
+        viewModelScope.launch{
+            _courses.postValue(repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate))
+        }
+
     }
 
     fun setReminderInfo(specificDate: LocalDate){
