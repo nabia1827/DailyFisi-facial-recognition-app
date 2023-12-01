@@ -11,6 +11,6 @@ data class User(
     val email: String = "",
     val cellphone: String = "",
     var imageUser: String = "",
-    val sessionActive: Boolean = false,  // (1) is in app (active) (0) inactive
-    val userActive: Boolean = true, // (1) user in with facial register (0)no facial register
+    var sessionActive: Boolean = false,  // (1) is in app (active) (0) inactive
+    var userActive: Boolean = true, // (1) user in with facial register (0)no facial register
 )

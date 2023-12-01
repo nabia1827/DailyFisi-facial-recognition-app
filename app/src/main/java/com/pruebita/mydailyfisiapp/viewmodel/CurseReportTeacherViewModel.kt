@@ -75,55 +75,53 @@ class CurseReportTeacherViewModel
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                viewModelScope.launch{
-                    val now = Calendar.getInstance(timeZone)
-                    val id = _idCourse.value
-                    if(id != null){
-                        _isToday.postValue(repoCourse.isToday(tokenManager.getToken(),id,userManager.getIdUser()))
+                val now = Calendar.getInstance(timeZone)
+                val id = _idCourse.value
+                if(id != null){
+                    _isToday.postValue(repoCourse.isToday(tokenManager.getToken(),id,userManager.getIdUser()))
 
-                        if(_isToday.value ==true){
-                            val start = _startTime.value
-                            val end = _endTime.value
-                            if(start != null && end !=null){
-                                print(isCurrent(start,now, end))
-                                if(isCurrent(start,now, end)) {
-                                    val theoAssists = repoAssist.getSectionTheoryReport(id)
-                                    val labAssists = repoAssist.getSectionLabReport(id)
-                                    if(theoAssists != null){//Only theory part?
-                                        _listTheoryAssists.postValue(theoAssists)
-                                        _listLabAssists.postValue(labAssists)
-                                        val cn = _cont.value
-                                        if(cn != null){
-                                            if(cn <500){
-                                                _cont.postValue(cn +1)
-                                            }
-                                            else{
-                                                _cont.postValue(0)
-                                            }
-                                            println("hey no null cont: ${cont.value}")
-                                        }else{
-                                            println("hey: ${cont.value}")
+                    if(_isToday.value ==true){
+                        val start = _startTime.value
+                        val end = _endTime.value
+                        if(start != null && end !=null){
+                            print(isCurrent(start,now, end))
+                            if(isCurrent(start,now, end)) {
+                                val theoAssists = repoAssist.getSectionTheoryReport(id)
+                                val labAssists = repoAssist.getSectionLabReport(id)
+                                if(theoAssists != null){//Only theory part?
+                                    _listTheoryAssists.postValue(theoAssists)
+                                    _listLabAssists.postValue(labAssists)
+                                    val cn = _cont.value
+                                    if(cn != null){
+                                        if(cn <500){
+                                            _cont.postValue(cn +1)
                                         }
-
+                                        else{
+                                            _cont.postValue(0)
+                                        }
+                                        println("hey no null cont: ${cont.value}")
                                     }else{
-                                        println("theo null")
+                                        println("hey: ${cont.value}")
                                     }
 
+                                }else{
+                                    println("theo null")
+                                }
 
-                                }
-                                else{
-                                    println("no current")
-                                }
+
                             }
+                            else{
+                                println("no current")
+                            }
+                        }
 
-                        }
-                        else{
-                            println("is today?")
-                        }
                     }
                     else{
-                        println("id coursejhvbfddss $id")
+                        println("is today?")
                     }
+                }
+                else{
+                    println("id coursejhvbfddss $id")
                 }
 
             }
@@ -132,32 +130,30 @@ class CurseReportTeacherViewModel
     }
 
     fun updateTeacherReport(idCourse:Int){
-        viewModelScope.launch{
-            _totalClasses.value = academicTimeManager.getCurrentWeek()
-            _idCourse.value = idCourse
-            val course = repoCourse.getCourseSummary(tokenManager.getToken(),idCourse, userManager.getIdUser())
-            _courseName.value = course?.courseName
-            _section.value = course?.section
-            _endTime.value = course?.endDate
-            _startTime.value = course?.startDate
-            _cont.value =0
+        _totalClasses.value = academicTimeManager.getCurrentWeek()
+        _idCourse.value = idCourse
+        val course = repoCourse.getCourseSummary(tokenManager.getToken(),idCourse, userManager.getIdUser())
+        _courseName.value = course?.courseName
+        _section.value = course?.section
+        _endTime.value = course?.endDate
+        _startTime.value = course?.startDate
+        _cont.value =0
 
-            val list = repoAssist.getStudentList(idCourse)
-            val theoAssists = repoAssist.getSectionTheoryReport(idCourse)
-            val labAssists = repoAssist.getSectionLabReport(idCourse)
+        val list = repoAssist.getStudentList(idCourse)
+        val theoAssists = repoAssist.getSectionTheoryReport(idCourse)
+        val labAssists = repoAssist.getSectionLabReport(idCourse)
 
-            if(list != null && list.isNotEmpty()){
-                _listStudents.value =list
-                _listTheoryAssists.value = theoAssists
-                _listLabAssists.value = labAssists
+        if(list != null && list.isNotEmpty()){
+            _listStudents.value =list
+            _listTheoryAssists.value = theoAssists
+            _listLabAssists.value = labAssists
 
-            }else{
-                _listStudents.value = null
-                _listTheoryAssists.value = null
-                _listLabAssists.value = null
+        }else{
+            _listStudents.value = null
+            _listTheoryAssists.value = null
+            _listLabAssists.value = null
 
 
-            }
         }
 
     }

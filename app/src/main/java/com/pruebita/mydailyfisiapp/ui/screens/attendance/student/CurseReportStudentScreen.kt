@@ -71,7 +71,7 @@ fun CurseReportStudentScreen(
     ) {
         item {
             Column(
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 HeaderCurseReport(navController, courseName, section)
             }

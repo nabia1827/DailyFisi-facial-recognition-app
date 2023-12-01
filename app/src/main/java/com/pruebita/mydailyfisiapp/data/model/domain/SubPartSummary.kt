@@ -3,11 +3,11 @@ package com.pruebita.mydailyfisiapp.data.model.domain
 import java.util.Calendar
 
 data class SubPartSummary(
-    val idCourse: Int = 0,
-    val courseName: String = "course",
-    val subpart: String = "",
-    val section: Int = 0,
-    val startDate: Calendar? = null, //start hour
-    val endDate: Calendar? = null, // end hour
-    val isFinished: Boolean = false,
+    var idCourse: Int = 0,
+    var courseName: String = "course",
+    var subpart: String = "",
+    var section: Int = 0,
+    var startDate: Calendar? = null, //start hour
+    var endDate: Calendar? = null, // end hour
+    var isFinished: Boolean = false,
 )

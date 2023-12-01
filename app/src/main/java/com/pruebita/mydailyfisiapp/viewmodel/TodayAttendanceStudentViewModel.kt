@@ -85,6 +85,8 @@ class TodayAttendanceStudentViewModel
                             if(currentIndex != -1){
                                 if(todayAss != null && todayAss[currentIndex].state != 1){
                                     todayAss[currentIndex].state = 2 //Broadcast real time
+                                    repoAssists.setAttendanceUser(userManager.getIdUser(),
+                                        todayAss[currentIndex].idCourse,todayAss[currentIndex].idSubPart,false)
                                     _todayAssists.postValue(todayAss)
                                 }
                             }
@@ -164,6 +166,8 @@ class TodayAttendanceStudentViewModel
             if(currentIndex != -1){
                 if(todayAss[currentIndex].state == 3 || todayAss[currentIndex].state == 4){
                     todayAss[currentIndex].state = 2 //absent
+                    repoAssists.setAttendanceUser(userManager.getIdUser(),
+                        todayAss[currentIndex].idCourse,todayAss[currentIndex].idSubPart,false)
                 }
             }
             currentIndex += 1
@@ -195,6 +199,8 @@ class TodayAttendanceStudentViewModel
         val todayAss = _todayAssists.value?.toMutableList()
         if(todayAss != null && currentIndex != -1){
             todayAss[currentIndex].state = 1 //presenr
+            repoAssists.setAttendanceUser(userManager.getIdUser(),
+                todayAss[currentIndex].idCourse,todayAss[currentIndex].idSubPart,true)
             _todayAssists.postValue(todayAss)
         }
 

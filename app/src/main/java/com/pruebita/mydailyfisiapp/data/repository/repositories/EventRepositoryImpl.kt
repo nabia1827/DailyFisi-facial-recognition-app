@@ -6,6 +6,8 @@ import com.pruebita.mydailyfisiapp.data.model.domain.Event
 import com.pruebita.mydailyfisiapp.data.model.domain.RecognizeResponse
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.EventRepository
+import com.pruebita.mydailyfisiapp.data.source.audi
+import com.pruebita.mydailyfisiapp.data.source.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -21,26 +23,21 @@ import java.util.TimeZone
 
 class EventRepositoryImpl(private val apiService:ApiService): EventRepository {
 
-    override suspend fun listAllTodayEvents(token:String): MutableList<Event>? {
+    override fun listAllTodayEvents(token:String): MutableList<Event>? {
         val authorizationHeader = "Bearer $token"
         println("Bearer in event $token")
-        var list:MutableList<Event>? = mutableListOf<Event>()
-        try {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val timeZone = TimeZone.getTimeZone("America/Lima")
-            dateFormat.timeZone = timeZone
+        var list:MutableList<Event> = mutableListOf<Event>()
+        val calendar = Calendar.getInstance()
 
-            val response = apiService.listAllTodayEvents(authorizationHeader)
-            if (response.isSuccessful) {
-                list = response.body()
-                println("Fecha primera: ${dateFormat.format(list?.get(0)?.eventDate?.time)}")
-            } else {
-                println("Error api event: ${response.code()}")
+        when(calendar.get(Calendar.DAY_OF_WEEK)){
+            Calendar.FRIDAY->{
+                list.add(event1)
             }
-        } catch (e: Exception) {
-            println("Error api event en catch: $e" )
+            Calendar.SATURDAY->{
+                list.add(event2)
+                list.add(event3)
+            }
         }
-
         return list
     }
 }

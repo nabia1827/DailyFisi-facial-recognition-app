@@ -116,9 +116,7 @@ class MainViewModel @Inject constructor(private val context: Context, private va
                 "users"
             )
             _currentUser.value = user
-            viewModelScope.launch{
-                repo.updateImageUser(tokenManager.getToken(),user)
-            }
+            repo.updateImageUser(tokenManager.getToken(),user)
 
         }
     }
@@ -127,9 +125,7 @@ class MainViewModel @Inject constructor(private val context: Context, private va
     fun logOut() {
         var tmp = _currentUser.value
         if (tmp != null) {
-            viewModelScope.launch{
-                repo.setActiveSession(tokenManager.getToken(),tmp.idUser, false)
-            }
+            repo.setActiveSession(tokenManager.getToken(),tmp.idUser, false)
 
         }
     }

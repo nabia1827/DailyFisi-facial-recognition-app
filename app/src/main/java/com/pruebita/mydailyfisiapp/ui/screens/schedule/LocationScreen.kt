@@ -2,6 +2,8 @@ package com.pruebita.mydailyfisiapp.ui.screens.schedule
 
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,6 +52,7 @@ fun PreviewLocationScreen(){
     //LocationScreen(navController, idCourse = idCourse, scheduleViewModel = scheduleViewModel)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LocationScreen(
     navController: NavHostController,

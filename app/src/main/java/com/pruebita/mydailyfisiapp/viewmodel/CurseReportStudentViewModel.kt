@@ -69,7 +69,7 @@ class CurseReportStudentViewModel
             override fun run() {
                 val idCourse =_idCourse.value
                 if (idCourse != null){
-                    val assists = repoAssist.getUserCourseAttendance(idCourse,userManager.getIdUser())
+                    val assists = repoAssist.getUserCourseAttendance(userManager.getIdUser(),idCourse)
                     if(assists != null && assists.isNotEmpty()){
                         _listAssists.postValue(assists)
                         _totalClasses.postValue(assists.size * 2) // Change for only theory part
@@ -85,25 +85,22 @@ class CurseReportStudentViewModel
 
     fun updateShowedCourse(idCourse:Int){
 
-        //If it doesn't work, change to launched effect
-        viewModelScope.launch{
-            _idCourse.value = idCourse
-            val course = repoCourse.getCourseShortInfo(tokenManager.getToken(),idCourse, userManager.getIdUser())
-            _courseName.value = course?.courseName
-            _section.value = course?.section
+        _idCourse.value = idCourse
+        val course = repoCourse.getCourseShortInfo(tokenManager.getToken(),idCourse, userManager.getIdUser())
+        _courseName.value = course?.courseName
+        _section.value = course?.section
 
-            val assists = repoAssist.getUserCourseAttendance(idCourse,userManager.getIdUser())
-            if(assists != null && assists.isNotEmpty()){
-                _listAssists.value = assists
-                _totalClasses.value = assists.size * 2 // Change for only theory part
-                _totalAssistsClasses.value = assists.count { it.theoryAssist == true } + assists.count { it.labAssist == true }
+        val assists = repoAssist.getUserCourseAttendance(userManager.getIdUser(),idCourse)
+        if(assists != null && assists.isNotEmpty()){
+            _listAssists.value = assists
+            _totalClasses.value = assists.size * 2 // Change for only theory part
+            _totalAssistsClasses.value = assists.count { it.theoryAssist == true } + assists.count { it.labAssist == true }
 
-            }else{
-                _listAssists.value = null
-                _totalClasses.value = 0
-                _totalAssistsClasses.value = 0
-                _currentAssist.value = null
-            }
+        }else{
+            _listAssists.value = null
+            _totalClasses.value = 0
+            _totalAssistsClasses.value = 0
+            _currentAssist.value = null
         }
 
 

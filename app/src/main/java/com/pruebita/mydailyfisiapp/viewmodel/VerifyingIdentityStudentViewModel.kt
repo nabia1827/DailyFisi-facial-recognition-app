@@ -38,12 +38,10 @@ class VerifyingIdentityStudentViewModel @Inject constructor(private val context:
 
 
     fun updateCourseRecognition(idCourse: Int, idSubPart: Int){
-        viewModelScope.launch{
-            _idCourse.value = idCourse
-            _idSubPart.value = idSubPart
-            if(idCourse != null && idSubPart != null){
-                _cardInfo.value = repoCourse.getCourseCardInfo(tokenManager.getToken(),idCourse,userManager.getIdUser(),idSubPart)
-            }
+        _idCourse.value = idCourse
+        _idSubPart.value = idSubPart
+        if(idCourse != null && idSubPart != null){
+            _cardInfo.value = repoCourse.getCourseCardInfo(tokenManager.getToken(),idCourse,userManager.getIdUser(),idSubPart)
         }
 
     }

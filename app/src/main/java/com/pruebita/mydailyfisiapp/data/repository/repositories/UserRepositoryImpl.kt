@@ -5,126 +5,114 @@ import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.domain.UserFromGmail
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.UserRepository
+import com.pruebita.mydailyfisiapp.data.source.student1
+import com.pruebita.mydailyfisiapp.data.source.student2
+import com.pruebita.mydailyfisiapp.data.source.teacher1
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
 class UserRepositoryImpl(private val apiService: ApiService): UserRepository {
 
-    override suspend fun getUser(token:String, email:String, password:String): User? {
+    override fun getUser(token:String, email:String, password:String): User? {
         val authorizationHeader = "Bearer $token"
         val pUser = email.substringBefore("@")
         var user :User?= User()
-        try {
-            val response = apiService.getUser(authorizationHeader,pUser,password)
-            if (response.isSuccessful) {
-                user = response.body()
-                println("getUser: ${user?.names}")
-            } else {
-                println("Error api getUser: ${response.code()}")
+        when (email) {
+            "nabia.pachas@unmsm.edu.pe" -> {
+                user = student1
             }
-        } catch (e: Exception) {
-            println("Error api getUser en catch: $e" )
+            "kevinmiguel.ortiz@unmsm.edu.pe" -> {
+                user = student2
+            }
+            "rubendavid.robles@unmsm.edu.pe" -> {
+                user = teacher1
+            }
         }
+
         return user
     }
 
-    override suspend fun getUserFromGoogle(token:String,userGmail: UserFromGmail): User? {
+    override fun getUserFromGoogle(token:String,userGmail: UserFromGmail): User? {
         val authorizationHeader = "Bearer $token"
-
         val userName = userGmail.email?:"".substringBefore("@")
-        var user :User?= User()
-        try {
-            val response = apiService.getUserFromGoogle(authorizationHeader,userName)
-            if (response.isSuccessful) {
-                user = response.body()
-                println("getUserFromGoogle: ${user?.names}")
-            } else {
-                println("Error api getUserFromGoogle: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            println("Error api getUserFromGoogle en catch: $e" )
-        }
-        return user
+
+        return getUser("",userGmail.email.toString(),"123456")
     }
 
-    override suspend fun updateImageUser(token:String, user: User) {
-        val authorizationHeader = "Bearer $token"
-        try {
-            val response = apiService.updateImageUser(authorizationHeader, ProfileUser(user.idUser,user.imageUser))
-            if (response.isSuccessful) {
-                val i = response.body()
-                println("getUserFromGoogle: $i")
-            } else {
-                println("Error api getUserFromGoogle: ${response.code()}")
+    override fun updateImageUser(token:String, user: User) {
+        when (user.idUser) {
+            1 -> {
+                student1.imageUser = user.imageUser
             }
-        } catch (e: Exception) {
-            println("Error api getUserFromGoogle en catch: $e" )
+            2 -> {
+                student2.imageUser = user.imageUser
+            }
+            3 -> {
+                teacher1.imageUser = user.imageUser
+            }
         }
     }
 
-    override suspend fun setActiveSession(token: String,id: Int,isActive: Boolean) {
-        val authorizationHeader = "Bearer $token"
-        try {
-            val response = apiService.setActiveSession(authorizationHeader,id,isActive)
-            if (response.isSuccessful) {
-                val i = response.body()
-                println("setActiveSession: $i")
-            } else {
-                println("Error api setActiveSession: ${response.code()}")
+    override fun setActiveSession(token: String,id: Int,isActive: Boolean) {
+        when (id) {
+            1 -> {
+                student1.sessionActive = isActive
             }
-        } catch (e: Exception) {
-            println("Error api setActiveSession en catch: $e" )
+            2 -> {
+                student2.sessionActive = isActive
+            }
+            3 -> {
+                teacher1.sessionActive = isActive
+            }
         }
     }
 
-    override suspend fun validateUser(token: String, email: String, password: String): Int {
+    override fun validateUser(token: String, email: String, password: String): Int {
         val authorizationHeader = "Bearer $token"
         val pUser = email.substringBefore("@")
         var i = 0
-        try {
-            val response = apiService.validateUser(authorizationHeader,pUser,password,0)
-            if (response.isSuccessful) {
-                i = response.body()?:0
-                println("getUser: $i")
-            } else {
-                println("Error api getUser: ${response.code()}")
+        when (email) {
+            "nabia.pachas@unmsm.edu.pe" -> {
+                i = if(password == student1.password) 1 else 0
             }
-        } catch (e: Exception) {
-            println("Error api getUser en catch: $e" )
+            "kevinmiguel.ortiz@unmsm.edu.pe" -> {
+                i = if(password == student2.password) 1 else 0
+            }
+            "rubendavid.robles@unmsm.edu.pe" -> {
+                i = if(password == teacher1.password) 1 else 0
+            }
         }
         return i
     }
 
-    override suspend fun getUserActive(token: String,idUser: Int): Boolean {
+    override fun getUserActive(token: String,idUser: Int): Boolean {
         val authorizationHeader = "Bearer $token"
         var isActive:Boolean? = false
-        try {
-            val response = apiService.getUserActive(authorizationHeader,idUser)
-            if (response.isSuccessful) {
-                isActive = response.body()
-                println("getUserActive: $isActive")
-            } else {
-                println("Error api getUserActive: ${response.code()}")
+        when (idUser) {
+            1 -> {
+                isActive = student1.userActive
             }
-        } catch (e: Exception) {
-            println("Error api getUserActive en catch: $e" )
+            2 -> {
+                isActive = student2.userActive
+            }
+            3 -> {
+                isActive = teacher1.userActive
+            }
         }
         return isActive == true
     }
-    override suspend fun setUserActive(token: String,idUser: Int, userActive: Boolean) {
-        val authorizationHeader = "Bearer $token"
-        var isActive:Int? = 0
-        try {
-            val response = apiService.setUserActive(authorizationHeader,idUser, userActive,0)
-            if (response.isSuccessful) {
-                isActive = response.body()
-                println("setUserActive: $isActive")
-            } else {
-                println("Error api setUserActive: ${response.code()}")
+    override fun setUserActive(token: String,idUser: Int, userActive: Boolean) {
+        when (idUser) {
+            1 -> {
+                student1.userActive = userActive
             }
-        } catch (e: Exception) {
-            println("Error api setUserActive en catch: $e" )
+            2 -> {
+                student2.userActive = userActive
+            }
+            3 -> {
+                teacher1.userActive = userActive
+            }
         }
 
     }

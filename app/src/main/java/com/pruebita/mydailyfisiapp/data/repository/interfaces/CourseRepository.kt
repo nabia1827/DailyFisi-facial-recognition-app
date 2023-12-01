@@ -7,18 +7,18 @@ import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
 import kotlinx.datetime.LocalDate
 
 interface CourseRepository {
-    suspend fun getTodayCourses(token:String,idUser: Int):MutableList<Course>?
+    fun getTodayCourses(token:String,idUser: Int):MutableList<Course>?
 
-    suspend fun getUserCourses(token:String,idUser: Int):MutableList<Course>?
+    fun getUserCourses(token:String,idUser: Int):MutableList<Course>?
 
-    suspend fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course?
+    fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course?
 
-    suspend fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary?
+    fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary?
 
-    suspend fun getCourseSummary(token:String,idCourse: Int,idUser: Int):CourseSummary?
+    fun getCourseSummary(token:String,idCourse: Int,idUser: Int):CourseSummary?
 
-    suspend fun isToday(token:String,idCourse: Int,idUser: Int):Boolean
+    fun isToday(token:String,idCourse: Int,idUser: Int):Boolean
 
-    suspend fun getCourseCardInfo (token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String>
-    suspend fun getCourseInfoFromTime(token:String,idUser: Int,specificDate: LocalDate): MutableList<Course>?
+    fun getCourseCardInfo (token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String>
+    fun getCourseInfoFromTime(token:String,idUser: Int,specificDate: LocalDate): MutableList<Course>?
 }

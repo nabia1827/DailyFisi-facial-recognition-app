@@ -3,6 +3,7 @@ package com.pruebita.mydailyfisiapp.data.model.helpers
 import android.content.Context
 import android.content.SharedPreferences
 import com.pruebita.mydailyfisiapp.data.model.domain.Semester
+import com.pruebita.mydailyfisiapp.data.source.getDate
 
 class AcademicTimeManager(private val context: Context) {
     private val semesterData: SharedPreferences =
@@ -28,7 +29,9 @@ class AcademicTimeManager(private val context: Context) {
         val idSemester = semesterData.getInt("idSemester", 0)
         val semesterDesc = semesterData.getString("semesterDesc", " ")
 
-        return Semester(idSemester, semesterDesc.toString(), null, null)
+        return Semester(idSemester, semesterDesc.toString(),
+            getDate(2023,9,30,8,0),
+            getDate(2024,1,19,0,0))
     }
 
     fun getCurrentWeek(): Int {

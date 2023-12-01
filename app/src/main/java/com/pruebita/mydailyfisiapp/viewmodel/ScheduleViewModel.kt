@@ -2,6 +2,8 @@ package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,6 +30,7 @@ import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel(){
     private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
@@ -117,19 +120,17 @@ class ScheduleViewModel @Inject constructor(private val context: Context,private
                 currentTime.get(Calendar.MINUTE)       == classStartTime.value?.get(Calendar.MINUTE) )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setCourseInfo(specificDate: LocalDate){
-        viewModelScope.launch{
-            val newCourses = repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate)
-            _indexTemp.postValue(-1)
-            _courses.postValue(newCourses)
-        }
+        val newCourses = repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate)
+        _indexTemp.postValue(-1)
+        _courses.postValue(newCourses)
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getCourseInfo(specificDate: LocalDate) {
-        viewModelScope.launch{
-            _courses.postValue(repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate))
-        }
+        _courses.postValue(repoCourse.getCourseInfoFromTime(tokenManager.getToken(),userManager.getIdUser(),specificDate))
 
     }
 

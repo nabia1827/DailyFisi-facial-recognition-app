@@ -29,7 +29,7 @@ interface AttendanceRepository {
 
     fun endAttendance(idCourse: Int, idSubPart: Int)
 
-    fun setAttendance(idUser:Int, idCourse:Int, idSubPart:Int, assist:Boolean)
+    fun setAttendanceUser(idUser:Int, idCourse:Int, idSubPart:Int, assist:Boolean)
 
     fun getSectionTheoryReport(idCourse: Int):MutableList<Int>
     fun getSectionLabReport(idCourse: Int):MutableList<Int>

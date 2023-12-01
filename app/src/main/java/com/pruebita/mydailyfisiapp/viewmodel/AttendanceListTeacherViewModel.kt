@@ -123,33 +123,31 @@ class AttendanceListTeacherViewModel
 
 
     fun updateShowedAttendanceList(idCourse:Int, idSubPart:Int){
-        viewModelScope.launch{
-            val calendar = Calendar.getInstance(timeZone)
-            _currentTime.postValue(calendar)
+        val calendar = Calendar.getInstance(timeZone)
+        _currentTime.postValue(calendar)
 
-            _idSubPart.value = idSubPart
-            _idCourse.value = idCourse
-            val course = repoCourse.getSubPartSummary(tokenManager.getToken(),idCourse,idSubPart, userManager.getIdUser())
-            _courseName.value = course?.courseName
-            _section.value = course?.section
-            _subPart.value = course?.subpart
-            _isFinished.value = course?.isFinished
-            _endTime.value = course?.endDate
+        _idSubPart.value = idSubPart
+        _idCourse.value = idCourse
+        val course = repoCourse.getSubPartSummary(tokenManager.getToken(),idCourse,idSubPart, userManager.getIdUser())
+        _courseName.value = course?.courseName
+        _section.value = course?.section
+        _subPart.value = course?.subpart
+        _isFinished.value = course?.isFinished
+        _endTime.value = course?.endDate
 
-            updateTimer()
+        updateTimer()
 
-            val list = repoAssist.getStudentList(idCourse)
-            val assists = repoAssist.getAttendanceList(idCourse,idSubPart)
-            if(list != null && list.isNotEmpty()){
-                _listStudents.value =list
-                _listAssists.value =assists
-                _cantAssisted.value = assists.count { it }
-            }else{
-                _listStudents.value = null
-                _listAssists.value = null
-                _cantAssisted.value = 0
+        val list = repoAssist.getStudentList(idCourse)
+        val assists = repoAssist.getAttendanceList(idCourse,idSubPart)
+        if(list != null && list.isNotEmpty()){
+            _listStudents.value =list
+            _listAssists.value =assists
+            _cantAssisted.value = assists.count { it }
+        }else{
+            _listStudents.value = null
+            _listAssists.value = null
+            _cantAssisted.value = 0
 
-            }
         }
 
     }
@@ -172,7 +170,7 @@ class AttendanceListTeacherViewModel
             val idCourse = _idCourse.value
             val idPart = _idSubPart.value
             if(idCourse != null && idPart != null){
-                repoAssist.setAttendance(list2[i].idStudent,idCourse,idPart,state)
+                repoAssist.setAttendanceUser(list2[i].idStudent,idCourse,idPart,state)
             }
 
         }

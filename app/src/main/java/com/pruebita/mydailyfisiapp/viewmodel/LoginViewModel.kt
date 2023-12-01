@@ -113,7 +113,7 @@ class LoginViewModel
         return false
     }
 
-    suspend fun onLoginSelected(): Boolean {
+    fun onLoginSelected(): Boolean {
         val email = _email.value
         val password = _password.value
 
@@ -139,7 +139,7 @@ class LoginViewModel
         }
     }
 
-    private suspend fun loadUserData(): Unit {
+    private fun loadUserData(): Unit {
         val email = _email.value
         val password = _password.value
         if (email != null && password != null) {
@@ -149,13 +149,11 @@ class LoginViewModel
     }
 
     //--
-    private suspend fun loadUserDataFromGoogle(user: UserFromGmail): Unit {
+    private fun loadUserDataFromGoogle(user: UserFromGmail): Unit {
         _currentUser.value = repo.getUserFromGoogle(tokenManager.getToken(),user)
-
-
     }
 
-    suspend fun saveLocallyUserData(): Unit {
+    fun saveLocallyUserData(): Unit {
         loadUserData()
         val curr = _currentUser.value
         if (curr != null) {
@@ -165,7 +163,7 @@ class LoginViewModel
         }
     }
 
-    suspend fun saveLocallyUserDataFromGoogle(user: UserFromGmail): Unit {
+    fun saveLocallyUserDataFromGoogle(user: UserFromGmail): Unit {
         if (user.email != null) {
             loadUserDataFromGoogle(user)
 
@@ -235,7 +233,7 @@ class LoginViewModel
         return regex.matches(email)
     }
 
-    suspend fun getUserActive():Boolean{
+    fun getUserActive():Boolean{
         val first = !repo.getUserActive(tokenManager.getToken(),userManager.getIdUser())
         _isFirstLogin.postValue(first)
         return first
@@ -243,10 +241,8 @@ class LoginViewModel
 
 
     fun setUserActive(userActive: Boolean){
-        viewModelScope.launch{
-            _isFirstLogin.postValue(!userActive)
-            repo.setUserActive(tokenManager.getToken(),userManager.getIdUser(), userActive)
-        }
+        _isFirstLogin.postValue(!userActive)
+        repo.setUserActive(tokenManager.getToken(),userManager.getIdUser(), userActive)
     }
 
 

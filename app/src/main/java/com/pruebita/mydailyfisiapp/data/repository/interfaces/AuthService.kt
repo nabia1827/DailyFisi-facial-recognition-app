@@ -8,5 +8,5 @@ import retrofit2.http.POST
 
 interface AuthService {
     @POST("api/auth")
-    suspend fun auth(@Body usuariosApi: UsuariosApi): Response<TokenResponse>
+    fun auth(@Body usuariosApi: UsuariosApi): Response<TokenResponse>
 }

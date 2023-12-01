@@ -1,17 +1,17 @@
 package com.pruebita.mydailyfisiapp.data.repository.repositories
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.gson.JsonPrimitive
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.CourseSummary
-import com.pruebita.mydailyfisiapp.data.model.domain.Room
-import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.model.domain.SubPartSummary
-import com.pruebita.mydailyfisiapp.data.model.domain.User
-import com.pruebita.mydailyfisiapp.data.model.domain.UserSetTime
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.ApiService
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.CourseRepository
+import com.pruebita.mydailyfisiapp.data.source.*
 import kotlinx.datetime.LocalDate
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -23,156 +23,348 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
     val day = 18
 
     //with order
-    override suspend fun getTodayCourses(token:String, idUser: Int): MutableList<Course>? {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getTodayCourses(token: String, idUser: Int): MutableList<Course>? {
         val authorizationHeader = "Bearer $token"
-        val calendar = Calendar.getInstance()
-        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        val calendar = Calendar.getInstance(timeZone)
+        var list : MutableList<Course> = mutableListOf()
+        if(idUser != 5){
+            when(calendar.get(Calendar.DAY_OF_WEEK)){
+                Calendar.MONDAY-> {
+                    list.add(sd)
+                    list.add(met)
+                }
+                Calendar.TUESDAY-> {
+                    list.add(ingInfo)
+                    list.add(si)
+                }
+                Calendar.WEDNESDAY-> {
+                    list.add(gdp)
+                }
+                Calendar.THURSDAY-> {
 
-        var list : MutableList<Course>? = mutableListOf()
-        try {
-            val response = apiService.getTodayCourses(authorizationHeader,idUser,dayOfWeek)
-            if (response.isSuccessful) {
-                list = response.body()
-                println("getTodayCourses: ${list?.get(0)?.idCourse}")
-            } else {
-                println("Error api getTodayCourses: ${response.code()}")
+                }
+                Calendar.FRIDAY-> {
+                    list.add(audi)
+                }
+                Calendar.SATURDAY-> {
+                    list.add(moviles)
+                    list.add(calculo)
+                    list.add(mkt)
+                }
+                Calendar.SUNDAY-> {
+
+                }
             }
-        } catch (e: Exception) {
-            println("Error api getTodayCourses en catch: $e" )
-        }
-        return list
+        }else{
+            when(calendar.get(Calendar.DAY_OF_WEEK)){
+                Calendar.MONDAY-> {
 
+                }
+                Calendar.TUESDAY-> {
+
+                }
+                Calendar.WEDNESDAY-> {
+
+                }
+                Calendar.THURSDAY-> {
+
+                }
+                Calendar.FRIDAY-> {
+
+                }
+                Calendar.SATURDAY-> {
+
+                    list.add(calculo)
+                    list.add(mkt)
+                }
+                Calendar.SUNDAY-> {
+
+                }
+            }
+        }
+
+        return list
     }
 
     // without order
-    override suspend fun getUserCourses(token:String, idUser: Int): MutableList<Course>? {
+    override fun getUserCourses(token: String, idUser: Int): MutableList<Course>? {
         val authorizationHeader = "Bearer $token"
-        var list : MutableList<Course>? = mutableListOf()
-        try {
-            val response = apiService.getUserCourses(authorizationHeader,idUser)
-            if (response.isSuccessful) {
-                list = response.body()
-                println("getUserCourses: ${list?.get(0)?.idCourse}")
-            } else {
-                println("Error api getUserCourses: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            println("Error api getUserCourses en catch: $e" )
+        return if(idUser != 5){
+            mutableListOf(sd, met, ingInfo, si, gdp, audi, moviles, calculo, mkt)
+        }else{
+            mutableListOf(calculo, mkt)
         }
-        return list
+
     }
 
-    override suspend fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course? {
+    override fun getCourseShortInfo(token:String,idCourse: Int,idUser: Int): Course? {
         val authorizationHeader = "Bearer $token"
         var course:Course? = Course()
-        try {
-            val response = apiService.getCourseShortInfo(authorizationHeader,idCourse, idUser,0.0f)
-            if (response.isSuccessful) {
-                course = response.body()
-                println("getUserCourses: ${course?.idCourse}")
-            } else {
-                println("Error api getUserCourses: ${response.code()}")
+        when (idCourse) {
+            1 -> {
+                course = sd
             }
-        } catch (e: Exception) {
-            println("Error api getUserCourses en catch: $e" )
+            2 -> {
+                course = met
+            }
+            3 -> {
+                course = ingInfo
+            }
+            4 -> {
+                course = si
+            }
+            5 -> {
+                course = audi
+            }
+            6 -> {
+                course = moviles
+            }
+            7 -> {
+                course = moviles
+            }
+            8 -> {
+                course = calculo
+            }
+            9 -> {
+                course = mkt
+            }
+
         }
         return course
     }
 
-    override suspend fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary? {
+    override fun getSubPartSummary(token:String,idCourse: Int, idSubPart: Int,idUser: Int): SubPartSummary? {
         val authorizationHeader = "Bearer $token"
-        var summary:SubPartSummary? = SubPartSummary()
-        try {
-            val response = apiService.getSubPartSummary(authorizationHeader,idCourse,idSubPart,idUser,0)
-            if (response.isSuccessful) {
-                summary = response.body()
-                println("getSubPartSummary: ${summary?.courseName}")
-            } else {
-                println("Error api getSubPartSummary: ${response.code()}")
+        var course:Course? = Course()
+        var summary:SubPartSummary = SubPartSummary()
+        when (idCourse) {
+            1 -> {
+                course = sd
             }
-        } catch (e: Exception) {
-            println("Error api getSubPartSummary en catch: $e" )
+            2 -> {
+                course = met
+            }
+            3 -> {
+                course = ingInfo
+            }
+            4 -> {
+                course = si
+            }
+            5 -> {
+                course = audi
+            }
+            6 -> {
+                course = moviles
+            }
+            7 -> {
+                course = moviles
+            }
+            8 -> {
+                course = calculo
+            }
+            9 -> {
+                course = mkt
+            }
+
+        }
+        summary.idCourse = course?.idCourse ?: 0
+        summary.courseName = course?.courseName?:""
+        summary.section = course?.section?:0
+        if(idSubPart == 1){
+            summary.startDate = course?.theoryPart?.startHour?: Calendar.getInstance()
+            summary.endDate= course?.theoryPart?.endHour?: Calendar.getInstance()
+            summary.isFinished = false
+            summary.subpart = "Teoria"
+        }else{
+            summary.startDate = course?.labPart?.startHour?: Calendar.getInstance()
+            summary.endDate= course?.labPart?.endHour?: Calendar.getInstance()
+            summary.isFinished = false
+            summary.subpart = "Laboratorio"
         }
         return summary
     }
 
-    override suspend fun getCourseSummary(token:String,idCourse: Int,idUser: Int): CourseSummary? {
+    override fun getCourseSummary(token:String,idCourse: Int,idUser: Int): CourseSummary? {
         val authorizationHeader = "Bearer $token"
-        var summary:CourseSummary? = CourseSummary()
-        try {
-            val response = apiService.getCourseSummary(authorizationHeader,idCourse,idUser,false)
-            if (response.isSuccessful) {
-                summary = response.body()
-                println("getCourseSummary: ${summary?.courseName}")
-            } else {
-                println("Error api getCourseSummary: ${response.code()}")
+        var course:Course = Course()
+        when (idCourse) {
+            1 -> {
+                course = sd
             }
-        } catch (e: Exception) {
-            println("Error api getCourseSummary en catch: $e" )
+            2 -> {
+                course = met
+            }
+            3 -> {
+                course = ingInfo
+            }
+            4 -> {
+                course = si
+            }
+            5 -> {
+                course = audi
+            }
+            6 -> {
+                course = moviles
+            }
+            7 -> {
+                course = moviles
+            }
+            8 -> {
+                course = calculo
+            }
+            9 -> {
+                course = mkt
+            }
+
         }
+        var summary:CourseSummary = CourseSummary()
+        summary.idCourse = course?.idCourse ?: 0
+        summary.courseName = course?.courseName?:""
+        summary.section = course?.section?:0
+        summary.startDate = course?.theoryPart?.startHour?: Calendar.getInstance()
+        summary.endDate= course?.labPart?.endHour?: Calendar.getInstance()
+
         return summary
     }
 
-    override suspend fun isToday(token:String,idCourse: Int,idUser: Int): Boolean {
+    override fun isToday(token:String,idCourse: Int,idUser: Int): Boolean {
         val authorizationHeader = "Bearer $token"
+        val now = Calendar.getInstance(timeZone)
         var today = false
-        try {
-            val response = apiService.isToday(authorizationHeader,idCourse,idUser,"a")
-            if (response.isSuccessful) {
-                today = response.body()?:false
-                println("isToday: $today")
-            } else {
-                println("Error api isToday: ${response.code()}")
+        var course:Course = Course()
+        when (idCourse) {
+            1 -> {
+                course = sd
             }
-        } catch (e: Exception) {
-            println("Error api isToday en catch: $e" )
+            2 -> {
+                course = met
+            }
+            3 -> {
+                course = ingInfo
+            }
+            4 -> {
+                course = si
+            }
+            5 -> {
+                course = audi
+            }
+            6 -> {
+                course = moviles
+            }
+            7 -> {
+                course = moviles
+            }
+            8 -> {
+                course = calculo
+            }
+            9 -> {
+                course = mkt
+            }
+
         }
-        return today
+        return course.startDate?.get(Calendar.DAY_OF_WEEK)== now.get(Calendar.DAY_OF_WEEK)
     }
 
-    override suspend fun getCourseCardInfo(token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String> {
+    override fun getCourseCardInfo(token:String,idCourse: Int,idUser: Int, isLabo: Int): Pair<String, String> {
         val authorizationHeader = "Bearer $token"
         var pair = Pair("","")
-        /*
-        try { //To change
-            val response = apiService.getCourseCardInfo(authorizationHeader,idCourse,idUser, isLabo+1)
-            if (response.isSuccessful) {
-                pair = response.body()?:Pair("","")
-                println("getCourseCardInfo: ${pair.first} - ${pair.second}")
-            } else {
-                println("Error api getCourseCardInfo: ${response.code()}")
+        var course:Course = Course()
+        when (idCourse) {
+            1 -> {
+                course = sd
             }
-        } catch (e: Exception) {
-            println("Error api getCourseCardInfo en catch: $e" )
-        }*/
-        return Pair("Moviles","Lab 04-NP")
+            2 -> {
+                course = met
+            }
+            3 -> {
+                course = ingInfo
+            }
+            4 -> {
+                course = si
+            }
+            5 -> {
+                course = audi
+            }
+            6 -> {
+                course = moviles
+            }
+            7 -> {
+                course = moviles
+            }
+            8 -> {
+                course = calculo
+            }
+            9 -> {
+                course = mkt
+            }
+
+        }
+        return if(isLabo == 0){//change?
+            Pair(course.courseName, "${course.theoryPart.room.typeRoom} ${course.theoryPart.room.idRoom}-${course.theoryPart.room.pavilion}" )
+        }else{
+            Pair(course.courseName, "${course.labPart.room.typeRoom} ${course.labPart.room.idRoom}-${course.labPart.room.pavilion}" )
+        }
     }
 
-    override suspend fun getCourseInfoFromTime(token:String,idUser: Int,specificDate: LocalDate): MutableList<Course>? {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getCourseInfoFromTime(token:String, idUser: Int, specificDate: LocalDate): MutableList<Course>? {
         val authorizationHeader = "Bearer $token"
-        val calendar = Calendar.getInstance()
-        calendar.clear()
-        calendar.set(specificDate.year, specificDate.monthNumber-1, specificDate.dayOfMonth)
-        val timeZone = TimeZone.getTimeZone("America/Lima")
+        var list : MutableList<Course> = mutableListOf()
 
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        if(idUser !=5){
+            when(specificDate.dayOfWeek){
+                DayOfWeek.MONDAY-> {
+                    list.add(sd)
+                    list.add(met)
+                }
+                DayOfWeek.TUESDAY-> {
+                    list.add(ingInfo)
+                    list.add(si)
+                }
+                DayOfWeek.WEDNESDAY-> {
+                    list.add(gdp)
+                }
+                DayOfWeek.THURSDAY-> {
 
-        var list : MutableList<Course>? = mutableListOf()
-        try {
-            dateFormat.timeZone = timeZone
-            println("String date:" + dateFormat.format(calendar?.time))
-            println(JsonPrimitive("Json date:" + dateFormat.format(calendar?.time)))
-            val response = apiService.getCourseInfoFromTime(authorizationHeader, idUser,dateFormat.format(calendar?.time))
+                }
+                DayOfWeek.FRIDAY-> {
+                    list.add(audi)
+                }
+                DayOfWeek.SATURDAY-> {
+                    list.add(moviles)
+                    list.add(calculo)
+                    list.add(mkt)
+                }
+                DayOfWeek.SUNDAY-> {
 
-
-            if (response.isSuccessful) {
-                list = response.body()
-                println("getCourseInfoFromTime: ${list?.get(0)?.idCourse}")
-            } else {
-                println("Error api getCourseInfoFromTime: ${response.code()}")
+                }
             }
-        } catch (e: Exception) {
-            println("Error api getCourseInfoFromTime en catch: $e" )
+        }else{
+            when(specificDate.dayOfWeek){
+                DayOfWeek.MONDAY-> {
+
+                }
+                DayOfWeek.TUESDAY-> {
+
+                }
+                DayOfWeek.WEDNESDAY-> {
+
+                }
+                DayOfWeek.THURSDAY-> {
+
+                }
+                DayOfWeek.FRIDAY-> {
+
+                }
+                DayOfWeek.SATURDAY-> {
+                    list.add(calculo)
+                    list.add(mkt)
+                }
+                DayOfWeek.SUNDAY-> {
+
+                }
+            }
         }
         return list
     }

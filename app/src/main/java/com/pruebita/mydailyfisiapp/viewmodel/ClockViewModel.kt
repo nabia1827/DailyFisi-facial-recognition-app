@@ -1,6 +1,8 @@
 package com.pruebita.mydailyfisiapp.viewmodel
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +24,7 @@ import java.util.TimeZone
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class ClockViewModel @Inject constructor(private val context: Context,private val apiService: ApiService): ViewModel() {
     private val repoCourse: CourseRepositoryImpl = CourseRepositoryImpl(apiService)
@@ -86,6 +89,7 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
         val timeToMidnight:Long = ((24 - now.get(Calendar.HOUR_OF_DAY)) * 60 * 60 * 1000).toLong()
 
         timer.scheduleAtFixedRate(object : TimerTask() {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun run() {
                 updateClockData()
             }
@@ -182,49 +186,47 @@ class ClockViewModel @Inject constructor(private val context: Context,private va
         return sdf.format(calendar.time)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun callAPI(idUser:Int) {
-        viewModelScope.launch {
-            _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
-            todayCourses = repoCourse.getTodayCourses(tokenManager.getToken(),idUser)?: mutableListOf()
-            _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),idUser))
-            if(todayCourses != null && todayCourses.isNotEmpty()){
-                _isFinished.postValue(false)
-            }
+        _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
+        todayCourses = repoCourse.getTodayCourses(tokenManager.getToken(),idUser)?: mutableListOf()
+        _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),idUser))
+        if(todayCourses != null && todayCourses.isNotEmpty()){
+            _isFinished.postValue(false)
         }
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun updateClockData(){
-        viewModelScope.launch{
-            val user = _user.value
+        val user = _user.value
 
-            if (user!=null){
-                _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
-                _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),user.idUser))
-                val newCourses = repoCourse.getTodayCourses(tokenManager.getToken(),user.idUser)
-                if (!newCourses.isNullOrEmpty()){
-                    todayCourses.clear()
-                    todayCourses.addAll(newCourses)
-                }
+        if (user!=null){
+            _todayEvents.postValue(repoEvent.listAllTodayEvents(tokenManager.getToken()))
+            _courses.postValue(repoCourse.getUserCourses(tokenManager.getToken(),user.idUser))
+            val newCourses = repoCourse.getTodayCourses(tokenManager.getToken(),user.idUser)
+            if (!newCourses.isNullOrEmpty()){
+                todayCourses.clear()
+                todayCourses.addAll(newCourses)
+            }
 
-                if(todayCourses != null && todayCourses.isNotEmpty()){
-                    if(todayCourses.size != 0){
-                        currentIndex = 0
-                        _isFinished.postValue(false)
-                        _classStartTime.postValue(todayCourses[currentIndex].theoryPart.startHour)
-                        _classEndTime.postValue(todayCourses[currentIndex].labPart.endHour)
-                        _actualCourse.postValue(todayCourses[currentIndex])
-                        _pendingCourses.postValue(todayCourses.size)
+            if(todayCourses != null && todayCourses.isNotEmpty()){
+                if(todayCourses.size != 0){
+                    currentIndex = 0
+                    _isFinished.postValue(false)
+                    _classStartTime.postValue(todayCourses[currentIndex].theoryPart.startHour)
+                    _classEndTime.postValue(todayCourses[currentIndex].labPart.endHour)
+                    _actualCourse.postValue(todayCourses[currentIndex])
+                    _pendingCourses.postValue(todayCourses.size)
 
-                        if((currentIndex +1) < todayCourses.size){
-                            _nextCourse.postValue(todayCourses[currentIndex +1])
+                    if((currentIndex +1) < todayCourses.size){
+                        _nextCourse.postValue(todayCourses[currentIndex +1])
 
-                            if((currentIndex +2) < todayCourses.size){
-                                _subNextCourse.postValue(todayCourses[currentIndex + 2])
-                            }
+                        if((currentIndex +2) < todayCourses.size){
+                            _subNextCourse.postValue(todayCourses[currentIndex + 2])
                         }
-
                     }
+
                 }
             }
         }

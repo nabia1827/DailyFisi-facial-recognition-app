@@ -5,6 +5,6 @@ import java.util.Calendar
 data class Semester(
     val idSemester:Int,
     val semesterDesc:String,
-    val startDate: Calendar?,
-    val endDate: Calendar?
+    val startDate: Calendar,
+    val endDate: Calendar
 )
