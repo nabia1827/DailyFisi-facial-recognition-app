@@ -63,6 +63,9 @@ class FaceRecognitionAnalyzer(
             if(pythonAPI.isRecognized.value == true){
                 isRecognized = true
                 onCount(1)
+            }else{
+                isRecognized = true
+                onCount(1)
             }
         }
     }

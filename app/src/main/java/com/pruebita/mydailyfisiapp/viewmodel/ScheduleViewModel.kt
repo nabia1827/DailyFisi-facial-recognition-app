@@ -165,7 +165,7 @@ class ScheduleViewModel @Inject constructor(private val context: Context,private
     ) {
         val startTime = LocalDateTime(
             selectedDate.get(Calendar.YEAR),
-            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.MONTH )+ 1,
             selectedDate.get(Calendar.DAY_OF_MONTH),
             initHour.get(Calendar.HOUR_OF_DAY),
             initHour.get(Calendar.MINUTE)
@@ -173,7 +173,7 @@ class ScheduleViewModel @Inject constructor(private val context: Context,private
 
         val endTime = LocalDateTime(
             selectedDate.get(Calendar.YEAR),
-            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.MONTH )+ 1,
             selectedDate.get(Calendar.DAY_OF_MONTH),
             endHour.get(Calendar.HOUR_OF_DAY),
             endHour.get(Calendar.MINUTE)
@@ -221,7 +221,7 @@ class ScheduleViewModel @Inject constructor(private val context: Context,private
         val startTime = LocalDateTime(
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
-            selectedDate.get(Calendar.DAY_OF_MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH)+1,
             initHour.get(Calendar.HOUR_OF_DAY),
             initHour.get(Calendar.MINUTE)
         )
@@ -229,7 +229,7 @@ class ScheduleViewModel @Inject constructor(private val context: Context,private
         val endTime = LocalDateTime(
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
-            selectedDate.get(Calendar.DAY_OF_MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH)+1,
             endHour.get(Calendar.HOUR_OF_DAY),
             endHour.get(Calendar.MINUTE)
         )

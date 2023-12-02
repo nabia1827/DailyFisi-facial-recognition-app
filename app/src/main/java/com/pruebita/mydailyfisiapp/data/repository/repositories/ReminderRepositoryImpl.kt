@@ -2,44 +2,46 @@ package com.pruebita.mydailyfisiapp.data.repository.repositories
 
 import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.data.repository.interfaces.ReminderRepository
+import com.pruebita.mydailyfisiapp.data.source.myRemainders
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 class ReminderRepositoryImpl: ReminderRepository{
 
     override fun listAllRemindersEvents(timeWeek: LocalDate): MutableList<Reminder>{
-        return mutableListOf(
-            Reminder(
-                idReminder = 1,
-                title = "Reunion de Gestion de Proyectos",
-                dateStart = LocalDateTime(2023, 11, 16, 12, 30),
-                dateEnd = LocalDateTime(2023, 11, 16, 12, 30),
-                isDone = false
-            ),
-            Reminder(
-                idReminder = 2,
-                title = "Reunion de Calculo",
-                dateStart = LocalDateTime(2023, 11, 16, 12, 30),
-                dateEnd = LocalDateTime(2023, 11, 16, 12, 30),
-                isDone = true
-            ),
-            Reminder(
-                idReminder = 3,
-                title = "Reunion de Algebra",
-                dateStart = LocalDateTime(2023, 11, 16, 12, 30),
-                dateEnd = LocalDateTime(2023, 11, 16, 12, 30),
-                isDone = true
-            )
-        )
+
+        var currentRemainders: MutableList<Reminder> = mutableListOf()
+        for (i in 0 until myRemainders.size){
+            if(timeWeek.year == myRemainders[i].dateStart.year
+                && timeWeek.month == myRemainders[i].dateStart.month
+                && timeWeek.dayOfMonth == myRemainders[i].dateStart.dayOfMonth){
+                currentRemainders.add(myRemainders[i])
+            }
+        }
+        return currentRemainders
     }
 
     override fun markAsCompleted(idReminder: Int, idUser: Int?) {
-        //Update the Reminder as Completed
+        for (i in 0 until myRemainders.size){
+            if(myRemainders[i].idReminder == idReminder){
+                myRemainders[i].isDone = true
+            }
+        }
     }
 
     override fun addReminder(userId: Int?, title: String, startTime: LocalDateTime, endTime: LocalDateTime): Int {
-        //Update and return the id value
-        return 4
+        val id=myRemainders.size
+        myRemainders.add(
+            Reminder(
+                idReminder = id,
+                title = title,
+                dateStart = startTime,
+                dateEnd = endTime,
+                isDone = false
+            )
+        )
+        println("Titulooo R: ${myRemainders[myRemainders.size-1].title}")
+        return id
     }
 
     override  fun editReminder(
@@ -49,7 +51,13 @@ class ReminderRepositoryImpl: ReminderRepository{
         startTime: LocalDateTime,
         endTime: LocalDateTime
     ){
-        //Edit the Reminder by its userId
+        for (i in 0 until myRemainders.size){
+            if(myRemainders[i].idReminder == idReminder){
+                myRemainders[i].dateStart = startTime
+                myRemainders[i].dateEnd = endTime
+                myRemainders[i].title = title
+            }
+        }
     }
 
 

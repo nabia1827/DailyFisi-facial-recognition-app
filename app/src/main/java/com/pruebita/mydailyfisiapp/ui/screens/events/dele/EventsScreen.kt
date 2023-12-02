@@ -89,16 +89,16 @@ fun PreviewEventScreen(){
 @Composable
 fun EventsScreen(navController: NavHostController) {
     var selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imageneseventos/101.jpg"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_4.jpg?alt=media&token=652e3e20-384c-4a60-9e68-35c6d39341cd"))
     }
     var img1 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba1.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36"))
     }
     var img2 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba2.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_2.jpg?alt=media&token=4fbbf795-91fe-4e3b-a738-2afcce491c2d"))
     }
     var img3 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba3.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_3.png?alt=media&token=f1c54a7c-3b65-4638-b715-2bb6281af906"))
     }
 
     var selectFilterCard = remember {
@@ -1001,7 +1001,7 @@ fun EventoCard(navController:NavHostController,selectedImageUri: Uri?, uris_goer
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "10",
+                                text = "15",
                                 style = TextStyle(
                                     fontSize = 18.sp,
                                     lineHeight = 0.sp,
@@ -1013,7 +1013,7 @@ fun EventoCard(navController:NavHostController,selectedImageUri: Uri?, uris_goer
                                 )
                             )
                             Text(
-                                text = "JUNE",
+                                text = "DIC",
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     lineHeight = 0.sp,

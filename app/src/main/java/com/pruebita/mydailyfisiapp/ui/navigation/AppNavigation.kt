@@ -307,13 +307,13 @@ fun AppNavigation(
             * */
 
         composable(route = ItemMenu.HomeScreen.routeStudent) {
-            HomeScreen(clockViewModel)
+            HomeScreen(clockViewModel,navController)
         }
         composable(route = ItemMenu.HomeScreen.routeDele) {
-            HomeScreen(clockViewModel)
+            HomeScreen(clockViewModel,navController)
         }
         composable(route = ItemMenu.HomeScreen.routeTeacher) {
-            HomeScreen(clockViewModel)
+            HomeScreen(clockViewModel,navController)
         }
         /*
         *  SUBMODULE OF ATTENDANCE

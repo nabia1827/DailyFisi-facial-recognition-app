@@ -395,6 +395,7 @@ fun headerCalendar(date: LocalDate, minimize: MutableState<Boolean>, label: Muta
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyDialog(
     showMyDialog: MutableState<DialogState>,

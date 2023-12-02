@@ -7,6 +7,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
@@ -103,6 +104,8 @@ fun startFaceRecognition(
     idCourse: Int
 ) {
     cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
+    val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+    cameraController.cameraSelector = cameraSelector
     cameraController.setImageAnalysisAnalyzer(
         ContextCompat.getMainExecutor(context),
         if(!isDetecting){

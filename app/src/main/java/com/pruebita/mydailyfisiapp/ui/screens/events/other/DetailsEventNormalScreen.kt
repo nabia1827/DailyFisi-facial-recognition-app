@@ -54,20 +54,20 @@ import com.pruebita.mydailyfisiapp.ui.theme.poppins
 @Composable
 fun DetailsEventNormalScreen(navController: NavHostController) {
     var selectedImageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/imageneseventos/101.jpg"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/events%2Fimages_events%2Fevent_4.jpg?alt=media&token=652e3e20-384c-4a60-9e68-35c6d39341cd"))
     }
 
     var img1 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba1.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36"))
     }
     var img2 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba2.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_2.jpg?alt=media&token=4fbbf795-91fe-4e3b-a738-2afcce491c2d"))
     }
     var img3 by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba3.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_3.png?alt=media&token=f1c54a7c-3b65-4638-b715-2bb6281af906"))
     }
     var org_img by remember {
-        mutableStateOf<Uri?>(Uri.parse("https://dfapruebaf.blob.core.windows.net/fotosperfil/persona_prueba4.png"))
+        mutableStateOf<Uri?>(Uri.parse("https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_8.jpeg?alt=media&token=5de373e3-a627-4e7a-9db9-44ab6a739aac"))
     }
 
     val uris = remember { mutableStateListOf(img1, img2, img3) }
@@ -128,7 +128,7 @@ fun DetailsEventContent(org_img: Uri?) {
         )
         DetailsCard(
             id = R.drawable.calendar_details,
-            title = "10 Junio, 2023",
+            title = "15 Diciembre, 2023",
             subtitle = "Viernes, 2:00PM - 5:00PM"
         )
         DetailsCard(
@@ -138,7 +138,7 @@ fun DetailsEventContent(org_img: Uri?) {
         )
         DetailsOrganizador(
             img = org_img,
-            title = "Pedro Alvarez",
+            title = "Diana Alvarez",
             subtitle = "Organizador"
 
         )

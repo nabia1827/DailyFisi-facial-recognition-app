@@ -3,6 +3,7 @@ package com.pruebita.mydailyfisiapp.data.source
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.DailyCourseAssist
 import com.pruebita.mydailyfisiapp.data.model.domain.Event
+import com.pruebita.mydailyfisiapp.data.model.domain.Reminder
 import com.pruebita.mydailyfisiapp.data.model.domain.Room
 import com.pruebita.mydailyfisiapp.data.model.domain.StudentAssistUnit
 import com.pruebita.mydailyfisiapp.data.model.domain.StudentGlobalReport
@@ -10,6 +11,7 @@ import com.pruebita.mydailyfisiapp.data.model.domain.SubPart
 import com.pruebita.mydailyfisiapp.data.model.domain.TeacherGlobalReport
 import com.pruebita.mydailyfisiapp.data.model.domain.User
 import com.pruebita.mydailyfisiapp.data.model.domain.UsuariosApi
+import kotlinx.datetime.LocalDateTime
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -34,7 +36,7 @@ var student1= User(
     cellphone = "950415842",
     imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
     sessionActive = false,
-    userActive = false
+    userActive = true
 )
 
 var student2= User(
@@ -68,21 +70,21 @@ var teacher1 = User(
 )
 
 val salon1 = Room(
-    idRoom = 101,
+    idRoom = 208,
     typeRoom = "Aula",
     pavilion = "AP",
-    floor = 1,
+    floor = 2,
     posX = 40,
     posY = 135,
 )
 
 val lab1 = Room(
-    idRoom = 1,
+    idRoom = 2,
     typeRoom = "Lab",
     pavilion = "NP",
-    floor = 1,
-    posX = 80,
-    posY = 115,
+    floor = 2,
+    posX = 50,
+    posY = 70,
 )
 
 var event1 = Event(
@@ -391,7 +393,7 @@ val student1Global = StudentGlobalReport(
         DailyCourseAssist(getDate(2023,10,10,7,15), theoryAssist = true, labAssist = true),
         DailyCourseAssist(getDate(2023,10,17,7,15), theoryAssist = true, labAssist = true),
         DailyCourseAssist(getDate(2023,10,24,7,15), theoryAssist = false, labAssist = true),
-        DailyCourseAssist(getDate(2023,11,1,7,15), theoryAssist = null, labAssist = null),
+        DailyCourseAssist(getDate(2023,11,1,7,15), theoryAssist = false, labAssist = true),
     ) ,
     assMoviles = mutableListOf(
         DailyCourseAssist(getDate(2023,10,4,7,15), theoryAssist = true, labAssist = true),
@@ -466,7 +468,7 @@ val teacherGlobalReportCalculo = TeacherGlobalReport(
             lastNames = "Acosta Cortez",
             nick = "MA",
         )
-    ), theoryAssist = mutableListOf(9,9,8,8,8,5,6,7,3), labAssist = mutableListOf()
+    ), theoryAssist = mutableListOf(3,3,4,4,4,2,4,2,4), labAssist = mutableListOf(1,1,3,4,3,3,1,2,3)
 )
 
 val teacherGlobalReportMkt = TeacherGlobalReport(
@@ -519,8 +521,33 @@ val teacherGlobalReportMkt = TeacherGlobalReport(
             lastNames = "Acosta Cortez",
             nick = "MA",
         )
-    ), theoryAssist = mutableListOf(8,8,9,10,2,8,8,8,8), labAssist = mutableListOf()
+    ), theoryAssist = mutableListOf(4,4,3,3,3,2,4,2,4), labAssist = mutableListOf(3,3,4,4,3,3,1,2,3)
 )
+
+var myRemainders = mutableListOf(
+    Reminder(
+        idReminder = 1,
+        title = "Reunion de Gestion de Proyectos",
+        dateStart = LocalDateTime(2023, 11, 27, 12, 30),
+        dateEnd = LocalDateTime(2023, 11, 27, 13, 30),
+        isDone = false
+    ),
+    Reminder(
+        idReminder = 2,
+        title = "Reunion de Calculo",
+        dateStart = LocalDateTime(2023, 12, 2, 16, 30),
+        dateEnd = LocalDateTime(2023, 12, 2, 18, 30),
+        isDone = false
+    ),
+    Reminder(
+        idReminder = 3,
+        title = "Reunion de Algebra",
+        dateStart = LocalDateTime(2023, 12, 2, 19, 30),
+        dateEnd = LocalDateTime(2023, 12, 2, 20, 30),
+        isDone = false
+    )
+)
+
 
 fun getDate(year:Int, mes:Int,dia:Int,hour:Int, minute:Int): Calendar{
     val timeZone: TimeZone = TimeZone.getTimeZone("America/Lima")

@@ -82,8 +82,8 @@ fun HorarioScreen(
     val timeTheoryStartMin = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
     val timeTheoryEndHour = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
     val timeTheoryEndMin = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
-    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin - $timeTheoryEndHour:$timeTheoryEndMin"
-
+    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin-$timeTheoryEndHour:$timeTheoryEndMin"
+    //val timeTheory = " ffffffff"
 
     val timeLaboStartHour = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
     val timeLaboStartMin = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
@@ -91,7 +91,7 @@ fun HorarioScreen(
     val timeLaboEndMin = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
     val timeLabo = "$timeLaboStartHour:$timeLaboStartMin - $timeLaboEndHour:$timeLaboEndMin"
 
-    val theoryDescription = "Aula ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
+    val theoryDescription = "Aula ${courseActual?.theoryPart?.room?.idRoom}, ${courseActual?.theoryPart?.room?.floor}°piso - ${courseActual?.theoryPart?.room?.pavilion} Pabellon"
     val laboDescription = "Lab ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
 
     Column (

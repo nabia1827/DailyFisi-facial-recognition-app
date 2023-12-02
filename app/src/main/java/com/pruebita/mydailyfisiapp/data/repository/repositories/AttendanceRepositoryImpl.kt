@@ -91,7 +91,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
             var attLab = Attendance(
                 date = now,
                 idCourse = list[i].idCourse,
-                idSubPart = 0,
+                idSubPart = 1,
                 courseName = list[i].courseName,
                 coursePart = list[i].labPart.desPart,
                 courseRoom = "${list[i].labPart.room.idRoom} - ${list[i].labPart.room.pavilion}",
@@ -115,7 +115,7 @@ class AttendanceRepositoryImpl:AttendanceRepository {
         val totalClasses = st.getTotalClasses(idUser)
         val totalAssistClasses = st.getTotalAssistClasses(idUser)
         println(" total: $totalAssistClasses/$totalClasses")
-        return totalAssistClasses/totalClasses
+        return (totalAssistClasses*100.0/totalClasses).toInt()
     }
 
     override fun getCourseReports(idUser: Int): MutableList<CourseReport> {

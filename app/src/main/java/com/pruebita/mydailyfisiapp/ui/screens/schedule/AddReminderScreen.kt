@@ -85,14 +85,15 @@ fun AddReminderScreen(
     navController: NavHostController,
     scheduleViewModel: ScheduleViewModel
 ) {
+    val timeZone = TimeZone.getTimeZone("America/Lima")
     var selectedId by rememberSaveable { mutableIntStateOf(0) }
-    var selectedDate by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
+    var selectedDate by rememberSaveable { mutableStateOf(Calendar.getInstance(timeZone)) }
     val openDialog = remember { mutableStateOf(false) }
 
     var showTimePickerLeft by remember { mutableStateOf(false) }
     var showTimePickerRight by remember { mutableStateOf(false) }
-    var initHour by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
-    var endHour by rememberSaveable { mutableStateOf(Calendar.getInstance()) }
+    var initHour by rememberSaveable { mutableStateOf(Calendar.getInstance(timeZone)) }
+    var endHour by rememberSaveable { mutableStateOf(Calendar.getInstance(timeZone)) }
     val text = remember { mutableStateOf("") }
 
     MyDatePickerDialog({ openDialog.value }, { newValue: Boolean ->
@@ -395,6 +396,7 @@ fun MyDatePickerDialog(
 
         val datePickerState = rememberDatePickerState()
 
+
         val confirmEnabled =
             remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
         DatePickerDialog(
@@ -481,16 +483,17 @@ fun SelectorFecha(
     changeSelection: (Int, Calendar) -> Unit,
     changeOpenDialog: (Boolean) -> Unit
 ) {
-
-    val todayDate = Calendar.getInstance()
-    val sdf = SimpleDateFormat("MMM dd, yyyy")
+    val timeZone = TimeZone.getTimeZone("America/Lima")
+    val todayDate = Calendar.getInstance(timeZone)
+    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    sdf.timeZone = timeZone
 
     // Tomorrow
-    val tomorrow = Calendar.getInstance()
+    val tomorrow = Calendar.getInstance(timeZone)
     tomorrow.add(Calendar.DAY_OF_MONTH, 1)
 
     // Day after tomorrow
-    val afterTomorrow = Calendar.getInstance()
+    val afterTomorrow = Calendar.getInstance(timeZone)
     afterTomorrow.add(Calendar.DAY_OF_MONTH, 2)
 
 
@@ -850,6 +853,7 @@ fun SelectorHora(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ButtonAddEvent(
     navController: NavHostController,

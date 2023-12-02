@@ -77,29 +77,29 @@ fun LocationScreen(
     val drawable_icon = context.getDrawable(R.drawable.baseline_location_on_24)
     drawable_icon?.setTint(0xFFFFFFFF.toInt())
     val bitmap_icon = drawable_icon?.toBitmap(height = 25, width = 25)
-
+    val courseActual = scheduleViewModel.getCourse(idCourse)
     var columnHeight = remember { mutableStateOf(240) }
 
     var xpos = remember {
-        mutableStateOf(40)
+        mutableStateOf(courseActual?.theoryPart?.room?.posX?:0)
     }
     var ypos = remember {
-        mutableStateOf(135)
+        mutableStateOf(courseActual?.theoryPart?.room?.posY?:0)
     }
     var labelLocation = remember{
-        mutableStateOf("Aula 102")
+        mutableStateOf("Aula ${courseActual?.theoryPart?.room?.idRoom}")
     }
 
     var istheoric = remember {
         mutableStateOf(true)
     }
-    val courseActual = scheduleViewModel.getCourse(idCourse)
+
 
     val timeTheoryStartHour = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
     val timeTheoryStartMin = courseActual?.theoryPart?.startHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
     val timeTheoryEndHour = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
     val timeTheoryEndMin = courseActual?.theoryPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
-    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin - $timeTheoryEndHour:$timeTheoryEndMin"
+    val timeTheory = "$timeTheoryStartHour:$timeTheoryStartMin-$timeTheoryEndHour:$timeTheoryEndMin"
 
 
     val timeLaboStartHour = courseActual?.labPart?.startHour?.let { String.format("%02d", it.get(Calendar.HOUR_OF_DAY)) }
@@ -108,7 +108,7 @@ fun LocationScreen(
     val timeLaboEndMin = courseActual?.labPart?.endHour?.let { String.format("%02d", it.get(Calendar.MINUTE)) }
     val timeLabo = "$timeLaboStartHour:$timeLaboStartMin - $timeLaboEndHour:$timeLaboEndMin"
 
-    val theoryDescription = "Aula ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
+    val theoryDescription = "Aula ${courseActual?.theoryPart?.room?.idRoom}, ${courseActual?.theoryPart?.room?.floor}°piso - ${courseActual?.theoryPart?.room?.pavilion} Pabellon"
     val laboDescription = "Lab ${courseActual?.labPart?.room?.idRoom}, ${courseActual?.labPart?.room?.floor}°piso - ${courseActual?.labPart?.room?.pavilion} Pabellon"
 
 
@@ -304,12 +304,14 @@ fun LocationScreen(
                             clip = true
                         )
                         .clickable {
+                            //Teorica
                             if(istheoric.value){
                                 navController.popBackStack()
                             }
                             else{
-                                xpos.value = 40
-                                ypos.value = 135
+                                xpos.value = courseActual?.theoryPart?.room?.posX?:0
+                                ypos.value = courseActual?.theoryPart?.room?.posY?:0
+                                labelLocation.value = "Aula ${courseActual?.theoryPart?.room?.idRoom}"
                                 istheoric.value = true
                             }
                         },
@@ -342,9 +344,11 @@ fun LocationScreen(
                             clip = true
                         )
                         .clickable {
+                            //Practica
                             if(istheoric.value){
-                                xpos.value = 40
-                                ypos.value = 85
+                                xpos.value = courseActual?.labPart?.room?.posX?:0
+                                ypos.value = courseActual?.labPart?.room?.posY?:0
+                                labelLocation.value = "Lab ${courseActual?.labPart?.room?.idRoom}"
                                 istheoric.value = false
                             }
                             else{

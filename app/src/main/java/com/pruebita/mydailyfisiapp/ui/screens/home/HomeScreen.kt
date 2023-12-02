@@ -1,8 +1,11 @@
 package com.pruebita.mydailyfisiapp.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,18 +41,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.pruebita.mydailyfisiapp.R
 import com.pruebita.mydailyfisiapp.data.model.domain.Course
 import com.pruebita.mydailyfisiapp.data.model.domain.Event
 import com.pruebita.mydailyfisiapp.data.model.domain.User
+import com.pruebita.mydailyfisiapp.ui.navigation.InternalScreens
 import com.pruebita.mydailyfisiapp.ui.theme.poppins
 import com.pruebita.mydailyfisiapp.viewmodel.ClockViewModel
 import java.util.Calendar
 import kotlin.math.floor
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(clockViewModel: ClockViewModel) {
+fun HomeScreen(clockViewModel: ClockViewModel,navController: NavHostController) {
 
     val currentUser: User by clockViewModel.user.observeAsState(initial = User())
 
@@ -83,39 +89,39 @@ fun HomeScreen(clockViewModel: ClockViewModel) {
         }
         item{
             Spacer(modifier = Modifier.padding(8.dp))
-            AttendanceSection(listCourses)
+            AttendanceSection(listCourses, navController)
 
         }
     }
 }
 
 @Composable
-fun AttendanceSection(listCourses: MutableList<Course>) {
+fun AttendanceSection(listCourses: MutableList<Course>,navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
 
     ){
         AttendanceSectionTitle()
-        AttendanceSectionContent(listCourses)
+        AttendanceSectionContent(listCourses,navController)
 
     }
 }
 
 @Composable
-fun AttendanceSectionContent(listCourses: MutableList<Course>) {
+fun AttendanceSectionContent(listCourses: MutableList<Course>,navController: NavHostController) {
     val rows = floor(listCourses.size/2.0).toInt()
     for (i in 0 until rows) {
-        AttendanceSectionCard(listCourses[2*i],listCourses[2*i+1])
+        AttendanceSectionCard(listCourses[2*i],listCourses[2*i+1],navController)
         Spacer(modifier = Modifier.padding(4.dp))
     }
     if(listCourses.size % 2 != 0){
-        AttendanceSectionCard(listCourses[listCourses.size - 1],null)
+        AttendanceSectionCard(listCourses[listCourses.size - 1],null,navController)
     }
 }
 
 @Composable
-fun AttendanceSectionCard(course1: Course, course2: Course?) {
+fun AttendanceSectionCard(course1: Course, course2: Course?,navController: NavHostController) {
     val backgroundList: MutableList<Int> = mutableListOf(
         R.drawable.espiral_background,
         R.drawable.fondo_evento_2,
@@ -134,7 +140,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                         colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
                     ),
                     shape = RoundedCornerShape(22.dp)
-                ),
+                ).clickable { navController.navigate(InternalScreens.CurseReportStudentScreen.route + "/${course1.idCourse}") },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -191,7 +197,7 @@ fun AttendanceSectionCard(course1: Course, course2: Course?) {
                             colors = listOf(Color(0xFF6663D7), Color(0xFF1E92BA))
                         ),
                         shape = RoundedCornerShape(22.dp)
-                    ),
+                    ).clickable { navController.navigate(InternalScreens.CurseReportStudentScreen.route + "/${course2.idCourse}") },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -275,6 +281,7 @@ fun AttendanceSectionTitle() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ClasesSection(viewModel: ClockViewModel) {
     val pendingCourses:Int by viewModel.pendingCourses.observeAsState(initial = 0)
@@ -308,6 +315,7 @@ fun ClasesSection(viewModel: ClockViewModel) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ClasesSectionLaterClass(nextCourse: Course?, subNextCourse: Course?, viewModel: ClockViewModel) {
     Row(
@@ -360,6 +368,7 @@ fun ClasesSectionLaterClass(nextCourse: Course?, subNextCourse: Course?, viewMod
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ClasesSectionInstantClass(viewModel: ClockViewModel, course: Course?) {
     Row(
@@ -397,6 +406,7 @@ fun ClasesSectionInstantClass(viewModel: ClockViewModel, course: Course?) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InstantClassDer(viewModel: ClockViewModel) {
     val currentTime: String by viewModel.currentTimeText.observeAsState(initial = "")

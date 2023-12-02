@@ -115,10 +115,10 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
                 course = si
             }
             5 -> {
-                course = audi
+                course = gdp
             }
             6 -> {
-                course = moviles
+                course = audi
             }
             7 -> {
                 course = moviles
@@ -152,10 +152,10 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
                 course = si
             }
             5 -> {
-                course = audi
+                course = gdp
             }
             6 -> {
-                course = moviles
+                course = audi
             }
             7 -> {
                 course = moviles
@@ -202,10 +202,10 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
                 course = si
             }
             5 -> {
-                course = audi
+                course = gdp
             }
             6 -> {
-                course = moviles
+                course = audi
             }
             7 -> {
                 course = moviles
@@ -247,10 +247,10 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
                 course = si
             }
             5 -> {
-                course = audi
+                course = gdp
             }
             6 -> {
-                course = moviles
+                course = audi
             }
             7 -> {
                 course = moviles
@@ -284,10 +284,10 @@ class CourseRepositoryImpl(private val apiService: ApiService): CourseRepository
                 course = si
             }
             5 -> {
-                course = audi
+                course = gdp
             }
             6 -> {
-                course = moviles
+                course = audi
             }
             7 -> {
                 course = moviles
