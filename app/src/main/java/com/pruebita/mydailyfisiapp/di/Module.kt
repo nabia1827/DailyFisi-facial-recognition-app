@@ -39,7 +39,7 @@ object AppModule {
             .registerTypeAdapter(Calendar::class.java, CalendarTypeAdapter())
             .create()
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.67:3000/")
+            .baseUrl("https://dailyfisiappbackend20231201190534.azurewebsites.net/")
             .client(unSafeOkHttpClient().build())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -54,7 +54,7 @@ object AppModule {
             .create()
 
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.67:3000/")
+            .baseUrl("https://dailyfisiappbackend20231201190534.azurewebsites.net/")
             .client(unSafeOkHttpClient().build())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
