@@ -36,7 +36,7 @@ var student1= User(
     cellphone = "950415842",
     imageUser = "https://firebasestorage.googleapis.com/v0/b/dailyfisiapp.appspot.com/o/users%2Fprofiles%2Fuser_1.jpg?alt=media&token=8fa61ee1-f687-4e43-8cab-f799bfd58f36",
     sessionActive = false,
-    userActive = true
+    userActive = false
 )
 
 var student2= User(

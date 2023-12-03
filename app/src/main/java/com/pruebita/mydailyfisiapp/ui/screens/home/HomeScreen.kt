@@ -555,7 +555,7 @@ fun InstantClassIzq(course: Course, dateToString: (Calendar) -> String) {
                 Text(
                     text = " ${course.theoryPart.room.typeRoom} ${course.theoryPart.room.idRoom} ",
                     style = TextStyle(
-                        fontSize = 15.sp,
+                        fontSize = 12.sp,
                         lineHeight = 14.sp,
                         fontFamily = poppins,
                         fontWeight = FontWeight(400),
