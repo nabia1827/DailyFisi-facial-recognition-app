@@ -1,61 +1,56 @@
-# MyDailyFisiApp
+Project Name: Academic Management App with Facial Recognition
+=============================================================
 
-![Logo del Proyecto](Logo.png)
+Overview
+--------
 
-## Descripción
-El proyecto de desarrollo tiene como objetivo fundamental la optimización de una tarea repetitiva y poco eficiente en la facultad de Ingeniería de Sistemas: la gestión de asistencias. Además, se enfoca en la publicación eficaz de eventos académicos. Su último propósito es proporcionar una solución práctica para encontrar rápidamente la ubicación de las aulas, permitiendo así una mejor gestión del tiempo en nuestra facultad. Este proyecto promete revolucionar la experiencia académica al simplificar procesos, aumentar la eficiencia y mejorar la conectividad en el entorno educativo de la facultad.
-Para hacer el merge
-## Funcionalidades
+This repository contains the source code and documentation for an academic management application designed to streamline the attendance process for educators through facial recognition technology.
 
-1. **Perfiles de Usuarios:**
-   - Estudiantes, profesores y personal de la facultad pueden crear perfiles con información relevante, como nombre, foto, área de estudio, intereses académicos y de investigación.
+Features
+--------
 
-2. **Muro de Noticias:**
-   - Un espacio donde los usuarios pueden publicar actualizaciones, compartir artículos interesantes, proyectos en los que están trabajando, logros académicos y otra información relevante.
+### Login
 
-3. **Comunidades de Estudio:**
-   - Sección donde los usuarios pueden plantear preguntas, discutir temas académicos, resolver dudas y debatir sobre tópicos relevantes.
+*   User authentication through username and password.
+*   Google account login option available.
 
-4. **Eventos Académicos:**
-   - Calendario que muestra conferencias, charlas, seminarios y otros eventos académicos que se llevarán a cabo en la facultad.
-   - Los usuarios pueden confirmar su asistencia, recibir recordatorios y compartir información sobre los eventos.
+### Home Module
 
-5. **Comunicación a través de Chats:**
-   - Función de mensajería interna que permite a los usuarios comunicarse directamente, ya sea uno a uno o en grupos.
-   - Se utiliza para discutir proyectos, coordinar actividades y compartir información.
+*   Displays a personalized greeting with the user's name and upcoming events.
+*   Shows the four pending classes and corresponding attendance records.
+*   Features a bottom navigation menu with options for Home, Schedule, Attendance, and Events.
 
-6. **Perfil de Profesor:**
-   - Los profesores pueden destacar sus áreas de expertise, publicaciones académicas, horarios de consulta y recibir preguntas de los estudiantes.
+### Schedule Module
 
+*   Presents a calendar interface with the ability to view the current month or week.
+*   Displays the course and time based on the selected date.
+*   Provides course reminders and exact classroom location within the institution's facility upon course selection.
 
-## Tecnologías Utilizadas
+### Attendance Module
 
-- Kotlin
-- Android Studio
-- Bibliotecas de terceros
+*   Varies based on user role (student or teacher).
+*   For students:
+    *   Option to mark attendance for the day.
+    *   Access to attendance reports for each course, indicating attendance status (marked, to be marked, and unmarked).
+    *   Progressive tracking of attendance over time.
+    *   Facial recognition verification for marking attendance.
+*   For teachers:
+    *   Ability to activate attendance for students.
 
-## Requisitos de Configuración
+### Configuration Section
 
-- Android Studio instalado
-- SDK de Android versión X.X.X
-- Otras dependencias o configuraciones específicas
+*   Toggle notification settings on/off.
+*   Change password functionality.
 
-## Instalación
+### Help Section
 
-1. Clona este repositorio: `git clone https://github.com/nabia1827/MyDailyFisiApp.git`
-2. Abre el proyecto en Android Studio.
-3. Configura las variables de entorno necesarias.
+*   Provides a detailed explanation of each interface's functionality for user reference.
 
-## Uso
+Technology Stack
+----------------
 
-Describe cómo se ejecuta o utiliza el proyecto:
-
-1. Paso 1: ...
-2. Paso 2: ...
-3. ...
-
-## Autor
-
-* Jose Ambrosio
-* Kevin Ortiz 
-* Nabia Pachas
+*   Interface prototypes developed using Figma.
+*   Android Studio used for Android application development.
+*   Backend implemented in .Net, deployed on Azure.
+*   Firebase utilized for image storage.
+*   Python service employed for facial recognition model storage.
