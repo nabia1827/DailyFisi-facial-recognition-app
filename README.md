@@ -1,4 +1,6 @@
-Project Name: Academic Management App with Facial Recognition
+Mobile application with facial recognition
+for management attendance control
+FISI UNMSM academic
 =============================================================
 
 Overview
